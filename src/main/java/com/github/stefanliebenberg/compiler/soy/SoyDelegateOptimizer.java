@@ -36,7 +36,7 @@ public class SoyDelegateOptimizer implements CompilerPass {
     }
 
     @Override
-    public void process(Node externs, Node root) {
+    public void process(final Node externs, final Node root) {
         reset();
         NodeTraversal.traverse(compiler, root, delegateFinder);
         NodeTraversal.traverse(compiler, root, delegateOptimizer);
@@ -65,7 +65,9 @@ public class SoyDelegateOptimizer implements CompilerPass {
             .AbstractPostOrderCallback {
 
         @Override
-        public void visit(NodeTraversal t, Node n, Node parent) {
+        public void visit(final NodeTraversal t,
+                          final Node n,
+                          final Node parent) {
             if (isDelegateCallNode(n)) {
                 Double priority = getPriority(n);
                 String key = getDelegateId(n);
@@ -108,8 +110,8 @@ public class SoyDelegateOptimizer implements CompilerPass {
     }
 
 
-    public static void addToCompile(Compiler compiler,
-                                    CompilerOptions compilerOptions) {
+    public static void addToCompile(final Compiler compiler,
+                                    final CompilerOptions compilerOptions) {
         Multimap<CustomPassExecutionTime, CompilerPass> customPasses =
                 compilerOptions.customPasses;
         if (customPasses == null) {
