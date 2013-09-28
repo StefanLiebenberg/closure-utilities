@@ -4,13 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.stefanliebenberg</groupId>
     <artifactId>closure-utilities</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>closure-utilities</name>
     <url>http://maven.apache.org</url>
     <properties>
-        <github.userName>StefanLiebenberg</github.userName>
-        <github.projectName>${project.name}</github.projectName>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <dependencies>
@@ -39,18 +37,14 @@
     </dependencies>
     <distributionManagement>
         <repository>
-            <name>Github/${github.userName}/${project.name}</name>
-            <id>github-${github.userName}-${project.name}</id>
-            <url>
-                git:releases://git@github.com:${github.userName}/${github.projectName}.git
-            </url>
+            <name>Github - Stefan Liebenberg</name>
+            <id>github-StefanLiebenberg</id>
+            <url>git:releases://git@github.com:StefanLiebenberg/maven.git</url>
         </repository>
         <snapshotRepository>
-            <id>Githib/StefanLiebenberg/ClosureUtilities Snapshots</id>
-            <name>github-stefanliebenberg-closure-utilities-snapshots</name>
-            <url>
-                git:snapshots://git@github.com:${github.userName}/${github.projectName}.git
-            </url>
+            <id>Github - Stefan Liebenberg - Snapshots</id>
+            <name>github-StefanLiebenberg-Snapshots</name>
+            <url>git:snapshots://git@github.com:StefanLiebenberg/maven.git</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -62,6 +56,20 @@
     </pluginRepositories>
 
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <extensions>
             <extension>
                 <groupId>ar.com.synergian</groupId>

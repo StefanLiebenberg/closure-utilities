@@ -23,14 +23,16 @@ public class SoyDelegateOptimizer implements CompilerPass {
 
     private final DelegateOptimiser delegateOptimizer = new DelegateOptimiser();
 
+
     public SoyDelegateOptimizer(final Compiler compiler) {
         this.compiler = compiler;
     }
 
-    private HashMap<String, Double> dataMap;
+    private final HashMap<String, Double> dataMap = new HashMap<String,
+            Double>();
 
     protected void reset() {
-        dataMap = new HashMap<String, Double>();
+        dataMap.clear();
     }
 
     @Override
@@ -44,25 +46,17 @@ public class SoyDelegateOptimizer implements CompilerPass {
             .AbstractPostOrderCallback {
 
         @Override
-        public void visit(NodeTraversal t, Node n, Node parent) {
-            final int type = n.getType();
-            switch (type) {
-                case Token.CALL:
-                    String qualifiedName = n.getFirstChild()
-                            .getQualifiedName();
-                    if ("soy.$$registerDelegateFn".equals(qualifiedName)) {
-                        String name = n.getFirstChild().getNext()
-                                .getLastChild().getString();
-                        String variant = n.getChildAtIndex(1).getNext()
-                                .getString();
-                        Double priority = n.getChildAtIndex(3).getDouble();
-                        String key = name + ":" + variant;
-                        Double currentPriorityInMap = dataMap.get(key);
-                        if (currentPriorityInMap == null ||
-                                currentPriorityInMap < priority) {
-                            dataMap.put(name + ":" + variant, priority);
-                        }
-                    }
+        public void visit(final NodeTraversal t, final Node n,
+                          final Node parent) {
+            if (isDelegateCallNode(n)) {
+                Double priority = getPriority(n);
+                String key = getDelegateId(n);
+                Double currentPriorityInMap = dataMap.get(key);
+                if (currentPriorityInMap == null ||
+                        currentPriorityInMap < priority) {
+                    dataMap.put(key, priority);
+                }
+
             }
         }
     }
@@ -71,26 +65,47 @@ public class SoyDelegateOptimizer implements CompilerPass {
             .AbstractPostOrderCallback {
 
         @Override
-        public void visit(NodeTraversal t, Node n, Node parent) {
-            final int type = n.getType();
-            if (type == Token.CALL) {
-                String qualifiedName = n.getFirstChild().getQualifiedName();
-                if ("soy.$$registerDelegateFn".equals(qualifiedName)) {
-                    String name = n.getFirstChild().getNext().getLastChild()
-                            .getString();
-                    String variant = n.getChildAtIndex(1).getNext()
-                            .getString();
-                    Double priority = n.getChildAtIndex(3).getDouble();
-                    String key = name + ":" + variant;
-                    Double highestPriorityInMap = dataMap.get(key);
-                    if (priority < highestPriorityInMap) {
-                        System.out.println("remove node");
-                        parent.detachFromParent();
-                        compiler.reportCodeChange();
-                    }
+        public void visit(final NodeTraversal t,
+                          final Node n,
+                          final Node parent) {
+            if (isDelegateCallNode(n)) {
+                Double priority = getPriority(n);
+                String key = getDelegateId(n);
+                Double highestPriorityInMap = dataMap.get(key);
+                if (priority < highestPriorityInMap) {
+                    parent.detachFromParent();
+                    compiler.reportCodeChange();
                 }
             }
         }
+    }
+
+    static private String getName(final Node node) {
+        return node.getFirstChild().getNext().getLastChild()
+                .getString();
+    }
+
+    static private String getVariant(final Node node) {
+        return node.getChildAtIndex(1).getNext().getString();
+    }
+
+    static private Double getPriority(final Node node) {
+        return node.getChildAtIndex(3).getDouble();
+    }
+
+    static private String getKey(final String name, final String variant) {
+        return name + ":" + variant;
+    }
+
+    static private String getDelegateId(final Node node) {
+        return getKey(getName(node), getVariant(node));
+    }
+
+    static private final String DELEGATE_FN_NAME = "soy.$$registerDelegateFn";
+
+    static private Boolean isDelegateCallNode(final Node node) {
+        return node.getType() == Token.CALL && node.getFirstChild()
+                .getQualifiedName().equals(DELEGATE_FN_NAME);
     }
 
 
@@ -101,7 +116,6 @@ public class SoyDelegateOptimizer implements CompilerPass {
         if (customPasses == null) {
             customPasses = LinkedListMultimap.create();
         }
-        Map<String, Double> delegatesMap = new HashMap<String, Double>();
         customPasses.put(CustomPassExecutionTime.BEFORE_CHECKS,
                 new SoyDelegateOptimizer(compiler));
         compilerOptions.setCustomPasses(customPasses);
