@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 
+
 public class BaseSourceFile {
 
     private final HashSet<String> providedNamespaces = new HashSet<String>();
@@ -28,10 +29,16 @@ public class BaseSourceFile {
         this.sourceLocation = new URI(sourcePath);
     }
 
+    /**
+     * @param namespace A namespace that this source file requires.
+     */
     public void addRequireNamespace(final String namespace) {
         this.requiredNamespaces.add(namespace);
     }
 
+    /**
+     * @param namespace A namespace that this source file provides.
+     */
     public void addProvideNamespace(final String namespace) {
         this.providedNamespaces.add(namespace);
     }
