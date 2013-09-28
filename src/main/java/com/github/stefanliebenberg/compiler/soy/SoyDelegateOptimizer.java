@@ -65,9 +65,7 @@ public class SoyDelegateOptimizer implements CompilerPass {
             .AbstractPostOrderCallback {
 
         @Override
-        public void visit(final NodeTraversal t,
-                          final Node n,
-                          final Node parent) {
+        public void visit(NodeTraversal t, Node n, Node parent) {
             if (isDelegateCallNode(n)) {
                 Double priority = getPriority(n);
                 String key = getDelegateId(n);
@@ -104,8 +102,9 @@ public class SoyDelegateOptimizer implements CompilerPass {
     static private final String DELEGATE_FN_NAME = "soy.$$registerDelegateFn";
 
     static private Boolean isDelegateCallNode(final Node node) {
-        return node.getType() == Token.CALL && node.getFirstChild()
-                .getQualifiedName().equals(DELEGATE_FN_NAME);
+        return node.getType() == Token.CALL &&
+                DELEGATE_FN_NAME.equals(node.getFirstChild()
+                        .getQualifiedName());
     }
 
 
