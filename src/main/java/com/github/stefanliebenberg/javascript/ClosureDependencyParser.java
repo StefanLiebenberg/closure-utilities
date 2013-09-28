@@ -12,6 +12,28 @@ import java.net.URI;
 public class ClosureDependencyParser implements
         IDependencyParser<ClosureSourceFile> {
 
+    @Override
+    public void parse(final ClosureSourceFile dependency,
+                      final Reader content) throws
+            IOException {
+        final URI sourceLocation = dependency.getSourceLocation();
+        final Parser parser = new Parser();
+        final AstRoot astRoot = parser.parse(content,
+                sourceLocation.toString(), 1);
+        visit(dependency, astRoot.getFirstChild());
+    }
+
+    @Override
+    public void parse(ClosureSourceFile dependency, String content) throws
+            IOException {
+        final URI sourceLocation = dependency.getSourceLocation();
+        final Parser parser = new Parser();
+        final AstRoot astRoot = parser.parse(content, sourceLocation.toString
+                (), 1);
+        visit(dependency, astRoot.getFirstChild());
+    }
+
+
     private boolean isName(final AstNode node) {
         return node instanceof Name;
     }
@@ -41,9 +63,9 @@ public class ClosureDependencyParser implements
         }
     }
 
-    public <T extends AstNode> T getArgument(final FunctionCall functionCall,
-                                             final Integer index,
-                                             final Class<T> tClass) {
+    private <T extends AstNode> T getArgument(final FunctionCall functionCall,
+                                              final Integer index,
+                                              final Class<T> tClass) {
         AstNode node = functionCall.getArguments().get(index);
         if (tClass.isInstance(node)) {
             return (T) node;
@@ -52,16 +74,16 @@ public class ClosureDependencyParser implements
         }
     }
 
-    public String getStringArgumentValue(final FunctionCall functionCall,
-                                         final Integer index) {
+    private String getStringArgumentValue(final FunctionCall functionCall,
+                                          final Integer index) {
         return getArgument(functionCall, index, StringLiteral.class).getValue();
     }
 
 
-    public void visit_PropertyGet_googScan(final ClosureSourceFile
-                                                   closureSourceFile,
-                                           final FunctionCall funcCall,
-                                           final PropertyGet propertyGet) {
+    private void visit_PropertyGet_googScan(final ClosureSourceFile
+                                                    closureSourceFile,
+                                            final FunctionCall funcCall,
+                                            final PropertyGet propertyGet) {
         if (isName(propertyGet.getLeft(), "goog")) {
             final AstNode right = propertyGet.getRight();
             if (isName(right, "provide")) {
@@ -74,8 +96,8 @@ public class ClosureDependencyParser implements
         }
     }
 
-    public void visit_FunctionCall(final ClosureSourceFile closureSourceFile,
-                                   final FunctionCall functionCall) {
+    private void visit_FunctionCall(final ClosureSourceFile closureSourceFile,
+                                    final FunctionCall functionCall) {
         final AstNode target = functionCall.getTarget();
         if (isPropertyGet(target)) {
             visit_PropertyGet_googScan(closureSourceFile, functionCall,
@@ -83,7 +105,8 @@ public class ClosureDependencyParser implements
         }
     }
 
-    private void visit(ClosureSourceFile dependency, Node node) {
+    private void visit(final ClosureSourceFile dependency,
+                       final Node node) {
         if (node == null) {
             return;
         }
@@ -112,21 +135,4 @@ public class ClosureDependencyParser implements
         visit(dependency, node.getNext());
     }
 
-    @Override
-    public void parse(ClosureSourceFile dependency, Reader content) throws
-            IOException {
-        URI sourceLocation = dependency.getSourceLocation();
-        Parser parser = new Parser();
-        AstRoot astRoot = parser.parse(content, sourceLocation.toString(), 1);
-        visit(dependency, astRoot.getFirstChild());
-    }
-
-    @Override
-    public void parse(ClosureSourceFile dependency, String content) throws
-            IOException {
-        URI sourceLocation = dependency.getSourceLocation();
-        Parser parser = new Parser();
-        AstRoot astRoot = parser.parse(content, sourceLocation.toString(), 1);
-        visit(dependency, astRoot.getFirstChild());
-    }
 }

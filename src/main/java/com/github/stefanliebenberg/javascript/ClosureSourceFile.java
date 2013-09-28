@@ -23,10 +23,16 @@ public class ClosureSourceFile extends BaseSourceFile {
 
     private Boolean isBaseFile = false;
 
+    /**
+     * @return Returns true if this file is the goog/base.js file.
+     */
     public Boolean getIsBaseFile() {
         return isBaseFile;
     }
 
+    /**
+     * @param isBaseFile
+     */
     public void setIsBaseFile(final Boolean isBaseFile) {
         this.isBaseFile = isBaseFile;
     }

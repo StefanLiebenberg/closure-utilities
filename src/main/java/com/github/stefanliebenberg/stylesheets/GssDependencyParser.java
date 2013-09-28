@@ -10,11 +10,24 @@ import java.io.StringReader;
 
 public class GssDependencyParser implements IDependencyParser<GssSourceFile> {
 
+    @Override
+    public void parse(final GssSourceFile dependency, final Reader reader)
+            throws IOException {
+        scan(dependency, new LineReader(reader));
+    }
+
+    @Override
+    public void parse(final GssSourceFile dependency, final String content)
+            throws IOException {
+        parse(dependency, new StringReader(content));
+    }
+
     private String extractStatement(final String statement,
                                     final String line) {
         if (line.contains(statement)) {
-            int startIdx = line.indexOf(statement) + statement.length();
-            int endIdx = line.indexOf(";", startIdx);
+            final Integer startIdx = line.indexOf(statement) + statement
+                    .length();
+            final Integer endIdx = line.indexOf(";", startIdx);
             if (startIdx != -1 && endIdx != -1) {
                 return line.substring(startIdx, endIdx).trim();
             }
@@ -33,7 +46,6 @@ public class GssDependencyParser implements IDependencyParser<GssSourceFile> {
     private void scan(final GssSourceFile dependency,
                       final LineReader lineReader)
             throws IOException {
-
         String line = lineReader.readLine(), statement;
         while (line != null) {
             statement = extractProvideStatement(line);
@@ -49,15 +61,4 @@ public class GssDependencyParser implements IDependencyParser<GssSourceFile> {
         }
     }
 
-    @Override
-    public void parse(final GssSourceFile dependency, final Reader reader)
-            throws IOException {
-        scan(dependency, new LineReader(reader));
-    }
-
-    @Override
-    public void parse(final GssSourceFile dependency, final String content)
-            throws IOException {
-        parse(dependency, new StringReader(content));
-    }
 }
