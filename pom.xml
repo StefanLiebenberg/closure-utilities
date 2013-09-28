@@ -2,20 +2,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.github.stefanliebenberg</groupId>
     <artifactId>closure-utilities</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-
     <name>closure-utilities</name>
     <url>http://maven.apache.org</url>
-
     <properties>
+        <github.userName>StefanLiebenberg</github.userName>
+        <github.projectName>${project.name}</github.projectName>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-
     <dependencies>
         <dependency>
             <groupId>com.google.javascript</groupId>
@@ -40,4 +37,37 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <distributionManagement>
+        <repository>
+            <name>Github/${github.userName}/${project.name}</name>
+            <id>github-${github.userName}-${project.name}</id>
+            <url>
+                git:releases://git@github.com:${github.userName}/${github.projectName}.git
+            </url>
+        </repository>
+        <snapshotRepository>
+            <id>Githib/StefanLiebenberg/ClosureUtilities Snapshots</id>
+            <name>github-stefanliebenberg-closure-utilities-snapshots</name>
+            <url>
+                git:snapshots://git@github.com:${github.userName}/${github.projectName}.git
+            </url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>synergian-repo</id>
+            <url>https://raw.github.com/synergian/wagon-git/releases</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>ar.com.synergian</groupId>
+                <artifactId>wagon-git</artifactId>
+                <version>0.1.6</version>
+            </extension>
+        </extensions>
+    </build>
 </project>
