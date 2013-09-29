@@ -4,7 +4,4 @@ after_success:
   - cp .travis/id_maven_rsa ~/.ssh/id_travis
   - cp .travis/id_maven_rsa.pub ~/.ssh/id_travis.pub
   - chmod 600 ~/.ssh/id_travis
-  - cat ~/.ssh/config
-  - ls ~/.ssh/
-  - ssh git@github.com
   - mvn -DskipTests=true deploy
