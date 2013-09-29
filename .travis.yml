@@ -5,4 +5,5 @@ before_script:
 after_success:
   - chmod 600 .travis/id_maven_rsa # this key should have push access
   - ssh-add .travis/id_maven_rsa
+  - ssh git@github.com
   - mvn deploy
