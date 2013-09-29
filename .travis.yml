@@ -1,7 +1,4 @@
 language: java
-before_script:
-  - echo -e "Host heroku.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-  - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 after_success:
   - chmod 600 .travis/id_maven_rsa
   - ssh-add .travis/id_maven_rsa
