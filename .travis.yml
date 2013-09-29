@@ -3,6 +3,7 @@ after_success:
   - echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_travis" >> ~/.ssh/config
   - cp .travis/id_maven_rsa ~/.ssh/id_travis
   - cp .travis/id_maven_rsa.pub ~/.ssh/id_travis.pub
+  - chmod 600 ~/.ssh/id_travis
   - cat ~/.ssh/config
   - ls ~/.ssh/
   - ssh git@github.com
