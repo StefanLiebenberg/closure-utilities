@@ -16,6 +16,7 @@ language: java
 before_install:
 - for i in {0..43}; do N=`printf "%02d" $i`; echo -n $id_t_$N >> ~/.ssh/id_travis_encoded; done;
 - sha1sum ~/.ssh/id_travis_encoded;
+- cat ~/.ssh/id_travis_encoded;
 - base64 --decode --ignore-garbage ~/.ssh/id_travis_encoded > ~/.ssh/id_travis
 - chmod 600 ~/.ssh/id_travis
 - sha1sum ~/.ssh/id_travis
