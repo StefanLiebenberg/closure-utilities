@@ -20,4 +20,5 @@ env:
 language: java
 after_success:
 - mvn deploy -X
+- cd /home/travis/build/StefanLiebenberg/closure-utilities/wagon-git/git%40github.com%3AStefanLiebenberg%2Fmaven.git && git status &&  git log origin/snapshots..HEAD;
 
