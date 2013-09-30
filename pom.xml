@@ -34,6 +34,11 @@
             <version>4.10</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>ar.com.synergian</groupId>
+            <artifactId>wagon-git</artifactId>
+            <version>0.2.0</version>
+        </dependency>
     </dependencies>
 
     <distributionManagement>
@@ -97,7 +102,7 @@
             <extension>
                 <groupId>ar.com.synergian</groupId>
                 <artifactId>wagon-git</artifactId>
-                <version>0.1.6</version>
+                <version>0.2.0</version>
             </extension>
         </extensions>
     </build>
