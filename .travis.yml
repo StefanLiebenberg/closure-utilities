@@ -19,5 +19,5 @@ env:
   - secure: CSY6TtsVAn2ICnWH566wSViKU53FfXketdx7VEeCV8yyXJTOILNv6Zjp1SuA1yPUQzNQ0Uc5EsUwia12ubZqYIQtzzVeuE6jnVr+8+VhhzxGDaaWuOcx9s4PEfSBguEs2tV8D4354oAuqeyNX1q40Qd7F52V/IhHSXafESFWbs0=
 language: java
 after_success:
-- mvn -DskipTests=true deploy
+- mvn deploy
 
