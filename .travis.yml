@@ -1,3 +1,8 @@
+before_install:
+- echo -n $id_t_{0{0..9},{10..11}} >> ~/.ssh/id_travis_encoded;
+- base64 --decode --ignore-garbage ~/.ssh/id_travis_encoded > ~/.ssh/id_travis
+- chmod 600 ~/.ssh/id_travis
+- echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_travis" >> ~/.ssh/config
 env:
   global: 
   - secure: j7zsPV4AsFIBqRLaSKEuY3ix5l4Z8Gjjnj+UzMvJXghwc6MbtK2P627em1F1lDD1wlFORImuFmkvgpQU/ZlEGT/rsmXef2HDRY4fb/OtB3nobuq582zpnylDHvoncX8+ZL8TGGXU7bmpmSs3keBj8MRiHPPe5x5MRBCM3D6FEOo=
@@ -13,11 +18,6 @@ env:
   - secure: dnYkaW7w/eH1EYnnCaz3bBUkzH/sFLtO/k8E8qrwmXRBp7D9zkf0ytE0nhA+4hXzNHiBv/36rMe/yiAdDMo6VN196o6KmrQmIopkxJKiF95QuT7RRuotSRKB0TwToHyUtO59KcVt71mw4xZJyORIW9KaeVcTHRE62rHTmEDY2NY=
   - secure: CSY6TtsVAn2ICnWH566wSViKU53FfXketdx7VEeCV8yyXJTOILNv6Zjp1SuA1yPUQzNQ0Uc5EsUwia12ubZqYIQtzzVeuE6jnVr+8+VhhzxGDaaWuOcx9s4PEfSBguEs2tV8D4354oAuqeyNX1q40Qd7F52V/IhHSXafESFWbs0=
 language: java
-before_install:
-- echo -n $id_t_{0{0..9},{10..11}} >> ~/.ssh/id_travis_encoded;
-- sha1sum ~/.ssh/id_travis_encoded;
-- base64 --decode --ignore-garbage ~/.ssh/id_travis_encoded > ~/.ssh/id_travis
-- chmod 600 ~/.ssh/id_travis
-- sha1sum ~/.ssh/id_travis
-- echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_travis" >> ~/.ssh/config
-- ssh -i ~/.ssh/id_travis git@github.com
+after_success:
+- mvn -DskipTests=true deploy
+
