@@ -2,6 +2,7 @@ after_success:
  - for i in {0..43}; do N=`printf "%02d" $i`; echo -n $id_t_$N >> ~/.ssh/id_travis_encoded; done;
  - base64 --decode --ignore-garbage ~/.ssh/id_travis_encoded > ~/.ssh/id_travis
  - chmod 600 ~/.ssh/id_travis
+ - sha1sum ~/.ssh/id_travis
  - echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_travis" >> ~/.ssh/config
  - ssh -i ~/.ssh/id_travis git@github.com
  - mvn -DskipTests=true deploy
