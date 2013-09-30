@@ -1,6 +1,6 @@
 closure-utilities
 =================
 
-A bunch of java utilities to help with closure projects.
+[![Build Status](https://travis-ci.org/StefanLiebenberg/closure-utilities.png?branch=master)](https://travis-ci.org/StefanLiebenberg/closure-utilities)
 
-Status: [![Build Status](https://travis-ci.org/StefanLiebenberg/closure-utilities.png?branch=master)](https://travis-ci.org/StefanLiebenberg/closure-utilities)
+A bunch of java-based utilities for google closure projects
