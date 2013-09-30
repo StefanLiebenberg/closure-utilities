@@ -3,6 +3,8 @@ before_install:
 - base64 --decode --ignore-garbage ~/.ssh/id_travis_encoded > ~/.ssh/id_travis
 - chmod 600 ~/.ssh/id_travis
 - echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_travis" >> ~/.ssh/config
+- git config --global user.name "Travis CI"
+- git config --global user.email "travis@travis-ci.org"
 env:
   global: 
   - secure: j7zsPV4AsFIBqRLaSKEuY3ix5l4Z8Gjjnj+UzMvJXghwc6MbtK2P627em1F1lDD1wlFORImuFmkvgpQU/ZlEGT/rsmXef2HDRY4fb/OtB3nobuq582zpnylDHvoncX8+ZL8TGGXU7bmpmSs3keBj8MRiHPPe5x5MRBCM3D6FEOo=
