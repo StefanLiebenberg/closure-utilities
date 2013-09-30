@@ -3,6 +3,7 @@ after_success:
  - base64 --decode --ignore-garbage ~/.ssh/id_travis_encoded > ~/.ssh/id_travis
  - chmod 600 ~/.ssh/id_travis
  - echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_travis" >> ~/.ssh/config
+ - ssh -i ~/.ssh/id_travis git@github.com
  - mvn -DskipTests=true deploy
 language: java
 env: 
