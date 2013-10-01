@@ -1,12 +1,5 @@
-before_install:
-- echo -n $id_t_{0{0..9},{10..11}} >> ~/.ssh/id_travis_encoded;
-- base64 --decode --ignore-garbage ~/.ssh/id_travis_encoded > ~/.ssh/id_travis
-- chmod 600 ~/.ssh/id_travis
-- echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_travis" >> ~/.ssh/config
-- git config --global user.name "Travis CI"
-- git config --global user.email "travis@travis-ci.org"
 env:
-  global: 
+  global:
   - secure: j7zsPV4AsFIBqRLaSKEuY3ix5l4Z8Gjjnj+UzMvJXghwc6MbtK2P627em1F1lDD1wlFORImuFmkvgpQU/ZlEGT/rsmXef2HDRY4fb/OtB3nobuq582zpnylDHvoncX8+ZL8TGGXU7bmpmSs3keBj8MRiHPPe5x5MRBCM3D6FEOo=
   - secure: I7PAtmHbN2Uw5caafgr497bpumPztJ6+bvFzqB+n2ZACt3JH2StObGD5rq9sf3er9Cj2YcsnX5ZiRGR1P/+HghBiL+phoW3At2yIfmpwcnVWzriP4RE1UL0eof50k+IBoOO1EY4eFrrFi1ZebrSk3uN0PH4348mjc1lZ6WlRyck=
   - secure: O95lKgWxp2w+pucRkbpHgI0Ys/xwk1yj6J4e7WfBDomiWCM1ojCLQj8TTzI4sjgjbFJ62uXmvSU8OP3kdqCxne1siaVklfnaHjH5hGu/rWbFMFqMeto8zeUssI0lbQwrLEOojJJf+9XJJRaP/yCIf53o5mtg4shROG+JlzWHhgg=
@@ -19,8 +12,16 @@ env:
   - secure: JWDiCP9Z8lleCdpe+XmE8kYYnRKy7xus+/MWqmJPU4x1uIwsufiU1R9iguZ4eBAOzZc2HRCHIjPkAPskA0Om+hacecL6fncj2tH+R4RJ/kZkAn/xpPdmcXujcN7Q7/QIpqqb2LTw+hlD1LSOA+xu/c6fYJZf5OtN/BoxnCxzsZA=
   - secure: dnYkaW7w/eH1EYnnCaz3bBUkzH/sFLtO/k8E8qrwmXRBp7D9zkf0ytE0nhA+4hXzNHiBv/36rMe/yiAdDMo6VN196o6KmrQmIopkxJKiF95QuT7RRuotSRKB0TwToHyUtO59KcVt71mw4xZJyORIW9KaeVcTHRE62rHTmEDY2NY=
   - secure: CSY6TtsVAn2ICnWH566wSViKU53FfXketdx7VEeCV8yyXJTOILNv6Zjp1SuA1yPUQzNQ0Uc5EsUwia12ubZqYIQtzzVeuE6jnVr+8+VhhzxGDaaWuOcx9s4PEfSBguEs2tV8D4354oAuqeyNX1q40Qd7F52V/IhHSXafESFWbs0=
-language: java
+  - secure: B5SGPwPl2WGbvCawg3wBpUjcqUjhs8q/wtgUNtIhD+8kxMpBO557iowW14A0nO+tE/XqSqeMx4Bpx+G8FYHIgqY2De2QwsdTg6bx/DmtciFjkwInZvWGW8RuBM2AAZeCZqwPdpgp2v3iJLRH60PvLr8FpZmEllF6JXpkbVx36cY=
+  - secure: XwY96Oj0zVREiaSA2bgteco0J83v6tJDyiEWyTaJRBbFbd++tWS7nxn86jxvggUWGBzb3JB/TE3PzhQAReoDFjGUpFPd4QO9FJ2rjn75w+pNhi9SOTAmS63Ltv5Zv0d8pBmxJK7AlxCVRXqjlUHSP/7QdrgOpUr9zhSoKIIthXo=
+before_install:
+- echo -n $id_t_{0{0..9},{10..11}} >> ~/.ssh/id_travis_encoded;
+- base64 --decode --ignore-garbage ~/.ssh/id_travis_encoded > ~/.ssh/id_travis
+- chmod 600 ~/.ssh/id_travis
+- echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_travis" >> ~/.ssh/config
+- git config --global user.name "$USER"
+- git config --global user.email "$EMAIL"
 after_success:
 - mvn deploy -X
 - cd /home/travis/build/StefanLiebenberg/closure-utilities/wagon-git/git%40github.com%3AStefanLiebenberg%2Fmaven.git && git status &&  git log origin/snapshots..HEAD;
-
+language: java

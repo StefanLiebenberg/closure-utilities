@@ -1,0 +1,22 @@
+{namespace example}
+
+/**
+ * @param Variant
+ */
+{template .Foo}
+  {delcall FooBase variant="$Variant" /}
+{/template}
+
+/**
+ *
+ */
+{deltemplate FooBase}
+  This is the base template and should be deleted. [DELETE]
+{/deltemplate}
+
+/**
+ *
+ */
+{deltemplate FooBase variant="'A'"}
+  This is a variant of the template and should be kept [KEEP].
+{/deltemplate}

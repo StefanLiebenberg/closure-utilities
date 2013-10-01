@@ -1,14 +1,14 @@
 package com.github.stefanliebenberg.compiler.soy;
 
 
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.*;
 import com.google.javascript.jscomp.Compiler;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -28,18 +28,48 @@ public class SoyDelegateOptimizer implements CompilerPass {
         this.compiler = compiler;
     }
 
-    private final HashMap<String, Double> dataMap = new HashMap<String,
-            Double>();
+    private final HashMap<String, Double> dataMap =
+            new HashMap<String, Double>();
+
+    private final HashMap<String, String> usedFunctionMap =
+            new HashMap<String, String>();
+
+    private final HashSet<String> allFunctions =
+            new HashSet<String>();
 
     protected void reset() {
         dataMap.clear();
+        usedFunctionMap.clear();
+        allFunctions.clear();
+        frozenAllFunctions = null;
+        frozenUsedFunctions = null;
+        frozenDataMap = null;
+    }
+
+    private ImmutableMap<String, Double> frozenDataMap;
+    private ImmutableCollection<String> frozenUsedFunctions;
+    private ImmutableCollection<String> frozenAllFunctions;
+
+    protected void freeze() {
+        frozenDataMap = ImmutableMap.copyOf(dataMap);
+        frozenUsedFunctions = ImmutableList.copyOf(usedFunctionMap.values());
+        frozenAllFunctions = ImmutableList.copyOf(allFunctions);
     }
 
     @Override
     public void process(final Node externs, final Node root) {
         reset();
         NodeTraversal.traverse(compiler, root, delegateFinder);
+
+
+        freeze();
         NodeTraversal.traverse(compiler, root, delegateOptimizer);
+    }
+
+    private void remember(String key, Double priority, String templateName) {
+        dataMap.put(key, priority);
+        usedFunctionMap.put(key, templateName);
+        allFunctions.add(templateName);
     }
 
     private class DelegateFinder extends NodeTraversal
@@ -54,7 +84,8 @@ public class SoyDelegateOptimizer implements CompilerPass {
                 Double currentPriorityInMap = dataMap.get(key);
                 if (currentPriorityInMap == null ||
                         currentPriorityInMap < priority) {
-                    dataMap.put(key, priority);
+                    remember(key, priority, n.getChildAtIndex(4)
+                            .getQualifiedName());
                 }
 
             }
@@ -68,15 +99,33 @@ public class SoyDelegateOptimizer implements CompilerPass {
         public void visit(final NodeTraversal t,
                           final Node n,
                           final Node parent) {
-            if (isDelegateCallNode(n)) {
-                Double priority = getPriority(n);
-                String key = getDelegateId(n);
-                Double highestPriorityInMap = dataMap.get(key);
-                if (priority < highestPriorityInMap) {
-                    parent.detachFromParent();
-                    compiler.reportCodeChange();
-                }
+            switch (n.getType()) {
+                case Token.CALL:
+                    if (isDelegateCallNode(n)) {
+                        Double priority = getPriority(n);
+                        String key = getDelegateId(n);
+                        Double highestPriorityInMap = frozenDataMap.get(key);
+                        if (priority < highestPriorityInMap) {
+                            parent.detachFromParent();
+                            compiler.reportCodeChange();
+                        }
+                    }
+                    break;
+                case Token.FUNCTION:
+                    Object property = n.getProp(Node.ORIGINALNAME_PROP);
+                    if (property != null) {
+                        String qualifiedName = property.toString();
+                        if (frozenAllFunctions.contains(qualifiedName)
+                                && !frozenUsedFunctions.contains
+                                (qualifiedName)) {
+                            parent.getParent().detachFromParent();
+                            compiler.reportCodeChange();
+                        }
+                    }
+                    break;
             }
+
+
         }
     }
 

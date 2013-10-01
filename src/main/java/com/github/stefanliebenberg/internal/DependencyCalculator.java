@@ -18,11 +18,10 @@ public class DependencyCalculator<S extends BaseSourceFile>
         this.dependencies = ImmutableSet.copyOf(dependencies);
     }
 
-    public DependencyCalculator(final ImmutableCollection<S>
-                                        dependencies) {
+    public DependencyCalculator(
+            final ImmutableCollection<S> dependencies) {
         this.dependencies = dependencies;
     }
-
 
 
     private final Function<S, String> BASE_TRANSFORMER =

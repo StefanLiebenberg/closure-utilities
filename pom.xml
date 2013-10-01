@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>12.0</version>
+            <version>14.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.mozilla</groupId>
@@ -34,6 +34,13 @@
             <version>4.10</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.template</groupId>
+            <artifactId>soy</artifactId>
+            <version>2012-12-21</version>
+            <scope>test</scope>
+        </dependency>
+
         <!--<dependency>-->
             <!--<groupId>ar.com.synergian</groupId>-->
             <!--<artifactId>wagon-git</artifactId>-->
@@ -41,8 +48,10 @@
         <!--</dependency>-->
     </dependencies>
 
+
+
     <distributionManagement>
-        <repository>
+       <repository>
             <name>Github - Stefan Liebenberg</name>
             <id>github-StefanLiebenberg</id>
             <url>git:releases://git@github.com:StefanLiebenberg/maven.git</url>

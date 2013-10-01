@@ -14,12 +14,12 @@ public class ClosureDependencyParser implements
 
     @Override
     public void parse(final ClosureSourceFile dependency,
-                      final Reader content) throws
-            IOException {
+                      final Reader content)
+            throws IOException {
         final URI sourceLocation = dependency.getSourceLocation();
         final Parser parser = new Parser();
-        final AstRoot astRoot = parser.parse(content,
-                sourceLocation.toString(), 1);
+        final String srcString = sourceLocation.toString();
+        final AstRoot astRoot = parser.parse(content, srcString, 1);
         visit(dependency, astRoot.getFirstChild());
     }
 
@@ -27,20 +27,19 @@ public class ClosureDependencyParser implements
     public void parse(ClosureSourceFile dependency, String content) throws
             IOException {
         final URI sourceLocation = dependency.getSourceLocation();
+        final String srcString = sourceLocation.toString();
         final Parser parser = new Parser();
-        final AstRoot astRoot = parser.parse(content, sourceLocation.toString
-                (), 1);
+        final AstRoot astRoot = parser.parse(content, srcString, 1);
         visit(dependency, astRoot.getFirstChild());
     }
-
 
     private boolean isName(final AstNode node) {
         return node instanceof Name;
     }
 
-    private boolean isName(final AstNode node, final String name) {
-        return isName(node) && ((Name) node).getIdentifier().equals
-                (name);
+    private boolean isName(final AstNode node,
+                           final String name) {
+        return isName(node) && ((Name) node).getIdentifier().equals(name);
     }
 
     private boolean isPropertyGet(final AstNode node) {
@@ -66,7 +65,7 @@ public class ClosureDependencyParser implements
     private <T extends AstNode> T getArgument(final FunctionCall functionCall,
                                               final Integer index,
                                               final Class<T> tClass) {
-        AstNode node = functionCall.getArguments().get(index);
+        final AstNode node = functionCall.getArguments().get(index);
         if (tClass.isInstance(node)) {
             return (T) node;
         } else {
@@ -131,8 +130,6 @@ public class ClosureDependencyParser implements
                 return;
             }
         }
-
         visit(dependency, node.getNext());
     }
-
 }

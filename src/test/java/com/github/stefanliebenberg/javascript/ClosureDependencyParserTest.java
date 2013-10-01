@@ -1,5 +1,6 @@
 package com.github.stefanliebenberg.javascript;
 
+import com.google.common.collect.ImmutableSet;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
@@ -27,8 +28,10 @@ public class ClosureDependencyParserTest {
         ClosureSourceFile closureSourceFile = new ClosureSourceFile("/path.js");
         String content = "goog.provide('a.b.c')";
         parser.parse(closureSourceFile, content);
-        Set<String> provides = closureSourceFile.getProvidedNamespaces();
-        Set<String> requires = closureSourceFile.getRequiredNamespaces();
+        ImmutableSet<String> provides =
+                closureSourceFile.getProvidedNamespaces();
+        ImmutableSet<String> requires =
+                closureSourceFile.getRequiredNamespaces();
         Assert.assertTrue(provides.contains("a.b.c"));
         Assert.assertEquals(1, provides.size());
         Assert.assertFalse(closureSourceFile.getIsBaseFile());
