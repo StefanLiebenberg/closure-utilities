@@ -51,4 +51,9 @@ public class Immuter {
                                              final Function<A, B> transform) {
         return set(Collections2.transform(collection, transform));
     }
+
+    public static String[] stringArray(Collection<String> collection) {
+        final String[] list = new String[collection.size()];
+        return collection.toArray(list);
+    }
 }

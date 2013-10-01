@@ -1,0 +1,14 @@
+
+@provide static;
+
+.foo {
+  background: red;
+}
+
+.bar {
+  color: blue;
+}
+
+.war {
+  border: pink;
+}
