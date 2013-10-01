@@ -22,5 +22,5 @@ before_install:
 - git config --global user.name "$USER"
 - git config --global user.email "$EMAIL"
 after_success:
-- mvn deploy
+- if [ ! $TRAVIS_PULL_REQUEST ]; mvn deploy; fi;
 language: java
