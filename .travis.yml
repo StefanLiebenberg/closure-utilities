@@ -15,12 +15,12 @@ env:
   - secure: B5SGPwPl2WGbvCawg3wBpUjcqUjhs8q/wtgUNtIhD+8kxMpBO557iowW14A0nO+tE/XqSqeMx4Bpx+G8FYHIgqY2De2QwsdTg6bx/DmtciFjkwInZvWGW8RuBM2AAZeCZqwPdpgp2v3iJLRH60PvLr8FpZmEllF6JXpkbVx36cY=
   - secure: XwY96Oj0zVREiaSA2bgteco0J83v6tJDyiEWyTaJRBbFbd++tWS7nxn86jxvggUWGBzb3JB/TE3PzhQAReoDFjGUpFPd4QO9FJ2rjn75w+pNhi9SOTAmS63Ltv5Zv0d8pBmxJK7AlxCVRXqjlUHSP/7QdrgOpUr9zhSoKIIthXo=
 before_install:
-- echo -n $id_t_{0{0..9},{10..11}} >> ~/.ssh/id_travis_encoded;
-- base64 --decode --ignore-garbage ~/.ssh/id_travis_encoded > ~/.ssh/id_travis
-- chmod 600 ~/.ssh/id_travis
-- echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_travis" >> ~/.ssh/config
-- git config --global user.name "$USER"
-- git config --global user.email "$EMAIL"
+- if $TRAVIS_SECURE_ENV_VARS; echo -n $id_t_{0{0..9},{10..11}} >> ~/.ssh/id_travis_encoded; fi;
+- if $TRAVIS_SECURE_ENV_VARS; base64 --decode --ignore-garbage ~/.ssh/id_travis_encoded > ~/.ssh/id_travis; fi;
+- if $TRAVIS_SECURE_ENV_VARS; chmod 600 ~/.ssh/id_travis; fi;
+- if $TRAVIS_SECURE_ENV_VARS; echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile ~/.ssh/id_travis" >> ~/.ssh/config; fi;
+- if $TRAVIS_SECURE_ENV_VARS; git config --global user.name "$USER"; fi;
+- if $TRAVIS_SECURE_ENV_VARS;  git config --global user.email "$EMAIL"; fi;
 after_success:
 - if [ ! $TRAVIS_PULL_REQUEST ]; mvn deploy; fi;
 language: java
