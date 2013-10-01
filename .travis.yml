@@ -22,6 +22,5 @@ before_install:
 - git config --global user.name "$USER"
 - git config --global user.email "$EMAIL"
 after_success:
-- mvn deploy -X
-- cd /home/travis/build/StefanLiebenberg/closure-utilities/wagon-git/git%40github.com%3AStefanLiebenberg%2Fmaven.git && git status &&  git log origin/snapshots..HEAD;
+- mvn deploy
 language: java

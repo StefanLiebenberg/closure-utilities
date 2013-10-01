@@ -104,10 +104,7 @@ public class SoyDelegateOptimizerTest {
 
         Result result = compiler.compile(externs, inputs, jsOptions);
 
-
         String source = compiler.toSource();
-        //System.err.println(source);
-
         Assert.assertTrue(result.success);
         Assert.assertFalse(source.contains("[DELETE]"));
         Assert.assertTrue(source.contains("[KEEP]"));
