@@ -7,10 +7,9 @@ import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
+import javax.annotation.Nullable;
+import java.io.*;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -92,6 +91,9 @@ public class FsTool {
         try {
             return read(inputFile);
         } catch (IOException ignored) {
+            System.err.println("Error occurred inside of a FsTools.safeRead. " +
+                    "ignoring");
+            ignored.printStackTrace();
             return null;
         }
     }
@@ -110,6 +112,17 @@ public class FsTool {
         try {
             write(output, content);
         } catch (IOException ignored) {
+            System.err.println("Error occurred inside of a FsTools.safeWrite." +
+                    " ignoring");
+            ignored.printStackTrace();
+        }
+    }
+
+    static void copy(File inputFile, File outputFile)
+            throws IOException {
+        try (final InputStream istream = new FileInputStream(inputFile);
+             final OutputStream ostream = new FileOutputStream(outputFile)) {
+            IOUtils.copy(istream, ostream);
         }
     }
 
@@ -129,73 +142,56 @@ public class FsTool {
         return directory;
     }
 
-    public static String[] getNames(final String path) {
-        return path.split(File.separator);
-    }
 
-    public static String getCommonPath(final String... paths) {
-        final int length = paths.length;
-        String[][] names = new String[length][];
-        for (int i = 0; i < length; i++) {
-            names[i] = getNames(paths[i]);
-        }
-
-        String common = "";
-        String[] firstPath = names[0];
-        int firstLength = firstPath.length;
-        for (int j = 0; j < firstLength; j++) {
-            String thisFolder = firstPath[j]; //grab the next folder name in
-            // the first path
-            boolean allMatched = true; //assume all have matched in case
-            // there are no more paths
-            for (int i = 1; i < length && allMatched; i++) { //look at the
-                // other paths
-                String[] current = names[i];
-                if (current.length < j) { //if there is no folder here
-                    allMatched = false; //no match
-                    break; //stop looking because we've gone as far as we can
-                }
-                //otherwise
-                allMatched &= current[j].equals(thisFolder); //check if it
-                // matched
-            }
-
-            if (allMatched) { //if they all matched this folder name
-                common += File.separator + thisFolder;
-            } else {//otherwise
-                break;//stop looking
-            }
-        }
-        return common;
-    }
-
-    public static String getCommonPath(final Collection<String> paths) {
-        return getCommonPath(paths.toArray(new String[paths.size()]));
-    }
-
-    public final static Function<File, String> fileToPathTransform = new
-            Function<File, String>() {
-                public String apply(final File file) {
-                    return file.getPath();
-                }
-            };
-
-    public final static Function<URL, String> urlToPathTransform = new
+    public final static Function<URL, String> URL_TO_FILEPATH = new
             Function<URL, String>() {
                 public String apply(final URL url) {
-                    return url.getPath();
+                    if (url != null) {
+                        return url.getPath();
+                    } else {
+                        return null;
+                    }
+                }
+            };
+
+    public final static Function<File, String> FILE_TO_FILEPATH =
+            new Function<File, String>() {
+                @Nullable
+                @Override
+                public String apply(@Nullable File file) {
+                    if (file != null) {
+                        return file.getPath();
+                    } else {
+                        return null;
+                    }
+                }
+            };
+
+    public final static Function<File, Path> FILE_TO_PATH =
+            new Function<File, Path>() {
+                @Nullable
+                @Override
+                public Path apply(@Nullable File file) {
+                    if (file != null) {
+                        return file.toPath();
+                    } else {
+                        return null;
+                    }
                 }
             };
 
 
-    public static File getCommonParent(final Collection<File> files) {
-        return new File(getCommonPath(Collections2.transform(files,
-                fileToPathTransform)));
-    }
-
-    public static File getCommonParentForUrls(final Collection<URL> files) {
-        return new File(getCommonPath(Collections2.transform(files,
-                urlToPathTransform)));
-    }
+    public final static Function<File, URI> FILE_TO_URI =
+            new Function<File, URI>() {
+                @Nullable
+                @Override
+                public URI apply(@Nullable File file) {
+                    if (file != null) {
+                        return file.toURI();
+                    } else {
+                        return null;
+                    }
+                }
+            };
 
 }

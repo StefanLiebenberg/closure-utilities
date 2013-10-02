@@ -1,6 +1,8 @@
-package com.github.stefanliebenberg.javascript;
+package com.github.stefanliebenberg.stylesheets;
 
 import com.github.stefanliebenberg.internal.BuildException;
+import com.github.stefanliebenberg.stylesheets.GssBuildOptions;
+import com.github.stefanliebenberg.stylesheets.GssBuilder;
 import com.github.stefanliebenberg.utilities.FsTool;
 import junit.framework.Assert;
 import org.codehaus.plexus.util.IOUtil;
@@ -27,12 +29,12 @@ public class GssBuilderTest {
         File outputSourceFile = new File(directory, path);
         FsTool.ensureDirectoryFor(outputSourceFile);
         try (InputStream inputStream = getClass().getResourceAsStream(path);
-             OutputStream outputStream = new FileOutputStream(outputSourceFile)) {
+             OutputStream outputStream = new FileOutputStream
+                     (outputSourceFile)) {
             IOUtil.copy(inputStream, outputStream);
         }
         return outputSourceFile;
     }
-
 
 
     public void setupDirectory() throws IOException {
@@ -64,11 +66,20 @@ public class GssBuilderTest {
     @Test
     public void testCompile() throws IOException, BuildException {
         gssBuildOptions.setSourceFiles(sourceFiles);
-        gssBuildOptions.setAssetsDirectory(new File(outputFile.getParentFile(), "assets"));
+        gssBuildOptions.setAssetsDirectory(new File(outputFile.getParentFile
+                (), "assets"));
         gssBuildOptions.setOutputFile(outputFile);
         gssBuilder.build();
         Assert.assertTrue(outputFile.exists());
     }
 
-
+    @Test
+    public void testSecondCompile() throws IOException, BuildException {
+        gssBuildOptions.setSourceFiles(sourceFiles);
+        gssBuildOptions.setAssetsDirectory(new File(outputFile.getParentFile
+                (), "assets"));
+        gssBuildOptions.setOutputFile(outputFile);
+        gssBuilder.build();
+        Assert.assertTrue(outputFile.exists());
+    }
 }

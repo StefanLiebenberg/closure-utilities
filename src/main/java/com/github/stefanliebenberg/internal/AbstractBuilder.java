@@ -1,10 +1,30 @@
 package com.github.stefanliebenberg.internal;
 
 
-public abstract class AbstractBuilder
+public abstract class AbstractBuilder<A>
         implements IBuilder {
 
     public AbstractBuilder() {}
+
+    protected A buildOptions;
+
+    public AbstractBuilder(final A buildOptions) {
+        this.buildOptions = buildOptions;
+    }
+
+    public void setBuildOptions(final A buildOptions) {
+        this.buildOptions = buildOptions;
+    }
+
+
+    @Override
+    public abstract void build()
+            throws BuildException;
+
+    @Override
+    public void reset() {
+        buildOptions = null;
+    }
 
     protected static void throwBuildException(final String message)
             throws BuildException {
@@ -17,11 +37,10 @@ public abstract class AbstractBuilder
         throw new BuildException(message, e);
     }
 
-    @Override
-    public abstract void build()
-            throws BuildException;
+    protected static void throwBuildException(final Throwable throwable)
+            throws BuildException {
+        throwBuildException("Build Failed", throwable);
+    }
 
-    @Override
-    public abstract void reset();
 }
 

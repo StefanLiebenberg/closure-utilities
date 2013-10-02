@@ -1,15 +1,13 @@
-package com.github.stefanliebenberg.javascript;
+package com.github.stefanliebenberg.stylesheets;
 
 import com.github.stefanliebenberg.internal.AbstractBuilder;
 import com.github.stefanliebenberg.internal.BuildException;
 import com.github.stefanliebenberg.internal.IBuilder;
 import com.github.stefanliebenberg.utilities.FsTool;
 import com.github.stefanliebenberg.utilities.Immuter;
-import com.google.common.base.Function;
 import com.google.common.css.compiler.commandline.ClosureCommandLineCompiler;
 import org.codehaus.plexus.util.StringUtils;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,36 +15,21 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GssBuilder extends AbstractBuilder
+public class GssBuilder extends AbstractBuilder<GssBuildOptions>
         implements IBuilder {
 
     private static final Pattern IMAGE_URL_PATTERN =
             Pattern.compile("image-url\\(([^\\)]+)\\)");
 
-    private static final Function<File, String> FILE_TO_STRING_PATH =
-            new Function<File, String>() {
-                @Nullable
-                @Override
-                public String apply(@Nullable File file) {
-                    return file.getPath();
-                }
-            };
-
-    protected GssBuildOptions buildOptions;
-
     public GssBuilder() {}
 
     public GssBuilder(final GssBuildOptions buildOptions) {
-        this.buildOptions = buildOptions;
-    }
-
-    public void setBuildOptions(final GssBuildOptions buildOptions) {
-        this.buildOptions = buildOptions;
+        super(buildOptions);
     }
 
     @Override
     public void reset() {
-        buildOptions = null;
+        super.reset();
         generatedStylesheet = null;
         generatedRenameMap = null;
     }
@@ -105,8 +88,8 @@ public class GssBuilder extends AbstractBuilder
 
         arguments.add("--output-file");
         FsTool.ensureDirectoryFor(outputFile);
-        arguments.add(FILE_TO_STRING_PATH.apply(outputFile));
-        arguments.addAll(Immuter.list(sourceFiles, FILE_TO_STRING_PATH));
+        arguments.add(FsTool.FILE_TO_FILEPATH.apply(outputFile));
+        arguments.addAll(Immuter.list(sourceFiles, FsTool.FILE_TO_FILEPATH));
         ClosureCommandLineCompiler.main(Immuter.stringArray(arguments));
         generatedRenameMap = renameMap;
     }
@@ -149,12 +132,16 @@ public class GssBuilder extends AbstractBuilder
     public void parseFunctionsFromCss(final File inputFile,
                                       final File outputFile)
             throws BuildException {
-        final String content = FsTool.safeRead(inputFile);
-        final File assetDirectory = buildOptions.getAssetsDirectory();
-        final String base = FsTool.getRelative(assetDirectory,
-                outputFile.getParentFile());
-        FsTool.safeWrite(outputFile, parseCssFunctions(content, base));
-        generatedStylesheet = outputFile;
+        try {
+            final String content = FsTool.read(inputFile);
+            final File assetDirectory = buildOptions.getAssetsDirectory();
+            final String base = FsTool.getRelative(outputFile.getParentFile(),
+                    assetDirectory);
+            FsTool.write(outputFile, parseCssFunctions(content, base));
+            generatedStylesheet = outputFile;
+        } catch (IOException ioException) {
+            throwBuildException(ioException);
+        }
     }
 
 
@@ -163,7 +150,7 @@ public class GssBuilder extends AbstractBuilder
         try {
             return FsTool.getTempFile("css_", "pass1");
         } catch (IOException e) {
-            throwBuildException("Failed to create temp css file", e);
+            throwBuildException(e);
         }
         return null;
     }
@@ -171,16 +158,13 @@ public class GssBuilder extends AbstractBuilder
     @Override
     public void build()
             throws BuildException {
-
         if (buildOptions == null) {
             throwBuildException("No build options given");
         }
-
         final File tempFile = getTemporaryFile();
         final File outputFile = buildOptions.getOutputFile();
         compileCssFiles(tempFile);
         parseFunctionsFromCss(tempFile, outputFile);
-
     }
 
 }

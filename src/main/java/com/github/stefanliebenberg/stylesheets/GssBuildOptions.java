@@ -1,4 +1,4 @@
-package com.github.stefanliebenberg.javascript;
+package com.github.stefanliebenberg.stylesheets;
 
 
 import com.github.stefanliebenberg.utilities.Immuter;
