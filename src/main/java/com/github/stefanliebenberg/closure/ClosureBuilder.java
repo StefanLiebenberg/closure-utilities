@@ -4,18 +4,22 @@ package com.github.stefanliebenberg.closure;
 import com.github.stefanliebenberg.internal.AbstractBuilder;
 import com.github.stefanliebenberg.internal.BuildException;
 import com.github.stefanliebenberg.internal.IBuilder;
+import com.github.stefanliebenberg.javascript.JsBuildOptions;
+import com.github.stefanliebenberg.javascript.JsBuilder;
 import com.github.stefanliebenberg.stylesheets.GssBuildOptions;
 import com.github.stefanliebenberg.stylesheets.GssBuilder;
 import com.github.stefanliebenberg.templates.SoyBuildOptions;
 import com.github.stefanliebenberg.templates.SoyBuilder;
 
+import javax.annotation.Nonnull;
+
 public class ClosureBuilder
-        extends AbstractBuilder<ClosureBuilder>
+        extends AbstractBuilder<ClosureBuildOptions>
         implements IBuilder {
 
     public ClosureBuilder() {}
 
-    public ClosureBuilder(ClosureBuilder buildOptions) {
+    public ClosureBuilder(@Nonnull final ClosureBuildOptions buildOptions) {
         super(buildOptions);
     }
 
@@ -23,14 +27,18 @@ public class ClosureBuilder
 
     private final SoyBuilder soyBuilder = new SoyBuilder();
 
+    private final JsBuilder jsBuilder = new JsBuilder();
+
 
     @Override
     public void reset() {
         super.reset();
         gssBuilder.reset();
         soyBuilder.reset();
+        jsBuilder.reset();
     }
 
+    @Nonnull
     public GssBuildOptions getGssBuildOptions() {
         GssBuildOptions gssBuildOptions = new GssBuildOptions();
         return gssBuildOptions;
@@ -38,11 +46,11 @@ public class ClosureBuilder
 
     public void buildGss()
             throws BuildException {
-        GssBuildOptions gssBuildOptions = getGssBuildOptions();
-        gssBuilder.setBuildOptions(gssBuildOptions);
+        gssBuilder.setBuildOptions(getGssBuildOptions());
         gssBuilder.build();
     }
 
+    @Nonnull
     public SoyBuildOptions getSoyBuildOptions() {
         SoyBuildOptions soyBuildOptions = new SoyBuildOptions();
         return soyBuildOptions;
@@ -50,13 +58,19 @@ public class ClosureBuilder
 
     public void buildSoy()
             throws BuildException {
-        SoyBuildOptions soyBuildOptions = getSoyBuildOptions();
-        soyBuilder.setBuildOptions(soyBuildOptions);
+        soyBuilder.setBuildOptions(getSoyBuildOptions());
         soyBuilder.build();
     }
 
-    public void buildJs() {
+    @Nonnull
+    public JsBuildOptions getJsBuildOptions() {
+        return new JsBuildOptions();
+    }
 
+    public void buildJs()
+            throws BuildException {
+        jsBuilder.setBuildOptions(getJsBuildOptions());
+        jsBuilder.build();
     }
 
 

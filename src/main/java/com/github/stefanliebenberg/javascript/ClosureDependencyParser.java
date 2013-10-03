@@ -5,6 +5,7 @@ import org.mozilla.javascript.Node;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.ast.*;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
@@ -13,8 +14,8 @@ public class ClosureDependencyParser implements
         IDependencyParser<ClosureSourceFile> {
 
     @Override
-    public void parse(final ClosureSourceFile dependency,
-                      final Reader content)
+    public void parse(@Nonnull final ClosureSourceFile dependency,
+                      @Nonnull final Reader content)
             throws IOException {
         final URI sourceLocation = dependency.getSourceLocation();
         final Parser parser = new Parser();
@@ -24,7 +25,8 @@ public class ClosureDependencyParser implements
     }
 
     @Override
-    public void parse(ClosureSourceFile dependency, String content)
+    public void parse(@Nonnull final ClosureSourceFile dependency,
+                      @Nonnull final String content)
             throws IOException {
         final URI sourceLocation = dependency.getSourceLocation();
         final String srcString = sourceLocation.toString();
