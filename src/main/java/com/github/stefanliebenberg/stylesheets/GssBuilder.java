@@ -135,8 +135,8 @@ public class GssBuilder extends AbstractBuilder<GssBuildOptions>
         try {
             final String content = FsTool.read(inputFile);
             final File assetDirectory = buildOptions.getAssetsDirectory();
-            final String base = FsTool.getRelative(outputFile.getParentFile(),
-                    assetDirectory);
+            final String base = FsTool.getRelative(assetDirectory,
+                    outputFile.getParentFile());
             FsTool.write(outputFile, parseCssFunctions(content, base));
             generatedStylesheet = outputFile;
         } catch (IOException ioException) {

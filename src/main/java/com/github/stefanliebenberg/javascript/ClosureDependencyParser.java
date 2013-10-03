@@ -24,8 +24,8 @@ public class ClosureDependencyParser implements
     }
 
     @Override
-    public void parse(ClosureSourceFile dependency, String content) throws
-            IOException {
+    public void parse(ClosureSourceFile dependency, String content)
+            throws IOException {
         final URI sourceLocation = dependency.getSourceLocation();
         final String srcString = sourceLocation.toString();
         final Parser parser = new Parser();

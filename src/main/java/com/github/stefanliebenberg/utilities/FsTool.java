@@ -25,7 +25,7 @@ public class FsTool {
 
     public static Path getRelativePath(final File path,
                                        final File base) {
-        return getRelativePath(base.toPath(), path.toPath());
+        return getRelativePath(path.toPath(), base.toPath());
     }
 
     public static String getRelative(final File path,
@@ -93,7 +93,7 @@ public class FsTool {
         } catch (IOException ignored) {
             System.err.println("Error occurred inside of a FsTools.safeRead. " +
                     "ignoring");
-            ignored.printStackTrace();
+//            ignored.printStackTrace();
             return null;
         }
     }
