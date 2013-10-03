@@ -4,6 +4,7 @@ package com.github.stefanliebenberg.javascript;
 import com.github.stefanliebenberg.internal.*;
 import com.github.stefanliebenberg.utilities.FsTool;
 import com.google.common.base.Function;
+import com.sun.istack.internal.NotNull;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -27,8 +28,12 @@ public class JsBuilder
             new Function<File, ClosureSourceFile>() {
                 @Nullable
                 @Override
-                public ClosureSourceFile apply(@Nullable File file) {
-                    return new ClosureSourceFile(file);
+                public ClosureSourceFile apply(@NotNull File file) {
+                    if (file != null) {
+                        return new ClosureSourceFile(file);
+                    } else {
+                        return null;
+                    }
                 }
             };
 
@@ -44,8 +49,10 @@ public class JsBuilder
         try {
             for (File rawFile : rawSourceFiles) {
                 ClosureSourceFile sourceFile = FILE_TO_CLOSURE.apply(rawFile);
-                dependencyParser.parse(sourceFile, FsTool.read(rawFile));
-                sourceFiles.add(sourceFile);
+                if (sourceFile != null) {
+                    dependencyParser.parse(sourceFile, FsTool.read(rawFile));
+                    sourceFiles.add(sourceFile);
+                }
             }
         } catch (IOException ioException) {
             throwBuildException(ioException);

@@ -21,6 +21,7 @@ public class GssBuildOptions {
 
     private File outputFile;
 
+
     public void setOutputFile(final File outputFile) {
         this.outputFile = outputFile;
     }
