@@ -27,22 +27,38 @@ public class SoyDelegateOptimizerTest {
         return SourceFile.fromInputStream(path, inputStream);
     }
 
-    private Map<String, String> getSoySources (URL... soyURI)  {
+    private Map<String, String> getSoySources(URL... soyURI) {
         SoyFileSet.Builder fileSetBuilder = new SoyFileSet.Builder();
-        for(URL url : soyURI) {
+        for (URL url : soyURI) {
             fileSetBuilder.add(url);
         }
         SoyFileSet set = fileSetBuilder.build();
         SoyJsSrcOptions soyOptions = new SoyJsSrcOptions();
         List<String> listOfSources = set.compileToJsSrc(soyOptions, null);
         Map<String, String> sources = new HashMap<String, String>();
-        for(int i = 0; i < soyURI.length; i++) {
+        for (int i = 0; i < soyURI.length; i++) {
             URL url = soyURI[i];
             String content = listOfSources.get(i);
             sources.put(url.toString(), content);
         }
         return sources;
     }
+
+    private static final Function<Map.Entry<String, String>,
+            SourceFile> ENTRY_SOURCE_FILE_FUNCTION =
+            new Function<Map.Entry<String, String>, SourceFile>() {
+                @Nullable
+                @Override
+                public SourceFile apply(@Nullable Map.Entry<String,
+                        String> entry) {
+                    if (entry != null) {
+                        return SourceFile.fromCode(entry.getKey(),
+                                entry.getValue());
+                    } else {
+                        return null;
+                    }
+                }
+            };
 
     @Test
     public void testOptimizationPass()
@@ -85,16 +101,10 @@ public class SoyDelegateOptimizerTest {
         inputs.add(getSourceFile("/javascript/goog/string/stringbuffer.js"));
         inputs.add(getSourceFile("/javascript/soyutils_usegoog.js"));
 
-        inputs.addAll(Immuter.list(soySources.entrySet(),
-                new Function<Map.Entry<String, String>, SourceFile>() {
-            @Nullable
-            @Override
-            public SourceFile apply(@Nullable Map.Entry<String, String> entry) {
-                return SourceFile.fromCode(entry.getKey(), entry.getValue());
-            }
-        }));
+        inputs.addAll(Immuter.list(soySources.entrySet(), ENTRY_SOURCE_FILE_FUNCTION));
 
-        inputs.add(SourceFile.fromCode("path:calling", "alert(example.Foo({Variant: 'RED'}));"));
+        inputs.add(SourceFile.fromCode("path:calling",
+                "alert(example.Foo({Variant: 'RED'}));"));
         CompilationLevel level = CompilationLevel.ADVANCED_OPTIMIZATIONS;
         level.setDebugOptionsForCompilationLevel(jsOptions);
         level.setOptionsForCompilationLevel(jsOptions);
