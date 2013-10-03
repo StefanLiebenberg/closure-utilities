@@ -4,7 +4,6 @@ package com.github.stefanliebenberg.javascript;
 import com.github.stefanliebenberg.internal.*;
 import com.github.stefanliebenberg.utilities.FsTool;
 import com.google.common.base.Function;
-import com.sun.istack.internal.NotNull;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -28,7 +27,7 @@ public class JsBuilder
             new Function<File, ClosureSourceFile>() {
                 @Nullable
                 @Override
-                public ClosureSourceFile apply(@NotNull File file) {
+                public ClosureSourceFile apply(@Nullable File file) {
                     if (file != null) {
                         return new ClosureSourceFile(file);
                     } else {
