@@ -8,6 +8,8 @@ import com.github.stefanliebenberg.utilities.Immuter;
 import com.google.common.css.compiler.commandline.ClosureCommandLineCompiler;
 import org.codehaus.plexus.util.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,20 +21,22 @@ public class GssBuilder extends AbstractBuilder<GssBuildOptions>
         implements IBuilder {
 
 
-    private static final Pattern IMAGE_URL_PATTERN =
-            Pattern.compile("image-url\\(([^\\)]+)\\)");
-
     public GssBuilder() {}
 
-    public GssBuilder(final GssBuildOptions buildOptions) {
+    public GssBuilder(@Nonnull final GssBuildOptions buildOptions) {
         super(buildOptions);
     }
+
+    private final ImageUrlProcessor imageUrlProcessor =
+            new ImageUrlProcessor();
+
 
     @Override
     public void reset() {
         super.reset();
         generatedStylesheet = null;
         generatedRenameMap = null;
+        imageUrlProcessor.setImageRoot(null);
     }
 
     private File generatedStylesheet;
@@ -48,11 +52,11 @@ public class GssBuilder extends AbstractBuilder<GssBuildOptions>
     }
 
     private void compileCssFiles(
-            final List<File> sourceFiles,
-            final File outputFile,
-            final File renameMap,
-            final Boolean productionBoolean,
-            final Boolean debugBoolean)
+            @Nonnull final List<File> sourceFiles,
+            @Nonnull final File outputFile,
+            @Nullable final File renameMap,
+            @Nonnull final Boolean productionBoolean,
+            @Nonnull final Boolean debugBoolean)
             throws BuildException {
 
         if (sourceFiles != null && sourceFiles.isEmpty()) {
@@ -106,28 +110,12 @@ public class GssBuilder extends AbstractBuilder<GssBuildOptions>
     }
 
 
-    private String getImagePath(final String path,
-                                final String base) {
-        if (base != null) {
-            return base + '/' + path;
-        } else {
-            return path;
-        }
-    }
-
-    public String parseCssFunctions(final String inputContent,
-                                    final String base) {
-        final Matcher matcher = IMAGE_URL_PATTERN.matcher(inputContent);
-        final StringBuffer sb = new StringBuffer();
-        while (matcher.find()) {
-            if (matcher.groupCount() == 1) {
-                matcher.appendReplacement(sb, "url(" + getImagePath
-                        (StringUtils.strip(StringUtils.strip(matcher.group(1),
-                                "\""), "'"), base) + ")");
-            }
-        }
-        matcher.appendTail(sb);
-        return sb.toString();
+    @Nonnull
+    public String parseCssFunctions(
+            @Nonnull final String inputContent,
+            @Nonnull final String base) {
+        imageUrlProcessor.setImageRoot(base);
+        return imageUrlProcessor.processString(inputContent);
     }
 
     public void parseFunctionsFromCss(final File inputFile,

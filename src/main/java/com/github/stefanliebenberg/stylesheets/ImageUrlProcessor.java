@@ -4,6 +4,8 @@ import com.github.stefanliebenberg.internal.PreProcessor;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.plexus.util.StringUtils;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.net.URI;
 import java.nio.file.Paths;
@@ -26,15 +28,17 @@ public class ImageUrlProcessor implements PreProcessor {
 
     private String imageRoot;
 
-    public void setImageRoot(String imageRoot) {
+    public void setImageRoot(@Nullable final String imageRoot) {
         this.imageRoot = imageRoot;
     }
 
-    private String getStringPath(String inputPath) {
+    @Nonnull
+    private String getStringPath(@Nonnull String inputPath) {
         if (imageRoot != null) {
             try {
 
-                if (!new URI(inputPath).isAbsolute() && !Paths.get(inputPath).isAbsolute()) {
+                if (!new URI(inputPath).isAbsolute() && !Paths.get(inputPath)
+                        .isAbsolute()) {
                     return Paths.get(imageRoot, inputPath).toString();
                 }
             } catch (Exception e) {
@@ -47,7 +51,10 @@ public class ImageUrlProcessor implements PreProcessor {
     }
 
 
-    public String processString(String inputString) {
+    @Nonnull
+    @Override
+    public String processString(
+            @Nonnull final String inputString) {
         final Matcher matcher = IMAGE_URL_PATTERN.matcher(inputString);
         final StringBuffer sb = new StringBuffer();
         String urlSegment, stripped, path;

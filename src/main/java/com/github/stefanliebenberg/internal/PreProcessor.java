@@ -1,14 +1,19 @@
 package com.github.stefanliebenberg.internal;
 
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 public interface PreProcessor {
-    public String processString(String content);
+    @Nonnull
+    public String processString(
+            @Nonnull final String content);
 
-    public void processStream(InputStream inputStream,
-                                OutputStream outputStream)
+
+    public void processStream(
+            @Nonnull final InputStream inputStream,
+            @Nonnull final OutputStream outputStream)
             throws IOException;
 }
