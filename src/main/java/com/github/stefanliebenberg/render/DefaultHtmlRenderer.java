@@ -111,13 +111,13 @@ public class DefaultHtmlRenderer
     }
 
     @Nonnull
-    protected String renderScripts() {
+    protected String renderScripts() throws IOException {
         final StringBuilder html = new StringBuilder();
         if (scripts != null && !scripts.isEmpty()) {
             if (shouldInline) {
                 StringBuilder content = new StringBuilder();
                 for (File script : scripts) {
-                    content.append(FsTool.safeRead(script));
+                    content.append(FsTool.read(script));
                 }
                 html.append(renderScript(content.toString()));
             } else {

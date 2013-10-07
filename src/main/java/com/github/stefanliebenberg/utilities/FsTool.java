@@ -2,7 +2,6 @@ package com.github.stefanliebenberg.utilities;
 
 
 import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -98,20 +97,6 @@ public class FsTool {
         }
     }
 
-    @Nullable
-    @Deprecated
-    public static String safeRead(
-            @Nonnull final File inputFile) {
-        try {
-            return read(inputFile);
-        } catch (IOException ignored) {
-            System.err.println("Error occurred inside of a FsTools.safeRead. " +
-                    "ignoring");
-//            ignored.printStackTrace();
-            return null;
-        }
-    }
-
 
     public static void write(
             @Nonnull final File output,
@@ -120,25 +105,6 @@ public class FsTool {
         ensureDirectoryFor(output);
         try (final FileWriter writer = new FileWriter(output)) {
             writer.write(content);
-        }
-    }
-
-    /**
-     * Safe write
-     * @param output
-     * @param content
-     *
-     */
-    @Deprecated
-    public static void safeWrite(
-            @Nonnull final File output,
-            @Nonnull final String content) {
-        try {
-            write(output, content);
-        } catch (IOException ignored) {
-            System.err.println("Error occurred inside of a FsTools.safeWrite." +
-                    " ignoring");
-            ignored.printStackTrace();
         }
     }
 

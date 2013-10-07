@@ -54,10 +54,11 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
 
     @Nonnull
     private SoyFileSet getSoyFileSet(
-            @Nonnull final List<File> files) {
+            @Nonnull final List<File> files)
+            throws IOException {
         final SoyFileSet.Builder builder = getSoyBuilder();
         for (File file : files) {
-            builder.add(FsTool.safeRead(file), file.getPath());
+            builder.add(FsTool.read(file), file.getPath());
         }
         return builder.build();
     }
@@ -78,21 +79,22 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
 
     @Nonnull
     private List<String> compileList(
-            @Nonnull final List<File> files) {
+            @Nonnull final List<File> files) throws IOException {
         final SoyFileSet soyFileSet = getSoyFileSet(files);
         final SoyJsSrcOptions jsSrcOptions = getJsSrcOptions();
         final File messageFile = buildOptions.getMessageFile();
         SoyMsgBundle bundle = null;
         if (messageFile != null && messageFile.exists()) {
-            bundle = xliffMsgPlugin.parseTranslatedMsgsFile(FsTool.safeRead
-                    (messageFile));
+            bundle = xliffMsgPlugin.parseTranslatedMsgsFile(
+                    FsTool.read(messageFile));
         }
         return soyFileSet.compileToJsSrc(jsSrcOptions, bundle);
     }
 
     @Nonnull
     private Map<File, String> compile(
-            @Nonnull final Collection<File> sources) {
+            @Nonnull final Collection<File> sources)
+            throws IOException {
         final List<File> fileList = Lists.newArrayList(sources);
         final List<String> strSources = compileList(fileList);
         final Map<File, String> result = new HashMap<File, String>();
@@ -103,7 +105,7 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
     }
 
 
-    public void compileSoyFiles() {
+    public void compileSoyFiles() throws IOException {
         final Collection<File> sourceFiles = new HashSet<File>();
         final Collection<File> sources = buildOptions.getSources();
 
@@ -126,10 +128,9 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
     @Override
     public void build() throws BuildException {
         checkOptions();
-
-        final File output = buildOptions.getOutputDirectory();
-        compileSoyFiles();
         try {
+            final File output = buildOptions.getOutputDirectory();
+            compileSoyFiles();
             generatedFiles = new HashSet<File>();
             File sourceFile, outputFile;
             String sourceContent;
@@ -141,7 +142,7 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
                 FsTool.write(outputFile, sourceContent);
             }
         } catch (IOException e) {
-            throwBuildException(e);
+            throw new BuildException(e);
         }
     }
 
