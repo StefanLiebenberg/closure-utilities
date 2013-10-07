@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 public class GssBuilder extends AbstractBuilder<GssBuildOptions>
         implements IBuilder {
 
+
     private static final Pattern IMAGE_URL_PATTERN =
             Pattern.compile("image-url\\(([^\\)]+)\\)");
 

@@ -104,7 +104,7 @@ public class SoyDelegateOptimizerTest {
         inputs.addAll(Immuter.list(soySources.entrySet(), ENTRY_SOURCE_FILE_FUNCTION));
 
         inputs.add(SourceFile.fromCode("path:calling",
-                "alert(example.Foo({Variant: 'RED'}));"));
+                "alert(template.example.Foo({Variant: 'RED'}));"));
         CompilationLevel level = CompilationLevel.ADVANCED_OPTIMIZATIONS;
         level.setDebugOptionsForCompilationLevel(jsOptions);
         level.setOptionsForCompilationLevel(jsOptions);

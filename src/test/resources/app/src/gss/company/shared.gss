@@ -1,0 +1,13 @@
+@provide company-shared;
+
+b {
+  color: red;
+}
+
+u {
+  color: blue;
+}
+
+body {
+  font-size: 11px;
+}

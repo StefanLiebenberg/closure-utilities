@@ -1,0 +1,7 @@
+@provide company-import;
+@require company-shared;
+
+
+div {
+  border: 1px solid red;
+}

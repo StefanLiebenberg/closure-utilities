@@ -12,6 +12,7 @@ import com.github.stefanliebenberg.templates.SoyBuildOptions;
 import com.github.stefanliebenberg.templates.SoyBuilder;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 
 public class ClosureBuilder
         extends AbstractBuilder<ClosureBuildOptions>
@@ -38,9 +39,19 @@ public class ClosureBuilder
         jsBuilder.reset();
     }
 
+    public File getGssOutputFile() {
+        return null;
+    }
+
     @Nonnull
     public GssBuildOptions getGssBuildOptions() {
         GssBuildOptions gssBuildOptions = new GssBuildOptions();
+        gssBuildOptions.setAssetsDirectory(buildOptions.getAssetsDirectory());
+        //gssBuildOptions.setSourceFiles(buildOptions.getGssSourceDirectories());
+        //gssBuildOptions.setRenameMap(buildOptions.getRenameMap());
+        gssBuildOptions.setShouldGenerateForDebug(buildOptions.getShouldDebug());
+        gssBuildOptions.setShouldGenerateForProduction(buildOptions.getShouldCompile());
+        gssBuildOptions.setOutputFile(getGssOutputFile());
         return gssBuildOptions;
     }
 
