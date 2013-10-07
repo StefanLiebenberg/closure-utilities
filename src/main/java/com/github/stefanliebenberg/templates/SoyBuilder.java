@@ -12,6 +12,7 @@ import com.google.template.soy.msgs.SoyMsgBundle;
 import com.google.template.soy.shared.SoyGeneralOptions;
 import com.google.template.soy.xliffmsgplugin.XliffMsgPlugin;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -21,7 +22,7 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
 
     public SoyBuilder() {}
 
-    public SoyBuilder(final SoyBuildOptions buildOptions) {
+    public SoyBuilder(@Nonnull final SoyBuildOptions buildOptions) {
         super(buildOptions);
     }
 
@@ -37,10 +38,11 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
 
     private Collection<File> generatedFiles;
 
-    private XliffMsgPlugin xliffMsgPlugin = new XliffMsgPlugin();
+    private final XliffMsgPlugin xliffMsgPlugin = new XliffMsgPlugin();
 
+    @Nonnull
     private SoyFileSet.Builder getSoyBuilder() {
-        SoyFileSet.Builder builder = new SoyFileSet.Builder();
+        final SoyFileSet.Builder builder = new SoyFileSet.Builder();
         if (buildOptions.getGlobalStringMap() != null) {
             builder.setCompileTimeGlobals(buildOptions.getGlobalStringMap());
         }
@@ -50,7 +52,9 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
         return builder;
     }
 
-    private SoyFileSet getSoyFileSet(final List<File> files) {
+    @Nonnull
+    private SoyFileSet getSoyFileSet(
+            @Nonnull final List<File> files) {
         final SoyFileSet.Builder builder = getSoyBuilder();
         for (File file : files) {
             builder.add(FsTool.safeRead(file), file.getPath());
@@ -58,6 +62,7 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
         return builder.build();
     }
 
+    @Nonnull
     private SoyJsSrcOptions getJsSrcOptions() {
         SoyJsSrcOptions jsSrcOptions = new SoyJsSrcOptions();
         //options.setShouldDeclareTopLevelNamespaces(true);
@@ -71,10 +76,12 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
         return jsSrcOptions;
     }
 
-    private List<String> compileList(List<File> files) {
-        SoyFileSet soyFileSet = getSoyFileSet(files);
-        SoyJsSrcOptions jsSrcOptions = getJsSrcOptions();
-        File messageFile = buildOptions.getMessageFile();
+    @Nonnull
+    private List<String> compileList(
+            @Nonnull final List<File> files) {
+        final SoyFileSet soyFileSet = getSoyFileSet(files);
+        final SoyJsSrcOptions jsSrcOptions = getJsSrcOptions();
+        final File messageFile = buildOptions.getMessageFile();
         SoyMsgBundle bundle = null;
         if (messageFile != null && messageFile.exists()) {
             bundle = xliffMsgPlugin.parseTranslatedMsgsFile(FsTool.safeRead
@@ -83,10 +90,12 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
         return soyFileSet.compileToJsSrc(jsSrcOptions, bundle);
     }
 
-    private Map<File, String> compile(Collection<File> sources) {
-        List<File> fileList = Lists.newArrayList(sources);
-        List<String> strSources = compileList(fileList);
-        Map<File, String> result = new HashMap<File, String>();
+    @Nonnull
+    private Map<File, String> compile(
+            @Nonnull final Collection<File> sources) {
+        final List<File> fileList = Lists.newArrayList(sources);
+        final List<String> strSources = compileList(fileList);
+        final Map<File, String> result = new HashMap<File, String>();
         for (int i = 0; i < fileList.size(); i++) {
             result.put(fileList.get(i), strSources.get(i));
         }
@@ -95,15 +104,15 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
 
 
     public void compileSoyFiles() {
-        Collection<File> sourceFiles = new HashSet<File>();
+        final Collection<File> sourceFiles = new HashSet<File>();
+        final Collection<File> sources = buildOptions.getSources();
 
-        Collection<File> sources = buildOptions.getSources();
         if (sources != null) {
             sourceFiles.addAll(sources);
         }
 
-        Collection<File> sourceDirectories = buildOptions
-                .getSourceDirectories();
+        final Collection<File> sourceDirectories =
+                buildOptions.getSourceDirectories();
         if (sourceDirectories != null && !sourceDirectories.isEmpty()) {
             for (File sourceDirectory : sourceDirectories) {
                 sourceFiles.addAll(
@@ -116,16 +125,18 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
 
     @Override
     public void build() throws BuildException {
+        checkOptions();
+
         final File output = buildOptions.getOutputDirectory();
         compileSoyFiles();
         try {
             generatedFiles = new HashSet<File>();
+            File sourceFile, outputFile;
+            String sourceContent;
             for (Map.Entry<File, String> entry : compiledSources.entrySet()) {
-                File sourceFile = entry.getKey();
-                String sourceContent = entry.getValue();
-
-                File outputFile = new File(output, sourceFile.getPath() +
-                        ".js");
+                sourceFile = entry.getKey();
+                sourceContent = entry.getValue();
+                outputFile = new File(output, sourceFile.getPath() + ".js");
                 generatedFiles.add(outputFile);
                 FsTool.write(outputFile, sourceContent);
             }

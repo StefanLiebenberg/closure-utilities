@@ -47,10 +47,13 @@ public class ClosureBuilder
     public GssBuildOptions getGssBuildOptions() {
         GssBuildOptions gssBuildOptions = new GssBuildOptions();
         gssBuildOptions.setAssetsDirectory(buildOptions.getAssetsDirectory());
-        //gssBuildOptions.setSourceFiles(buildOptions.getGssSourceDirectories());
+        //gssBuildOptions.setSourceFiles(buildOptions.getGssSourceDirectories
+        // ());
         //gssBuildOptions.setRenameMap(buildOptions.getRenameMap());
-        gssBuildOptions.setShouldGenerateForDebug(buildOptions.getShouldDebug());
-        gssBuildOptions.setShouldGenerateForProduction(buildOptions.getShouldCompile());
+        gssBuildOptions.setShouldGenerateForDebug(buildOptions.getShouldDebug
+                ());
+        gssBuildOptions.setShouldGenerateForProduction(buildOptions
+                .getShouldCompile());
         gssBuildOptions.setOutputFile(getGssOutputFile());
         return gssBuildOptions;
     }
@@ -63,7 +66,7 @@ public class ClosureBuilder
 
     @Nonnull
     public SoyBuildOptions getSoyBuildOptions() {
-        SoyBuildOptions soyBuildOptions = new SoyBuildOptions();
+        final SoyBuildOptions soyBuildOptions = new SoyBuildOptions();
         return soyBuildOptions;
     }
 
@@ -78,6 +81,7 @@ public class ClosureBuilder
         return new JsBuildOptions();
     }
 
+
     public void buildJs()
             throws BuildException {
         jsBuilder.setBuildOptions(getJsBuildOptions());
@@ -87,7 +91,7 @@ public class ClosureBuilder
 
     @Override
     public void build() throws BuildException {
-        checkBuildOptions();
+        checkOptions();
         buildGss();
         buildSoy();
         buildJs();

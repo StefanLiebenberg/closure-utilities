@@ -40,14 +40,15 @@ public class JsBuilder
 
     @Override
     public void build() throws BuildException {
-        Collection<File> sourceDirectories =
+        final Collection<File> sourceDirectories =
                 buildOptions.getJavaScriptSourceDirectories();
-        Collection<File> rawSourceFiles =
+        final Collection<File> rawSourceFiles =
                 FsTool.find(sourceDirectories, JS_EXT);
         sourceFiles = new HashSet<ClosureSourceFile>();
         try {
             for (File rawFile : rawSourceFiles) {
-                ClosureSourceFile sourceFile = FILE_TO_CLOSURE.apply(rawFile);
+                final ClosureSourceFile sourceFile =
+                        FILE_TO_CLOSURE.apply(rawFile);
                 if (sourceFile != null) {
                     dependencyParser.parse(sourceFile, FsTool.read(rawFile));
                     sourceFiles.add(sourceFile);
