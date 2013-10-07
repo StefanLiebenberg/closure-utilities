@@ -6,7 +6,6 @@ import com.github.stefanliebenberg.internal.IBuilder;
 import com.github.stefanliebenberg.utilities.FsTool;
 import com.github.stefanliebenberg.utilities.Immuter;
 import com.google.common.css.compiler.commandline.ClosureCommandLineCompiler;
-import org.codehaus.plexus.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,8 +13,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class GssBuilder extends AbstractBuilder<GssBuildOptions>
         implements IBuilder {
