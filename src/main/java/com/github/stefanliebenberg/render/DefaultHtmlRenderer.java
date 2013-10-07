@@ -6,6 +6,7 @@ import com.github.stefanliebenberg.utilities.FsTool;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.IOException;
 
 public class DefaultHtmlRenderer
         extends AbstractHtmlRenderer
@@ -91,13 +92,13 @@ public class DefaultHtmlRenderer
     }
 
     @Nonnull
-    protected String renderStylesheets() {
+    protected String renderStylesheets() throws IOException {
         final StringBuilder html = new StringBuilder();
         if (stylesheets != null && !stylesheets.isEmpty()) {
             if (shouldInline) {
                 final StringBuilder content = new StringBuilder();
                 for (File stylesheet : stylesheets) {
-                    content.append(FsTool.safeRead(stylesheet));
+                    content.append(FsTool.read(stylesheet));
                 }
                 html.append(renderStylesheet(content.toString()));
             } else {
@@ -147,7 +148,7 @@ public class DefaultHtmlRenderer
     }
 
     @Nonnull
-    protected String renderHeadTag() {
+    protected String renderHeadTag() throws IOException {
         return render_tag("html",
                 renderTitle(),
                 renderScripts(),
@@ -160,7 +161,7 @@ public class DefaultHtmlRenderer
     }
 
     @Nonnull
-    protected String renderHtmlTag() {
+    protected String renderHtmlTag() throws IOException {
         return render_tag("html",
                 renderHeadTag(),
                 renderBodyTag());
@@ -174,7 +175,11 @@ public class DefaultHtmlRenderer
 
     @Override
     @Nonnull
-    public String render() {
-        return renderDoctype() + renderHtmlTag();
+    public String render() throws RenderException {
+        try {
+            return renderDoctype() + renderHtmlTag();
+        } catch (IOException ioException) {
+            throw new RenderException(ioException);
+        }
     }
 }

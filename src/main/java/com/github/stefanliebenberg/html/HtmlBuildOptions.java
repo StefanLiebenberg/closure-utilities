@@ -1,7 +1,8 @@
-package com.github.stefanliebenberg.render;
+package com.github.stefanliebenberg.html;
 
 
 import com.github.stefanliebenberg.internal.IBuildOptions;
+import com.github.stefanliebenberg.render.HtmlRenderer;
 
 import java.io.File;
 import java.util.List;

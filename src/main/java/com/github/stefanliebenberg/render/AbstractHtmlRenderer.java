@@ -66,5 +66,5 @@ public abstract class AbstractHtmlRenderer implements HtmlRenderer {
 
     @Override
     @Nonnull
-    public abstract String render();
+    public abstract String render() throws RenderException;
 }

@@ -99,6 +99,7 @@ public class FsTool {
     }
 
     @Nullable
+    @Deprecated
     public static String safeRead(
             @Nonnull final File inputFile) {
         try {
@@ -122,6 +123,13 @@ public class FsTool {
         }
     }
 
+    /**
+     * Safe write
+     * @param output
+     * @param content
+     *
+     */
+    @Deprecated
     public static void safeWrite(
             @Nonnull final File output,
             @Nonnull final String content) {

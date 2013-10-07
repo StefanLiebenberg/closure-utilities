@@ -26,5 +26,5 @@ public interface HtmlRenderer {
     public HtmlRenderer setOutputPath(@Nullable final File outputPath);
 
     @Nonnull
-    public String render();
+    public String render() throws RenderException;
 }

@@ -6,7 +6,6 @@ import com.github.stefanliebenberg.internal.IBuilder;
 import com.github.stefanliebenberg.utilities.FsTool;
 import com.github.stefanliebenberg.utilities.Immuter;
 import com.google.common.css.compiler.commandline.ClosureCommandLineCompiler;
-import com.sun.istack.internal.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -111,21 +110,24 @@ public class GssBuilder extends AbstractBuilder<GssBuildOptions>
     @Nonnull
     public String parseCssFunctions(
             @Nonnull final String inputContent,
-            @Nonnull final String base) {
+            @Nullable final String base) {
         imageUrlProcessor.setImageRoot(base);
         return imageUrlProcessor.processString(inputContent);
     }
 
     public void parseFunctionsFromCss(
-            @NotNull final File inputFile,
-            @NotNull final File outputFile)
+            @Nonnull final File inputFile,
+            @Nonnull final File outputFile)
             throws BuildException {
         try {
             final String content = FsTool.read(inputFile);
             final File assetDirectory = buildOptions.getAssetsDirectory();
-            final String base = FsTool.getRelative(assetDirectory,
-                    outputFile.getParentFile());
+            final String base =
+                    (assetDirectory != null) ?
+                            FsTool.getRelative(assetDirectory,
+                                    outputFile.getParentFile()) : null;
             FsTool.write(outputFile, parseCssFunctions(content, base));
+
             generatedStylesheet = outputFile;
         } catch (IOException ioException) {
             throwBuildException(ioException);
