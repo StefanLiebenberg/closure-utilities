@@ -6,6 +6,7 @@ import com.github.stefanliebenberg.internal.IBuilder;
 import com.github.stefanliebenberg.utilities.FsTool;
 import com.github.stefanliebenberg.utilities.Immuter;
 import com.google.common.css.compiler.commandline.ClosureCommandLineCompiler;
+import com.sun.istack.internal.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -115,8 +116,9 @@ public class GssBuilder extends AbstractBuilder<GssBuildOptions>
         return imageUrlProcessor.processString(inputContent);
     }
 
-    public void parseFunctionsFromCss(final File inputFile,
-                                      final File outputFile)
+    public void parseFunctionsFromCss(
+            @NotNull final File inputFile,
+            @NotNull final File outputFile)
             throws BuildException {
         try {
             final String content = FsTool.read(inputFile);
@@ -144,13 +146,18 @@ public class GssBuilder extends AbstractBuilder<GssBuildOptions>
     @Override
     public void build()
             throws BuildException {
-        if (buildOptions == null) {
-            throwBuildException("No build options given");
-        }
+        checkOptions();
+
         final File tempFile = getTemporaryFile();
         final File outputFile = buildOptions.getOutputFile();
         compileCssFiles(tempFile);
         parseFunctionsFromCss(tempFile, outputFile);
     }
 
+    @Override
+    public void checkOptions() throws BuildException {
+        super.checkOptions();
+        checkNotNull(buildOptions.getOutputFile());
+        checkNotNull(buildOptions.getSourceFiles());
+    }
 }

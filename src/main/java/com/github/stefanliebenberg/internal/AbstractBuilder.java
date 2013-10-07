@@ -2,6 +2,7 @@ package com.github.stefanliebenberg.internal;
 
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public abstract class AbstractBuilder<A>
         implements IBuilder {
@@ -28,36 +29,41 @@ public abstract class AbstractBuilder<A>
         buildOptions = null;
     }
 
-    protected static void throwBuildException(final String message)
+    protected static void throwBuildException(@Nonnull final String message)
             throws BuildException {
         throw new BuildException(message);
     }
 
-    protected static void throwBuildException(final String message,
-                                              final Throwable e)
+    protected static void throwBuildException(@Nonnull final String message,
+                                              @Nonnull final Throwable e)
             throws BuildException {
         throw new BuildException(message, e);
     }
 
-    protected static void throwBuildException(final Throwable throwable)
+    protected static void throwBuildException(
+            @Nonnull final Throwable throwable)
             throws BuildException {
         throwBuildException("Build Failed", throwable);
     }
 
-    protected static void checkNotNull(final Object object,
-                                       final String message)
+
+    protected static void checkNotNull(
+            @Nullable final Object object,
+            @Nonnull final String message)
             throws BuildException {
         if (object == null) {
             throwBuildException(message, new NullPointerException());
         }
     }
 
-    protected static void checkNotNull(final Object object)
+
+    protected static void checkNotNull(@Nullable final Object object)
             throws BuildException {
         checkNotNull(object, "Object should not be null");
     }
 
-    protected void checkBuildOptions()
+    @Override
+    public void checkOptions()
             throws BuildException {
         checkNotNull(buildOptions, "Build options should not be null");
     }
