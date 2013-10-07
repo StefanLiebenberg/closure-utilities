@@ -17,7 +17,6 @@ import java.util.List;
 public class GssBuilder extends AbstractBuilder<GssBuildOptions>
         implements IBuilder {
 
-
     public GssBuilder() {}
 
     public GssBuilder(@Nonnull final GssBuildOptions buildOptions) {
@@ -49,15 +48,16 @@ public class GssBuilder extends AbstractBuilder<GssBuildOptions>
     }
 
     private void compileCssFiles(
-            @Nonnull final List<File> sourceFiles,
+            @Nullable final List<File> sourceFiles,
             @Nonnull final File outputFile,
             @Nullable final File renameMap,
             @Nonnull final Boolean productionBoolean,
             @Nonnull final Boolean debugBoolean)
             throws BuildException {
 
-        if (sourceFiles != null && sourceFiles.isEmpty()) {
+        if (sourceFiles == null || sourceFiles.isEmpty()) {
             throwBuildException("No input files specified.");
+            return;
         }
 
         List<String> arguments = new ArrayList<String>();
@@ -70,10 +70,10 @@ public class GssBuilder extends AbstractBuilder<GssBuildOptions>
             arguments.add(renameMap.getPath());
         }
 
-        if (productionBoolean != null && productionBoolean) {
+        if (productionBoolean) {
             arguments.add("--output-renaming-map-format");
             arguments.add("CLOSURE_COMPILED");
-            if (debugBoolean != null && debugBoolean) {
+            if (debugBoolean) {
                 arguments.add("--rename");
                 arguments.add("DEBUG");
             } else {

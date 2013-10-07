@@ -4,8 +4,11 @@ package com.github.stefanliebenberg.stylesheets;
 import com.github.stefanliebenberg.utilities.Immuter;
 import com.google.common.collect.ImmutableList;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.List;
+
 
 public class GssBuildOptions {
 
@@ -21,24 +24,24 @@ public class GssBuildOptions {
 
     private File outputFile;
 
-
-    public void setOutputFile(final File outputFile) {
+    public void setOutputFile(@Nullable final File outputFile) {
         this.outputFile = outputFile;
     }
 
-    public void setAssetsDirectory(final File assetsDirectory) {
+    public void setAssetsDirectory(@Nullable final File assetsDirectory) {
         this.assetsDirectory = assetsDirectory;
     }
 
-    public void setSourceFiles(final ImmutableList<File> sourceFiles) {
+    public void setSourceFiles(@Nullable final ImmutableList<File>
+                                       sourceFiles) {
         this.sourceFiles = sourceFiles;
     }
 
-    public void setSourceFiles(final List<File> sourceFiles) {
+    public void setSourceFiles(@Nullable final List<File> sourceFiles) {
         setSourceFiles(Immuter.list(sourceFiles));
     }
 
-    public void setRenameMap(final File renameMap) {
+    public void setRenameMap(@Nullable final File renameMap) {
         this.renameMap = renameMap;
     }
 
@@ -48,34 +51,39 @@ public class GssBuildOptions {
     }
 
     public void setShouldGenerateForDebug(
-            final Boolean shouldGenerateForDebug) {
+            @Nonnull final Boolean shouldGenerateForDebug) {
         this.shouldGenerateForDebug = shouldGenerateForDebug;
     }
 
+    @Nullable
     public File getOutputFile() {
         return outputFile;
     }
 
+    @Nullable
     public ImmutableList<File> getSourceFiles() {
         return sourceFiles;
     }
 
+    @Nullable
     public File getAssetsDirectory() {
         return assetsDirectory;
     }
 
+    @Nullable
     public File getRenameMap() {
         return renameMap;
     }
 
+    @Nonnull
     public Boolean getShouldGenerateForProduction() {
         return shouldGenerateForProduction;
     }
 
 
+    @Nonnull
     public Boolean getShouldGenerateForDebug() {
         return shouldGenerateForDebug;
     }
-
 
 }
