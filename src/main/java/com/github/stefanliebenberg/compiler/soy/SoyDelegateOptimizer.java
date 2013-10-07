@@ -7,6 +7,7 @@ import com.google.javascript.jscomp.*;
 import com.google.javascript.rhino.Node;
 import com.google.javascript.rhino.Token;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -23,7 +24,7 @@ public class SoyDelegateOptimizer implements CompilerPass {
     private final DelegateOptimiser delegateOptimizer = new DelegateOptimiser();
 
 
-    public SoyDelegateOptimizer(final Compiler compiler) {
+    public SoyDelegateOptimizer(@Nonnull final Compiler compiler) {
         this.compiler = compiler;
     }
 
@@ -65,7 +66,9 @@ public class SoyDelegateOptimizer implements CompilerPass {
         NodeTraversal.traverse(compiler, root, delegateOptimizer);
     }
 
-    private void remember(String key, Double priority, String templateName) {
+    private void remember(@Nonnull final String key,
+                          @Nonnull final Double priority,
+                          @Nonnull final String templateName) {
         dataMap.put(key, priority);
         usedFunctionMap.put(key, templateName);
         allFunctions.add(templateName);
@@ -75,7 +78,8 @@ public class SoyDelegateOptimizer implements CompilerPass {
             .AbstractPostOrderCallback {
 
         @Override
-        public void visit(final NodeTraversal t, final Node n,
+        public void visit(final NodeTraversal t,
+                          final Node n,
                           final Node parent) {
             if (isDelegateCallNode(n)) {
                 Double priority = getPriority(n);
@@ -151,20 +155,30 @@ public class SoyDelegateOptimizer implements CompilerPass {
 
     static private final String DELEGATE_FN_NAME = "soy.$$registerDelegateFn";
 
-    static private Boolean isDelegateCallNode(final Node node) {
+    @Nonnull
+    static private Boolean isDelegateCallNode(@Nonnull final Node node) {
         return node.getType() == Token.CALL &&
                 DELEGATE_FN_NAME.equals(node.getFirstChild()
                         .getQualifiedName());
     }
 
-
-    public static void addToCompile(final Compiler compiler,
-                                    final CompilerOptions compilerOptions) {
-        Multimap<CustomPassExecutionTime, CompilerPass> customPasses =
-                compilerOptions.customPasses;
-        if (customPasses == null) {
-            customPasses = LinkedListMultimap.create();
+    @Nonnull
+    private static Multimap<CustomPassExecutionTime,
+            CompilerPass> getCustomPassesFromOptions(
+            @Nonnull final CompilerOptions compilerOptions
+    ) {
+        if (compilerOptions.customPasses != null) {
+            return compilerOptions.customPasses;
+        } else {
+            return LinkedListMultimap.create();
         }
+    }
+
+    public static void addToCompile(
+            @Nonnull final Compiler compiler,
+            @Nonnull final CompilerOptions compilerOptions) {
+        final Multimap<CustomPassExecutionTime, CompilerPass> customPasses =
+                getCustomPassesFromOptions(compilerOptions);
         customPasses.put(CustomPassExecutionTime.BEFORE_CHECKS,
                 new SoyDelegateOptimizer(compiler));
         compilerOptions.setCustomPasses(customPasses);
