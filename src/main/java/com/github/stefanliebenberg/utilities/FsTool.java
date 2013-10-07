@@ -7,6 +7,7 @@ import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.net.URI;
@@ -18,34 +19,39 @@ import java.util.Iterator;
 
 public class FsTool {
 
-    public static Path getRelativePath(final Path path,
-                                       final Path base) {
+    @Nonnull
+    public static Path getRelativePath(
+            @Nonnull final Path path,
+            @Nonnull final Path base) {
         return base.toAbsolutePath().relativize(path.toAbsolutePath());
     }
 
-    public static Path getRelativePath(final File path,
-                                       final File base) {
+    @Nonnull
+    public static Path getRelativePath(
+            @Nonnull final File path,
+            @Nonnull final File base) {
         return getRelativePath(path.toPath(), base.toPath());
     }
 
-    public static String getRelative(final File path,
-                                     final File base) {
+    @Nonnull
+    public static String getRelative(@Nonnull final File path,
+                                     @Nonnull final File base) {
         return getRelativePath(path, base).toString();
     }
 
-    public static void ensureDirectory(final File directory) {
+    public static void ensureDirectory(@Nonnull final File directory) {
         if (!directory.exists()) {
             directory.mkdirs();
         }
     }
 
-    public static void ensureDirectoryFor(final File outputFile) {
+    public static void ensureDirectoryFor(@Nonnull final File outputFile) {
         ensureDirectory(outputFile.getParentFile());
     }
 
-    public static void collectFiles(final File directory,
-                                    final Collection<File> files,
-                                    final String... extensions) {
+    public static void collectFiles(@Nonnull final File directory,
+                                    @Nonnull final Collection<File> files,
+                                    @Nonnull final String... extensions) {
         if (directory.exists()) {
             final Iterator<File> iterator =
                     FileUtils.iterateFiles(directory, extensions, true);
@@ -56,30 +62,35 @@ public class FsTool {
     }
 
     public static void collectFiles(
-            final Collection<File> directories,
-            final Collection<File> files,
-            final String... extensions) {
+            @Nonnull final Collection<File> directories,
+            @Nonnull final Collection<File> files,
+            @Nonnull final String... extensions) {
         for (File directory : directories) {
             collectFiles(directory, files, extensions);
         }
     }
 
-    public static Collection<File> find(final File directory,
-                                        final String... extensions) {
+    @Nonnull
+    public static Collection<File> find(
+            @Nonnull final File directory,
+            @Nonnull final String... extensions) {
         final Collection<File> files = new HashSet<File>();
         collectFiles(directory, files, extensions);
         return files;
     }
 
+    @Nonnull
     public static Collection<File> find(
-            final Collection<File> directories,
-            final String... extensions) {
+            @Nonnull final Collection<File> directories,
+            @Nonnull final String... extensions) {
         final Collection<File> files = new HashSet<File>();
         collectFiles(directories, files, extensions);
         return files;
     }
 
-    public static String read(final File inputFile)
+    @Nonnull
+    public static String read(
+            @Nonnull final File inputFile)
             throws IOException {
         try (final FileInputStream inputStream = new FileInputStream
                 (inputFile)) {
@@ -87,7 +98,9 @@ public class FsTool {
         }
     }
 
-    public static String safeRead(final File inputFile) {
+    @Nullable
+    public static String safeRead(
+            @Nonnull final File inputFile) {
         try {
             return read(inputFile);
         } catch (IOException ignored) {
@@ -98,8 +111,10 @@ public class FsTool {
         }
     }
 
-    public static void write(final File output,
-                             final String content)
+
+    public static void write(
+            @Nonnull final File output,
+            @Nonnull final String content)
             throws IOException {
         ensureDirectoryFor(output);
         try (final FileWriter writer = new FileWriter(output)) {
@@ -107,8 +122,9 @@ public class FsTool {
         }
     }
 
-    public static void safeWrite(final File output,
-                                 final String content) {
+    public static void safeWrite(
+            @Nonnull final File output,
+            @Nonnull final String content) {
         try {
             write(output, content);
         } catch (IOException ignored) {
@@ -118,7 +134,9 @@ public class FsTool {
         }
     }
 
-    static void copy(File inputFile, File outputFile)
+    static void copy(
+            @Nonnull final File inputFile,
+            @Nonnull final File outputFile)
             throws IOException {
         try (final InputStream istream = new FileInputStream(inputFile);
              final OutputStream ostream = new FileOutputStream(outputFile)) {
@@ -126,8 +144,10 @@ public class FsTool {
         }
     }
 
-    public static File getTempFile(final String prefix,
-                                   final String affix)
+    @Nonnull
+    public static File getTempFile(
+            @Nonnull final String prefix,
+            @Nonnull final String affix)
             throws IOException {
         File tempFile = File.createTempFile(prefix, affix);
         ensureDirectoryFor(tempFile);
@@ -135,13 +155,13 @@ public class FsTool {
         return tempFile;
     }
 
+    @Nonnull
     public static File getTempDirectory()
             throws IOException {
         final File directory = Files.createTempDir();
         directory.deleteOnExit();
         return directory;
     }
-
 
     public final static Function<URL, String> URL_TO_FILEPATH = new
             Function<URL, String>() {

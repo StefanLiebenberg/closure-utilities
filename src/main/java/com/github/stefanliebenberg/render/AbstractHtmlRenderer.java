@@ -22,36 +22,42 @@ public abstract class AbstractHtmlRenderer implements HtmlRenderer {
     public AbstractHtmlRenderer() {}
 
     @Override
+    @Nonnull
     public HtmlRenderer setStylesheets(@Nullable final List<File> stylesheets) {
         this.stylesheets = stylesheets;
         return this;
     }
 
     @Override
+    @Nonnull
     public HtmlRenderer setScripts(@Nullable final List<File> scripts) {
         this.scripts = scripts;
         return this;
     }
 
     @Override
+    @Nonnull
     public HtmlRenderer setTitle(@Nullable final String title) {
         this.title = title;
         return this;
     }
 
     @Override
+    @Nonnull
     public HtmlRenderer setContent(@Nullable final String content) {
         this.content = content;
         return this;
     }
 
     @Override
+    @Nonnull
     public HtmlRenderer setShouldInline(@Nullable final Boolean shouldInline) {
         this.shouldInline = shouldInline;
         return this;
     }
 
     @Override
+    @Nonnull
     public HtmlRenderer setOutputPath(@Nullable final File outputPath) {
         this.outputPath = outputPath;
         return this;

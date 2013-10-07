@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 
 public class Immuter {
+
     @Nonnull
     public static <A, B> Collection<B> transform(
             @Nonnull final Collection<A> aCollection,

@@ -7,16 +7,22 @@ import java.util.List;
 
 public interface HtmlRenderer {
 
+    @Nonnull
     public HtmlRenderer setStylesheets(@Nullable final List<File> stylesheets);
 
+    @Nonnull
     public HtmlRenderer setScripts(@Nullable final List<File> scripts);
 
+    @Nonnull
     public HtmlRenderer setTitle(@Nullable final String title);
 
+    @Nonnull
     public HtmlRenderer setContent(@Nullable final String content);
 
+    @Nonnull
     public HtmlRenderer setShouldInline(@Nullable final Boolean shouldInline);
 
+    @Nonnull
     public HtmlRenderer setOutputPath(@Nullable final File outputPath);
 
     @Nonnull

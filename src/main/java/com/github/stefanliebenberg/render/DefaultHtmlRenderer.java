@@ -8,9 +8,11 @@ import javax.annotation.Nullable;
 import java.io.File;
 
 public class DefaultHtmlRenderer
-        extends AbstractHtmlRenderer {
+        extends AbstractHtmlRenderer
+        implements HtmlRenderer {
 
-    protected String getFilePath(File file) {
+    @Nonnull
+    protected String getFilePath(@Nonnull File file) {
         if (outputPath != null) {
             return FsTool.getRelative(file, outputPath.getParentFile());
         } else {
@@ -31,7 +33,7 @@ public class DefaultHtmlRenderer
             @Nullable final String[] attributes,
             @Nonnull final Boolean terminatesSelf,
             @Nullable final String... content) {
-        StringBuilder html = new StringBuilder();
+        final StringBuilder html = new StringBuilder();
         html.append("<").append(tagName);
         if (attributes != null && attributes.length > 0) {
             for (String attr : attributes) {
@@ -52,6 +54,7 @@ public class DefaultHtmlRenderer
         return html.toString();
     }
 
+    @Nonnull
     protected String render_tag(@Nonnull final String tagName,
                                 String... content) {
         return render_tag_base(tagName, null, false, content);
@@ -65,7 +68,7 @@ public class DefaultHtmlRenderer
     }
 
     @Nonnull
-    protected String renderStylesheet(File sourceFile) {
+    protected String renderStylesheet(@Nonnull final File sourceFile) {
         return render_tag_base("link", new String[]{
                 render_attr("rel", "stylesheet"),
                 render_attr("href", getFilePath(sourceFile))
@@ -89,10 +92,10 @@ public class DefaultHtmlRenderer
 
     @Nonnull
     protected String renderStylesheets() {
-        StringBuilder html = new StringBuilder();
+        final StringBuilder html = new StringBuilder();
         if (stylesheets != null && !stylesheets.isEmpty()) {
             if (shouldInline) {
-                StringBuilder content = new StringBuilder();
+                final StringBuilder content = new StringBuilder();
                 for (File stylesheet : stylesheets) {
                     content.append(FsTool.safeRead(stylesheet));
                 }
@@ -108,7 +111,7 @@ public class DefaultHtmlRenderer
 
     @Nonnull
     protected String renderScripts() {
-        StringBuilder html = new StringBuilder();
+        final StringBuilder html = new StringBuilder();
         if (scripts != null && !scripts.isEmpty()) {
             if (shouldInline) {
                 StringBuilder content = new StringBuilder();
