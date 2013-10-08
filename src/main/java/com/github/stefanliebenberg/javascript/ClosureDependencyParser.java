@@ -1,11 +1,13 @@
 package com.github.stefanliebenberg.javascript;
 
 import com.github.stefanliebenberg.internal.IDependencyParser;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 import org.mozilla.javascript.Node;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.ast.*;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
@@ -35,28 +37,33 @@ public class ClosureDependencyParser implements
         visit(dependency, astRoot.getFirstChild());
     }
 
-    private boolean isName(final AstNode node) {
+    private boolean isName(
+            @Nonnull final AstNode node) {
         return node instanceof Name;
     }
 
-    private boolean isName(final AstNode node,
-                           final String name) {
+    private boolean isName(
+            @Nonnull final AstNode node,
+            @Nonnull final String name) {
         return isName(node) && ((Name) node).getIdentifier().equals(name);
     }
 
-    private boolean isPropertyGet(final AstNode node) {
+    private boolean isPropertyGet(
+            @Nonnull final AstNode node) {
         return node instanceof PropertyGet;
     }
 
-    private boolean hasNamedProperty(final PropertyGet node,
-                                     final String left,
-                                     final String right) {
+    private boolean hasNamedProperty(
+            @Nonnull final PropertyGet node,
+            @Nonnull final String left,
+            @Nonnull final String right) {
         return isName(node.getLeft(), left) && isName(node.getRight(), right);
     }
 
 
-    private void visit_assignment(final ClosureSourceFile closureSourceFile,
-                                  final Assignment assignment) {
+    private void visit_assignment(
+            @Nonnull final ClosureSourceFile closureSourceFile,
+            @Nonnull final Assignment assignment) {
         final AstNode left = assignment.getLeft();
         if (isPropertyGet(left) &&
                 hasNamedProperty((PropertyGet) left, "goog", "base")) {
@@ -64,27 +71,40 @@ public class ClosureDependencyParser implements
         }
     }
 
-    private <T extends AstNode> T getArgument(final FunctionCall functionCall,
-                                              final Integer index,
-                                              final Class<T> tClass) {
+    @Nullable
+    @SuppressWarnings("unchecked")
+    private <T extends AstNode> T getArgument(
+            @Nonnull final FunctionCall functionCall,
+            @Nonnull final Integer index,
+            @Nonnull final Class<T> tClass) {
         final AstNode node = functionCall.getArguments().get(index);
         if (tClass.isInstance(node)) {
+
             return (T) node;
         } else {
             return null;
         }
     }
 
-    private String getStringArgumentValue(final FunctionCall functionCall,
-                                          final Integer index) {
-        return getArgument(functionCall, index, StringLiteral.class).getValue();
+    @Nullable
+    private String getStringArgumentValue(
+            @Nonnull final FunctionCall functionCall,
+            @Nonnull final Integer index) {
+        StringLiteral stringNode = getArgument(functionCall, index,
+                StringLiteral.class);
+        if (stringNode != null) {
+            return stringNode.getValue();
+        } else {
+            return null;
+        }
+
     }
 
 
-    private void visit_PropertyGet_googScan(final ClosureSourceFile
-                                                    closureSourceFile,
-                                            final FunctionCall funcCall,
-                                            final PropertyGet propertyGet) {
+    private void visit_PropertyGet_googScan(
+            @Nonnull final ClosureSourceFile closureSourceFile,
+            @Nonnull final FunctionCall funcCall,
+            @Nonnull final PropertyGet propertyGet) {
         if (isName(propertyGet.getLeft(), "goog")) {
             final AstNode right = propertyGet.getRight();
             if (isName(right, "provide")) {
@@ -97,8 +117,9 @@ public class ClosureDependencyParser implements
         }
     }
 
-    private void visit_FunctionCall(final ClosureSourceFile closureSourceFile,
-                                    final FunctionCall functionCall) {
+    private void visit_FunctionCall(
+            @Nonnull final ClosureSourceFile closureSourceFile,
+            @Nonnull final FunctionCall functionCall) {
         final AstNode target = functionCall.getTarget();
         if (isPropertyGet(target)) {
             visit_PropertyGet_googScan(closureSourceFile, functionCall,
@@ -106,8 +127,9 @@ public class ClosureDependencyParser implements
         }
     }
 
-    private void visit(final ClosureSourceFile dependency,
-                       final Node node) {
+    private void visit(
+            @Nonnull final ClosureSourceFile dependency,
+            @Nullable final Node node) {
         if (node == null) {
             return;
         }
