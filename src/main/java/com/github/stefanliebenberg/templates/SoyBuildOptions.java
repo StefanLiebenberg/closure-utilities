@@ -6,6 +6,7 @@ import com.github.stefanliebenberg.utilities.Immuter;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
@@ -22,43 +23,62 @@ public class SoyBuildOptions implements IBuildOptions {
 
     private File messageFile;
 
-    public void setOutputDirectory(final File outputDirectory) {
+    public void setOutputDirectory(@Nullable final File outputDirectory) {
         this.outputDirectory = outputDirectory;
     }
 
-    public void setSources(final Collection<File> sources) {
+    public void setSources(@Nullable final Collection<File> sources) {
         this.sources = sources;
     }
 
-    public void setSourceDirectories(final Collection<File> sourceDirectories) {
+    public void setSourceDirectories(@Nullable final Collection<File>
+                                             sourceDirectories) {
         this.sourceDirectories = sourceDirectories;
     }
 
-    public void setMessageFile(final File messageFile) {
+    public void setMessageFile(@Nullable final File messageFile) {
         this.messageFile = messageFile;
     }
 
-    public void setGlobalStringMap(final Map<String, String> globalStringMap) {
+    public void setGlobalStringMap(@Nullable final Map<String,
+            String> globalStringMap) {
         this.globalStringMap = globalStringMap;
     }
 
+    @Nullable
     public File getOutputDirectory() {
         return outputDirectory;
     }
 
+    @Nullable
     public ImmutableCollection<File> getSources() {
-        return Immuter.list(sources);
+        if (sources != null) {
+            return Immuter.list(sources);
+        } else {
+            return null;
+        }
     }
 
+    @Nullable
     public ImmutableCollection<File> getSourceDirectories() {
-        return Immuter.list(sourceDirectories);
+        if (sourceDirectories != null) {
+            return Immuter.list(sourceDirectories);
+        } else {
+            return null;
+        }
     }
 
+    @Nullable
     public File getMessageFile() {
         return messageFile;
     }
 
+    @Nullable
     public ImmutableMap<String, String> getGlobalStringMap() {
-        return Immuter.map(globalStringMap);
+        if (globalStringMap != null) {
+            return Immuter.map(globalStringMap);
+        } else {
+            return null;
+        }
     }
 }
