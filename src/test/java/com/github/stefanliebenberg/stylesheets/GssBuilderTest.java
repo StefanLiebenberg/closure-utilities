@@ -65,6 +65,7 @@ public class GssBuilderTest {
 
     @Test
     public void testCompile() throws IOException, BuildException {
+        gssBuildOptions.setShouldCalculateDependencies(false);
         gssBuildOptions.setSourceFiles(sourceFiles);
         gssBuildOptions.setAssetsDirectory(new File(outputFile.getParentFile
                 (), "assets"));
@@ -75,6 +76,7 @@ public class GssBuilderTest {
 
     @Test
     public void testSecondCompile() throws IOException, BuildException {
+        gssBuildOptions.setShouldCalculateDependencies(false);
         gssBuildOptions.setSourceFiles(sourceFiles);
         gssBuildOptions.setAssetsDirectory(new File(outputFile.getParentFile
                 (), "assets"));

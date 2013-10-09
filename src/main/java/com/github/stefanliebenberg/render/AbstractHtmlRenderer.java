@@ -5,7 +5,9 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.List;
 
-public abstract class AbstractHtmlRenderer implements HtmlRenderer {
+public abstract class AbstractHtmlRenderer
+        extends AbstractRenderer
+        implements HtmlRenderer {
 
     protected Boolean shouldInline = false;
 
@@ -20,6 +22,16 @@ public abstract class AbstractHtmlRenderer implements HtmlRenderer {
     protected File outputPath;
 
     public AbstractHtmlRenderer() {}
+
+    @Override
+    public void reset() {
+        shouldInline = false;
+        stylesheets = null;
+        scripts = null;
+        title = null;
+        content = null;
+        outputPath = null;
+    }
 
     @Override
     @Nonnull
@@ -51,7 +63,7 @@ public abstract class AbstractHtmlRenderer implements HtmlRenderer {
 
     @Override
     @Nonnull
-    public HtmlRenderer setShouldInline(@Nullable final Boolean shouldInline) {
+    public HtmlRenderer setShouldInline(@Nonnull final Boolean shouldInline) {
         this.shouldInline = shouldInline;
         return this;
     }
@@ -64,7 +76,4 @@ public abstract class AbstractHtmlRenderer implements HtmlRenderer {
     }
 
 
-    @Override
-    @Nonnull
-    public abstract String render() throws RenderException;
 }

@@ -23,23 +23,4 @@ public class DependencyException extends Exception {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public static void throwNothingProvides(final String namespace)
-            throws DependencyException {
-        throw new DependencyException(
-                "Nothing provides the namespace, " + namespace);
-    }
-
-    public static void throwCircularError(final String namespace,
-                                          final String provider,
-                                          final String... parents)
-            throws DependencyException {
-        StringBuilder message = new StringBuilder();
-        message.append("Circular Error detected while trying to import '")
-                .append(namespace).append("'.");
-        for (String parent : parents) {
-            message.append("\n   ").append(parent);
-        }
-        message.append("\n   ").append(provider);
-        throw new DependencyException(message.toString());
-    }
 }

@@ -5,6 +5,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,12 +15,13 @@ import java.util.List;
 public class DependencyCalculator<S extends BaseSourceFile>
         implements IDependencyCalculator<S> {
 
-    public DependencyCalculator(final Collection<S> dependencies) {
+    public DependencyCalculator(
+            @Nonnull final Collection<S> dependencies) {
         this.dependencies = ImmutableSet.copyOf(dependencies);
     }
 
     public DependencyCalculator(
-            final ImmutableCollection<S> dependencies) {
+            @Nonnull final ImmutableCollection<S> dependencies) {
         this.dependencies = dependencies;
     }
 
@@ -37,29 +39,35 @@ public class DependencyCalculator<S extends BaseSourceFile>
                 }
             };
 
-    private void throwNothingProvides(final String namespace)
-            throws DependencyException {
-        DependencyException.throwNothingProvides(namespace);
+    @Nonnull
+    private DependencyException nothingProvides(
+            @Nonnull final String namespace) {
+        return new DependencyException("Nothing provides '" + namespace + "'");
     }
 
-    private void throwCircularError(final String namespace,
-                                    final S provider,
-                                    final Collection<S> parents)
-            throws DependencyException {
-        final String providerName =
-                BASE_TRANSFORMER.apply(provider);
-        final Collection<String> strings = Collections2.transform(parents,
-                BASE_TRANSFORMER);
+    @Nonnull
+    private DependencyException circularError(
+            @Nonnull final String namespace,
+            @Nonnull final Collection<S> parents) {
+        final Collection<String> strings =
+                Collections2.transform(parents, BASE_TRANSFORMER);
         final String[] parentNames =
                 strings.toArray(new String[strings.size()]);
-        DependencyException.
-                throwCircularError(namespace, providerName, parentNames);
+        final StringBuilder message = new StringBuilder();
+        message.append("Circular Error detected while trying to import '")
+                .append(namespace).append("'.");
+        for (String parent : parentNames) {
+            message.append("\n   ").append(parent);
+        }
+        message.append("\n   ").append(namespace);
+        return new DependencyException(message.toString());
     }
-
 
     private ImmutableCollection<S> dependencies;
 
-    private S getProviderOf(final String namespace) {
+    @Nullable
+    private S getProviderOf(
+            @Nonnull final String namespace) {
         for (S dependency : dependencies) {
             if (dependency.getProvidedNamespaces().contains(namespace)) {
                 return dependency;
@@ -68,35 +76,37 @@ public class DependencyCalculator<S extends BaseSourceFile>
         return null;
     }
 
-    private List<S> resolveDependencies(final String namespace,
-                                        final List<S> dependencies,
-                                        final Collection<S> parents)
+    @Nonnull
+    private List<S> resolveDependencies(
+            @Nonnull final String namespace,
+            @Nonnull final List<S> dependencies,
+            @Nonnull final Collection<S> parents)
             throws DependencyException {
         final S provider = getProviderOf(namespace);
 
         if (provider == null) {
-            throwNothingProvides(namespace);
-            return null;
+            throw nothingProvides(namespace);
         }
 
         if (parents.contains(provider)) {
-            throwCircularError(namespace, provider, parents);
+            throw circularError(namespace, parents);
         }
 
         if (!dependencies.contains(provider)) {
             parents.add(provider);
             for (String requireStatement : provider.getRequiredNamespaces()) {
-                resolveDependencies(requireStatement, dependencies,
-                        parents);
+                resolveDependencies(requireStatement, dependencies, parents);
             }
             parents.remove(provider);
             dependencies.add(provider);
         }
+
         return dependencies;
     }
 
-    private void addDependencies(final String entryPoint,
-                                 final List<S> nodes)
+    private void addDependencies(
+            @Nonnull final String entryPoint,
+            @Nonnull final List<S> nodes)
             throws DependencyException {
         for (S node : resolveDependencies(entryPoint, nodes,
                 new HashSet<S>())) {
@@ -106,7 +116,7 @@ public class DependencyCalculator<S extends BaseSourceFile>
         }
     }
 
-    public List<S> getDependencyList(final List<String> entryPoints)
+    public List<S> getDependencyList(@Nonnull final List<String> entryPoints)
             throws DependencyException {
         final List<S> nodes = new ArrayList<S>();
         for (String entryPoint : entryPoints) {
@@ -115,7 +125,7 @@ public class DependencyCalculator<S extends BaseSourceFile>
         return nodes;
     }
 
-    public List<S> getDependencyList(final String entryPoint)
+    public List<S> getDependencyList(@Nonnull final String entryPoint)
             throws DependencyException {
         final List<S> nodes = new ArrayList<S>();
         addDependencies(entryPoint, nodes);

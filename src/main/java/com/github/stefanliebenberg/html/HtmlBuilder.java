@@ -19,6 +19,8 @@ public class HtmlBuilder
 
     private File generatedHtmlFile;
 
+    public HtmlBuilder() {}
+
     public HtmlBuilder(@Nonnull final HtmlBuildOptions options) {
         super(options);
     }

@@ -1,22 +1,26 @@
 package com.github.stefanliebenberg.stylesheets;
 
 
-import com.github.stefanliebenberg.utilities.Immuter;
-import com.google.common.collect.ImmutableList;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 
 public class GssBuildOptions {
 
+    private Boolean shouldCalculateDependencies = true;
+
     private Boolean shouldGenerateForProduction = false;
 
     private Boolean shouldGenerateForDebug = true;
 
-    private ImmutableList<File> sourceFiles;
+    private List<File> sourceFiles;
+
+    private Collection<File> sourceDirectories;
+
+    private List<String> entryPoints;
 
     private File renameMap;
 
@@ -32,13 +36,8 @@ public class GssBuildOptions {
         this.assetsDirectory = assetsDirectory;
     }
 
-    public void setSourceFiles(@Nullable final ImmutableList<File>
-                                       sourceFiles) {
-        this.sourceFiles = sourceFiles;
-    }
-
     public void setSourceFiles(@Nullable final List<File> sourceFiles) {
-        setSourceFiles(Immuter.list(sourceFiles));
+        this.sourceFiles = sourceFiles;
     }
 
     public void setRenameMap(@Nullable final File renameMap) {
@@ -61,9 +60,10 @@ public class GssBuildOptions {
     }
 
     @Nullable
-    public ImmutableList<File> getSourceFiles() {
+    public List<File> getSourceFiles() {
         return sourceFiles;
     }
+
 
     @Nullable
     public File getAssetsDirectory() {
@@ -86,4 +86,34 @@ public class GssBuildOptions {
         return shouldGenerateForDebug;
     }
 
+    @Nonnull
+    public Boolean getShouldCalculateDependencies() {
+        return shouldCalculateDependencies;
+    }
+
+    public void setShouldCalculateDependencies(
+            @Nonnull final Boolean shouldCalculateDependencies) {
+        this.shouldCalculateDependencies = shouldCalculateDependencies;
+    }
+
+    @Nullable
+    public Collection<File> getSourceDirectories() {
+        return sourceDirectories;
+    }
+
+
+    public void setSourceDirectories(
+            @Nullable final Collection<File> sourceDirectories) {
+        this.sourceDirectories = sourceDirectories;
+    }
+
+    @Nullable
+    public List<String> getEntryPoints() {
+        return entryPoints;
+    }
+
+    public void setEntryPoints(
+            @Nullable final List<String> entryPoints) {
+        this.entryPoints = entryPoints;
+    }
 }

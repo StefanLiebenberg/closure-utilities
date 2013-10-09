@@ -174,12 +174,13 @@ public class DefaultHtmlRenderer
     }
 
     @Override
-    @Nonnull
-    public String render() throws RenderException {
+    public void render(@Nonnull StringBuffer sb) throws RenderException {
         try {
-            return renderDoctype() + renderHtmlTag();
+            sb.append(renderDoctype());
+            sb.append(renderHtmlTag());
         } catch (IOException ioException) {
             throw new RenderException(ioException);
         }
     }
+
 }

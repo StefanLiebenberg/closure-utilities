@@ -22,7 +22,6 @@ public class DependencyBuildOptions<A extends BaseSourceFile> {
         this.sourceFiles = sourceFiles;
     }
 
-
     public void setEntryPoints(
             @Nonnull final List<String> entryPoints) {
         this.entryPoints = entryPoints;

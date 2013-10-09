@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class ClosureBuildOptions {
+    private File cssClassRenameMap;
     private File assetsDirectory;
     private Collection<File> gssSourceDirectories;
     private List<String> gssEntryPoints;
@@ -133,5 +134,15 @@ public class ClosureBuildOptions {
 
     public void setAssetsDirectory(@Nullable final File assetsDirectory) {
         this.assetsDirectory = assetsDirectory;
+    }
+
+    @Nullable
+    public File getCssClassRenameMap() {
+        return cssClassRenameMap;
+    }
+
+    public void setCssClassRenameMap(
+            @Nullable final File cssClassRenameMap) {
+        this.cssClassRenameMap = cssClassRenameMap;
     }
 }
