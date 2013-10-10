@@ -1,6 +1,5 @@
 package com.github.stefanliebenberg.closure;
 
-
 import com.github.stefanliebenberg.html.HtmlBuildOptions;
 import com.github.stefanliebenberg.html.HtmlBuilder;
 import com.github.stefanliebenberg.internal.AbstractBuilder;
@@ -33,7 +32,7 @@ public class ClosureBuilder
 
     private final JsBuilder jsBuilder = new JsBuilder();
 
-    public final HtmlBuilder htmlBuilder = new HtmlBuilder();
+    private final HtmlBuilder htmlBuilder = new HtmlBuilder();
 
     @Override
     public void reset() {
@@ -44,6 +43,7 @@ public class ClosureBuilder
     }
 
     public File getGssOutputFile() {
+        // where do generate the .css file
         return null;
     }
 
@@ -87,7 +87,6 @@ public class ClosureBuilder
     @Nonnull
     public JsBuildOptions getJsBuildOptions() {
         JsBuildOptions jsBuildOptions = new JsBuildOptions();
-        jsBuildOptions.setShouldCalculateDependencies(true);
         jsBuildOptions.setEntryPoints(
                 buildOptions.getJavascriptEntryPoints());
         jsBuildOptions.setSourceDirectories(
@@ -119,8 +118,7 @@ public class ClosureBuilder
     }
 
     @Override
-    public void build() throws BuildException {
-        checkOptions();
+    public void buildInternal() throws BuildException {
         buildGss();
         buildSoy();
         buildJs();

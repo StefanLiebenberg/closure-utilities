@@ -19,7 +19,7 @@ public class MultiLocaleSoyBuilder
     }
 
     @Override
-    public void build() throws BuildException {
+    public void buildInternal() throws BuildException {
         for (File soyMessageFile : buildOptions.getSoyMessageFiles()) {
             soyBuilder.reset();
             buildOptions.setMessageFile(soyMessageFile);

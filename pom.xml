@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.stefanliebenberg</groupId>
     <artifactId>closure-utilities</artifactId>
-    <version>1.3.5-SNAPSHOT</version>
+    <version>1.3.6-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>closure-utilities</name>
     <url>http://maven.apache.org</url>

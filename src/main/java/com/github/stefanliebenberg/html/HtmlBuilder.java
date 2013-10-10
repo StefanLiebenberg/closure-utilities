@@ -9,6 +9,7 @@ import com.github.stefanliebenberg.render.RenderException;
 import com.github.stefanliebenberg.utilities.FsTool;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 
@@ -60,16 +61,11 @@ public class HtmlBuilder
 
 
     @Override
-    public void build() throws BuildException {
-        checkOptions();
-        try {
-            final File outputFile = buildOptions.getOutputFile();
-            if (outputFile != null) {
-                FsTool.write(outputFile, renderHtmlFile(outputFile));
-                generatedHtmlFile = outputFile;
-            }
-        } catch (IOException | RenderException ioException) {
-            throw new BuildException(ioException);
+    public void buildInternal() throws Exception {
+        final File outputFile = buildOptions.getOutputFile();
+        if (outputFile != null) {
+            FsTool.write(outputFile, renderHtmlFile(outputFile));
+            generatedHtmlFile = outputFile;
         }
     }
 
@@ -79,6 +75,7 @@ public class HtmlBuilder
         checkNotNull(buildOptions.getOutputFile());
     }
 
+    @Nullable
     public File getGeneratedHtmlFile() {
         return generatedHtmlFile;
     }

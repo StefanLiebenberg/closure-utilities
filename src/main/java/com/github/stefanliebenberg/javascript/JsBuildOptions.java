@@ -5,14 +5,17 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class JsBuildOptions {
 
-    private Boolean shouldCalculateDependencies = true;
     private File outputDependencyFile;
     private Collection<File> sourceDirectories;
-    private List<File> sourceFiles;
     private List<String> entryPoints;
+    private Map<String, Object> globals;
+
+    private Boolean shouldDebug = true;
+    private Boolean shouldCompile = false;
 
     @Nullable
     public Collection<File> getSourceDirectories() {
@@ -24,7 +27,6 @@ public class JsBuildOptions {
         this.sourceDirectories = sourceDirectories;
     }
 
-
     @Nullable
     public List<String> getEntryPoints() {
         return entryPoints;
@@ -32,27 +34,6 @@ public class JsBuildOptions {
 
     public void setEntryPoints(@Nullable final List<String> entryPoints) {
         this.entryPoints = entryPoints;
-    }
-
-
-    @Nonnull
-    public Boolean getShouldCalculateDependencies() {
-        return shouldCalculateDependencies;
-    }
-
-    public void setShouldCalculateDependencies(
-            @Nonnull Boolean shouldCalculateDependencies) {
-        this.shouldCalculateDependencies = shouldCalculateDependencies;
-    }
-
-    @Nullable
-    public List<File> getSourceFiles() {
-        return sourceFiles;
-    }
-
-    public void setSourceFiles(
-            @Nullable final List<File> sourceFiles) {
-        this.sourceFiles = sourceFiles;
     }
 
     @Nullable
@@ -63,5 +44,32 @@ public class JsBuildOptions {
     public void setOutputDependencyFile(
             @Nullable final File outputDependencyFile) {
         this.outputDependencyFile = outputDependencyFile;
+    }
+
+    @Nullable
+    public Map<String, Object> getGlobals() {
+        return globals;
+    }
+
+    public void setGlobals(@Nullable Map<String, Object> globals) {
+        this.globals = globals;
+    }
+
+    @Nonnull
+    public Boolean getShouldDebug() {
+        return shouldDebug;
+    }
+
+    public void setShouldDebug(@Nonnull final Boolean shouldDebug) {
+        this.shouldDebug = shouldDebug;
+    }
+
+    @Nonnull
+    public Boolean getShouldCompile() {
+        return shouldCompile;
+    }
+
+    public void setShouldCompile(@Nonnull final Boolean shouldCompile) {
+        this.shouldCompile = shouldCompile;
     }
 }

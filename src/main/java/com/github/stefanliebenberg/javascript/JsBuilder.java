@@ -5,16 +5,15 @@ import com.github.stefanliebenberg.internal.*;
 import com.github.stefanliebenberg.render.DependencyFileRenderer;
 import com.github.stefanliebenberg.render.RenderException;
 import com.github.stefanliebenberg.utilities.FsTool;
+import com.google.javascript.jscomp.*;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class JsBuilder
         extends AbstractBuilder<JsBuildOptions>
@@ -66,52 +65,128 @@ public class JsBuilder
 
     public void calculateDependencies()
             throws DependencyException, IOException, BuildException {
-        if (buildOptions.getShouldCalculateDependencies()) {
-            final List<String> entryPoints = buildOptions.getEntryPoints();
-            final Collection<File> srcDirectories = buildOptions
-                    .getSourceDirectories();
-            if (srcDirectories != null && entryPoints != null) {
-                final Collection<File> allSourceFiles =
-                        FsTool.find(srcDirectories, JS_EXT);
-                final Collection<ClosureSourceFile> dependencies =
-                        new HashSet<ClosureSourceFile>();
+        final List<String> entryPoints = buildOptions.getEntryPoints();
+        final Collection<File> srcDirectories = buildOptions
+                .getSourceDirectories();
+        if (srcDirectories != null && entryPoints != null) {
+            final Collection<File> allSourceFiles =
+                    FsTool.find(srcDirectories, JS_EXT);
+            final Collection<ClosureSourceFile> dependencies =
+                    new HashSet<ClosureSourceFile>();
 
-                for (File sourceFile : allSourceFiles) {
-                    ClosureSourceFile closureSourceFile =
-                            new ClosureSourceFile(sourceFile);
-                    try (Reader fileReader = new FileReader(sourceFile)) {
-                        dependencyParser.parse(closureSourceFile, fileReader);
-                    }
-                    dependencies.add(closureSourceFile);
+            for (File sourceFile : allSourceFiles) {
+                ClosureSourceFile closureSourceFile =
+                        new ClosureSourceFile(sourceFile);
+                try (Reader fileReader = new FileReader(sourceFile)) {
+                    dependencyParser.parse(closureSourceFile, fileReader);
                 }
-
-                final DependencyBuildOptions<ClosureSourceFile>
-                        depBuildOptions =
-                        new DependencyBuildOptions<ClosureSourceFile>();
-                depBuildOptions.setEntryPoints(buildOptions.getEntryPoints());
-                depBuildOptions.setSourceFiles(dependencies);
-                dependencyBuilder.setBuildOptions(depBuildOptions);
-                dependencyBuilder.build();
+                dependencies.add(closureSourceFile);
             }
-            sourceFiles = dependencyBuilder.getResolvedFiles();
+
+            final DependencyBuildOptions<ClosureSourceFile>
+                    depBuildOptions =
+                    new DependencyBuildOptions<ClosureSourceFile>();
+            depBuildOptions.setEntryPoints(buildOptions.getEntryPoints());
+            depBuildOptions.setSourceFiles(dependencies);
+            dependencyBuilder.setBuildOptions(depBuildOptions);
+            dependencyBuilder.build();
+        }
+        sourceFiles = dependencyBuilder.getResolvedFiles();
+    }
+
+    @Nonnull
+    private CompilerOptions getCompilerOptions(final File sourceMap) {
+        final CompilerOptions compilerOptions = new CompilerOptions();
+        if (buildOptions.getShouldDebug()) {
+            final CompilationLevel level =
+                    CompilationLevel.ADVANCED_OPTIMIZATIONS;
+            level.setOptionsForCompilationLevel(compilerOptions);
+            level.setTypeBasedOptimizationOptions(compilerOptions);
+            compilerOptions.setAggressiveVarCheck(CheckLevel.ERROR);
+            compilerOptions.setBrokenClosureRequiresLevel(CheckLevel.ERROR);
+            compilerOptions.setCheckGlobalNamesLevel(CheckLevel.ERROR);
+            compilerOptions.setCheckGlobalThisLevel(CheckLevel.ERROR);
+            compilerOptions.setCheckMissingReturn(CheckLevel.ERROR);
+            compilerOptions.setCheckProvides(CheckLevel.ERROR);
+            compilerOptions.setCheckRequires(CheckLevel.ERROR);
+
+            compilerOptions.setWarningLevel(DiagnosticGroups.ACCESS_CONTROLS,
+                    CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups
+                    .AMBIGUOUS_FUNCTION_DECL, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups
+                    .DEBUGGER_STATEMENT_PRESENT, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups.CHECK_REGEXP,
+                    CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES,
+                    CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups.CONST,
+                    CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups
+                    .CONSTANT_PROPERTY, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups.DEPRECATED,
+                    CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups
+                    .DUPLICATE_MESSAGE, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups.DUPLICATE_VARS,
+                    CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups.ES5_STRICT,
+                    CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups
+                    .EXTERNS_VALIDATION, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups.UNDEFINED_NAMES,
+                    CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups
+                    .UNDEFINED_VARIABLES, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(DiagnosticGroups
+                    .TYPE_INVALIDATION, CheckLevel.ERROR);
+
+            // we declare many unkown defines.
+            compilerOptions.setWarningLevel(DiagnosticGroups.UNKNOWN_DEFINES,
+                    CheckLevel.OFF);
+
+
+            compilerOptions.setCheckTypes(true);
+            compilerOptions.setOptimizeArgumentsArray(true);
+            compilerOptions.setOptimizeCalls(true);
+            compilerOptions.setOptimizeParameters(true);
+            compilerOptions.setOptimizeReturns(true);
+            compilerOptions.setCheckSymbols(true);
+            compilerOptions.setCheckEventfulObjectDisposalPolicy
+                    (CheckEventfulObjectDisposal.DisposalCheckingPolicy
+                            .AGGRESSIVE);
+            compilerOptions.setAggressiveRenaming(true);
         } else {
-            sourceFiles = buildOptions.getSourceFiles();
+            final CompilationLevel level =
+                    CompilationLevel.SIMPLE_OPTIMIZATIONS;
+            level.setOptionsForCompilationLevel(compilerOptions);
+            level.setTypeBasedOptimizationOptions(compilerOptions);
+            compilerOptions.setPrettyPrint(true);
         }
 
+        final Map<String, Object> globals =
+                buildOptions.getGlobals();
+        if (globals != null) {
+            compilerOptions.setDefineReplacements(globals);
+        }
+
+        if (sourceMap != null) {
+            compilerOptions.setSourceMapFormat(SourceMap.Format.V3);
+            //compilerOptions.setSourceMapDetailLevel(SourceMap.DetailLevel
+            // .ALL);
+            compilerOptions.setSourceMapDetailLevel(SourceMap.DetailLevel
+                    .SYMBOLS);
+            compilerOptions.setSourceMapOutputPath(sourceMap.getPath());
+        }
+        return compilerOptions;
     }
 
     @Override
-    public void build() throws BuildException {
-        checkOptions();
-        try {
-            findDependencyFiles();
-            buildDependenciesFile();
-            calculateDependencies();
-            // compileScriptFile();
-        } catch (IOException | DependencyException | RenderException
-                exception) {
-            throwBuildException(exception);
-        }
+    public void buildInternal() throws Exception {
+        findDependencyFiles();
+        buildDependenciesFile();
+        calculateDependencies();
+        // compileScriptFile();
     }
 
     @Override
@@ -127,7 +202,15 @@ public class JsBuilder
         return sourceFiles;
     }
 
+    @Nullable
     public List<ClosureSourceFile> getClosureSourceFiles() {
         return closureSourceFiles;
+    }
+
+    @Override
+    public void checkOptions() throws BuildException {
+        super.checkOptions();
+        checkNotNull(buildOptions.getEntryPoints());
+        checkNotNull(buildOptions.getSourceDirectories());
     }
 }

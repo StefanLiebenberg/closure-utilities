@@ -3,7 +3,6 @@ package com.github.stefanliebenberg.internal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.management.InstanceAlreadyExistsException;
 
 public abstract class AbstractBuilder<A>
         implements IBuilder {
@@ -20,31 +19,38 @@ public abstract class AbstractBuilder<A>
         this.buildOptions = buildOptions;
     }
 
+    protected abstract void buildInternal() throws Exception;
 
     @Override
-    public abstract void build()
-            throws BuildException;
+    public void build()
+            throws BuildException {
+        checkOptions();
+        try {
+            buildInternal();
+        } catch (Exception exception) {
+            throw buildException(exception);
+        }
+    }
 
     @Override
     public void reset() {
         buildOptions = null;
     }
 
-    protected static void throwBuildException(@Nonnull final String message)
-            throws BuildException {
-        throw new BuildException(message);
+    protected static BuildException buildException(
+            @Nonnull final String message) {
+        return new BuildException(message);
     }
 
-    protected static void throwBuildException(@Nonnull final String message,
-                                              @Nullable final Throwable e)
-            throws BuildException {
-        throw new BuildException(message, e);
+    protected static BuildException buildException(
+            @Nonnull final String message,
+            @Nullable final Throwable e) {
+        return new BuildException(message, e);
     }
 
-    protected static void throwBuildException(
-            @Nonnull final Throwable throwable)
-            throws BuildException {
-        throwBuildException("Build Failed", throwable);
+    protected static BuildException buildException(
+            @Nonnull final Throwable throwable) {
+        return buildException("Build Failed", throwable);
     }
 
 
@@ -53,7 +59,7 @@ public abstract class AbstractBuilder<A>
             @Nonnull final String message)
             throws BuildException {
         if (object == null) {
-            throwBuildException(message, new NullPointerException());
+            throw buildException(message, new NullPointerException());
         }
     }
 
@@ -61,7 +67,7 @@ public abstract class AbstractBuilder<A>
             @Nullable final Object object,
             @Nonnull final String message) throws BuildException {
         if (object != null) {
-            throwBuildException(message);
+            throw buildException(message);
         }
     }
 

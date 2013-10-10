@@ -32,18 +32,13 @@ public class DependencyBuilder<A extends BaseSourceFile>
             };
 
     @Override
-    public void build() throws BuildException {
-        try {
-            final ImmutableSet<A> sourceFiles =
-                    buildOptions.getSourceFiles();
-            final ImmutableList<String> entryPoints =
-                    buildOptions.getEntryPoints();
-            dependencyCalculator =
-                    new DependencyCalculator<A>(sourceFiles);
+    public void buildInternal() throws Exception {
+        final ImmutableSet<A> sourceFiles = buildOptions.getSourceFiles();
+        final ImmutableList<String> entryPoints = buildOptions.getEntryPoints();
+        if (sourceFiles != null && entryPoints != null) {
+            dependencyCalculator = new DependencyCalculator<A>(sourceFiles);
             resolvedSourceFiles =
                     dependencyCalculator.getDependencyList(entryPoints);
-        } catch (DependencyException dependencyException) {
-            throwBuildException(dependencyException);
         }
     }
 

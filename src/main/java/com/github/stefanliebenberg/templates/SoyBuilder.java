@@ -126,24 +126,21 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
 
 
     @Override
-    public void build() throws BuildException {
-        checkOptions();
-        try {
-            final File output = buildOptions.getOutputDirectory();
-            compileSoyFiles();
-            generatedFiles = new HashSet<File>();
-            File sourceFile, outputFile;
-            String sourceContent;
-            for (Map.Entry<File, String> entry : compiledSources.entrySet()) {
-                sourceFile = entry.getKey();
-                sourceContent = entry.getValue();
-                outputFile = new File(output, sourceFile.getPath() + ".js");
-                generatedFiles.add(outputFile);
-                FsTool.write(outputFile, sourceContent);
-            }
-        } catch (IOException e) {
-            throw new BuildException(e);
+    public void buildInternal() throws Exception {
+
+        final File output = buildOptions.getOutputDirectory();
+        compileSoyFiles();
+        generatedFiles = new HashSet<File>();
+        File sourceFile, outputFile;
+        String sourceContent;
+        for (Map.Entry<File, String> entry : compiledSources.entrySet()) {
+            sourceFile = entry.getKey();
+            sourceContent = entry.getValue();
+            outputFile = new File(output, sourceFile.getPath() + ".js");
+            generatedFiles.add(outputFile);
+            FsTool.write(outputFile, sourceContent);
         }
+
     }
 
     public Map<File, String> getCompiledSources() {

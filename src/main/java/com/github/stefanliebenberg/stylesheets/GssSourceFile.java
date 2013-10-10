@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class GssSourceFile extends BaseSourceFile {
+
     public GssSourceFile(URI sourceLocation) {
         super(sourceLocation);
     }
