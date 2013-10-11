@@ -1,7 +1,5 @@
 package org.stefanl.closure_utilities.stylesheets;
 
-import org.stefanl.closure_utilities.GssBuildOptions;
-import org.stefanl.closure_utilities.GssBuilder;
 import org.stefanl.closure_utilities.internal.AbstractBuildTest;
 import org.stefanl.closure_utilities.utilities.FsTool;
 import com.google.common.collect.Lists;

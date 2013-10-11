@@ -1,4 +1,4 @@
-package org.stefanl.closure_utilities;
+package org.stefanl.closure_utilities.stylesheets;
 
 import org.stefanl.closure_utilities.internal.PreProcessor;
 import org.apache.commons.io.IOUtils;

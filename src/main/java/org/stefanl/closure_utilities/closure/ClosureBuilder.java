@@ -8,8 +8,8 @@ import org.stefanl.closure_utilities.internal.IBuilder;
 import org.stefanl.closure_utilities.javascript.JsBuildOptions;
 import org.stefanl.closure_utilities.javascript.JsBuilder;
 import org.stefanl.closure_utilities.render.DefaultHtmlRenderer;
-import org.stefanl.closure_utilities.GssBuildOptions;
-import org.stefanl.closure_utilities.GssBuilder;
+import org.stefanl.closure_utilities.stylesheets.GssBuildOptions;
+import org.stefanl.closure_utilities.stylesheets.GssBuilder;
 import org.stefanl.closure_utilities.templates.SoyBuildOptions;
 import org.stefanl.closure_utilities.templates.SoyBuilder;
 

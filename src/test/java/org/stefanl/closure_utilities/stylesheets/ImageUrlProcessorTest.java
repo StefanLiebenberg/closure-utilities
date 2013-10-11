@@ -2,7 +2,6 @@ package org.stefanl.closure_utilities.stylesheets;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import org.stefanl.closure_utilities.ImageUrlProcessor;
 
 
 public class ImageUrlProcessorTest {

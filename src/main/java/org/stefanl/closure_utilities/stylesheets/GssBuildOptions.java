@@ -1,4 +1,4 @@
-package org.stefanl.closure_utilities;
+package org.stefanl.closure_utilities.stylesheets;
 
 
 import javax.annotation.Nonnull;

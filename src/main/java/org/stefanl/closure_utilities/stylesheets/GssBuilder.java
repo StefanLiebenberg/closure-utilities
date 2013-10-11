@@ -1,10 +1,10 @@
-package org.stefanl.closure_utilities;
+package org.stefanl.closure_utilities.stylesheets;
 
+import com.google.common.base.Function;
+import com.google.common.css.compiler.commandline.ClosureCommandLineCompiler;
 import org.stefanl.closure_utilities.internal.*;
 import org.stefanl.closure_utilities.utilities.FsTool;
 import org.stefanl.closure_utilities.utilities.Immuter;
-import com.google.common.base.Function;
-import com.google.common.css.compiler.commandline.ClosureCommandLineCompiler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
