@@ -69,7 +69,6 @@ public class GssBuilderTest extends AbstractBuildTest<GssBuilder,
         builder.build();
 
         String content = FsTool.read(outputFile);
-        System.out.println(content);
         Assert.assertTrue(content.contains(".foo-color{background:red}"));
         Assert.assertTrue(content.contains(".foo-font{font:Arial,12px}"));
         Assert.assertTrue(content.contains(".foo-image{background:url" +
