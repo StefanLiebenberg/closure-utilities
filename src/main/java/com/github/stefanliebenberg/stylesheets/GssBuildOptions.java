@@ -4,6 +4,7 @@ package com.github.stefanliebenberg.stylesheets;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class GssBuildOptions {
     private File renameMap;
 
     private File assetsDirectory;
+
+    private URI assetsUri;
 
     private File outputFile;
 
@@ -115,5 +118,14 @@ public class GssBuildOptions {
     public void setEntryPoints(
             @Nullable final List<String> entryPoints) {
         this.entryPoints = entryPoints;
+    }
+
+    @Nullable
+    public URI getAssetsUri() {
+        return assetsUri;
+    }
+
+    public void setAssetsUri(@Nullable final URI assetsUri) {
+        this.assetsUri = assetsUri;
     }
 }

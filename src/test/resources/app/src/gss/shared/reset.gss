@@ -1,0 +1,7 @@
+
+@provide shared-reset;
+
+html, body {
+  background: white;
+  color: black;
+}

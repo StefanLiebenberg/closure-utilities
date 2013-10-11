@@ -1,24 +1,20 @@
 package com.github.stefanliebenberg.stylesheets;
 
 import com.github.stefanliebenberg.internal.AbstractBuildTest;
-import com.github.stefanliebenberg.internal.BuildException;
-import com.github.stefanliebenberg.stylesheets.GssBuildOptions;
-import com.github.stefanliebenberg.stylesheets.GssBuilder;
 import com.github.stefanliebenberg.utilities.FsTool;
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
-import org.junit.Test;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.net.URI;
 
 public class GssBuilderTest extends AbstractBuildTest<GssBuilder,
         GssBuildOptions> {
+
+    protected File outputFile;
 
     public GssBuilderTest()
             throws InstantiationException, IllegalAccessException {
@@ -29,83 +25,55 @@ public class GssBuilderTest extends AbstractBuildTest<GssBuilder,
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        outputFile = new File(outputDirectory, "output.css");
+        builderOptions.setOutputFile(outputFile);
     }
 
     @Override
     @After
     public void tearDown() throws Exception {
+        outputFile = null;
         super.tearDown();
     }
 
     @Test
-    public void testCompile() throws Exception {
+    public void testNormalCompile() throws Exception {
         File srcGssDir = getApplicationDirectory("src/gss");
         Assert.assertTrue(srcGssDir.exists());
-
-        File outputFile = new File(outputDirectory, "output.css");
 
         builderOptions.setEntryPoints(Lists.newArrayList("company-import"));
         builderOptions.setSourceDirectories(Lists.newArrayList(srcGssDir));
         builderOptions.setShouldCalculateDependencies(true);
-        builderOptions.setOutputFile(outputFile);
         builder.build();
 
-        Assert.assertTrue(outputFile.exists());
+        String content = FsTool.read(outputFile);
+        Assert.assertTrue(content.contains(".foo-color{background:red}"));
+        Assert.assertTrue(content.contains(".foo-font{font:Arial,12px}"));
+        Assert.assertTrue(content.contains(".foo-image{background:url" +
+                "(images/path-to-chicken.jpg)}"));
+    }
+
+    @Test
+    public void testCompileWithImagePath() throws Exception {
+
+        File srcGssDir = getApplicationDirectory("src/gss");
+        Assert.assertTrue(srcGssDir.exists());
+
+        File outputFile = new File(outputDirectory, "output.css");
+        builderOptions.setEntryPoints(Lists.newArrayList("company-import"));
+        builderOptions.setSourceDirectories(Lists.newArrayList(srcGssDir));
+        builderOptions.setShouldCalculateDependencies(true);
+
+        URI assetsDirectory = new URI("/assets");
+        builderOptions.setAssetsUri(assetsDirectory);
+        builder.build();
 
         String content = FsTool.read(outputFile);
         System.out.println(content);
-        Assert.assertTrue(content.contains("font-size:11px"));
+        Assert.assertTrue(content.contains(".foo-color{background:red}"));
+        Assert.assertTrue(content.contains(".foo-font{font:Arial,12px}"));
+        Assert.assertTrue(content.contains(".foo-image{background:url" +
+                "(/assets/images/path-to-chicken.jpg)}"));
     }
 
-//    private File outputFile;
-//
-//    private final List<File> sourceFiles = new ArrayList<File>();
-//
-//    private File setupSourceFile(String path, File directory)
-//            throws IOException {
-//        File outputSourceFile = new File(directory, path);
-//        FsTool.ensureDirectoryFor(outputSourceFile);
-//        try (InputStream inputStream = getClass().getResourceAsStream(path);
-//             OutputStream outputStream = new FileOutputStream
-//                     (outputSourceFile)) {
-//            IOUtil.copy(inputStream, outputStream);
-//        }
-//        return outputSourceFile;
-//    }
-//
-//
-//    public void setupDirectory() throws IOException {
-//        File tempDirectory = FsTool.getTempDirectory();
-//
-//        File targetDirectory = new File(tempDirectory, "target");
-//        FsTool.ensureDirectory(targetDirectory);
-//        outputFile = new File(targetDirectory, "style.css");
-//
-//        File sourceDirectory = new File(tempDirectory, "sources");
-//        FsTool.ensureDirectory(sourceDirectory);
-//        sourceFiles.add(setupSourceFile("/gss/static.gss", sourceDirectory));
-//    }
-//
-//
-//    @Test
-//    public void testCompile() throws IOException, BuildException {
-//        builderOptions.setShouldCalculateDependencies(false);
-//        builderOptions.setSourceFiles(sourceFiles);
-//        builderOptions.setAssetsDirectory(new File(outputFile.getParentFile
-//                (), "assets"));
-//        builderOptions.setOutputFile(outputFile);
-//        builder.build();
-//        Assert.assertTrue(outputFile.exists());
-//    }
-//
-//    @Test
-//    public void testSecondCompile() throws IOException, BuildException {
-//        builderOptions.setShouldCalculateDependencies(false);
-//        builderOptions.setSourceFiles(sourceFiles);
-//        builderOptions.setAssetsDirectory(new File(outputFile.getParentFile
-//                (), "assets"));
-//        builderOptions.setOutputFile(outputFile);
-//        builder.build();
-//        Assert.assertTrue(outputFile.exists());
-//    }
 }

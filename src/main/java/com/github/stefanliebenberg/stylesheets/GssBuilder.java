@@ -4,17 +4,15 @@ import com.github.stefanliebenberg.internal.*;
 import com.github.stefanliebenberg.utilities.FsTool;
 import com.github.stefanliebenberg.utilities.Immuter;
 import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import com.google.common.css.compiler.commandline.ClosureCommandLineCompiler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 public class GssBuilder
@@ -148,16 +146,29 @@ public class GssBuilder
         return imageUrlProcessor.processString(inputContent);
     }
 
+    @Nullable
+    public String getBasePath(@Nonnull File outputFile) {
+
+        URI assetsUri = buildOptions.getAssetsUri();
+        if (assetsUri != null) {
+            return assetsUri.toString();
+        }
+
+        File assetsDirectory = buildOptions.getAssetsDirectory();
+        if (assetsDirectory != null) {
+            return FsTool.getRelative(assetsDirectory,
+                    outputFile.getParentFile());
+        }
+
+        return null;
+    }
+
     public void parseFunctionsFromCss()
             throws IOException {
         final File outputFile = buildOptions.getOutputFile();
         if (outputFile != null) {
             final String content = FsTool.read(temporaryOutputFile);
-            final File assetDirectory = buildOptions.getAssetsDirectory();
-            final String base =
-                    (assetDirectory != null) ?
-                            FsTool.getRelative(assetDirectory,
-                                    outputFile.getParentFile()) : null;
+            final String base = getBasePath(outputFile);
             FsTool.write(outputFile, parseCssFunctions(content, base));
             generatedStylesheet = outputFile;
         }

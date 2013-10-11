@@ -1,5 +1,6 @@
 @provide company-import;
 @require company-shared;
+@require shared-reset;
 
 
 div {

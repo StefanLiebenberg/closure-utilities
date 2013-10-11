@@ -1,13 +1,13 @@
 @provide company-shared;
 
-b {
-  color: red;
+.foo-color {
+  background: red;
 }
 
-u {
-  color: blue;
+.foo-image {
+  background: image-url("images/path-to-chicken.jpg");
 }
 
-body {
-  font-size: 11px;
+.foo-font {
+  font: Arial, 12px;
 }

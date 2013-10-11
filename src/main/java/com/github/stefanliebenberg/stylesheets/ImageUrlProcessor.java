@@ -36,9 +36,8 @@ public class ImageUrlProcessor implements PreProcessor {
     private String getStringPath(@Nonnull String inputPath) {
         if (imageRoot != null) {
             try {
-
-                if (!new URI(inputPath).isAbsolute() && !Paths.get(inputPath)
-                        .isAbsolute()) {
+                if (!new URI(inputPath).isAbsolute() &&
+                        !Paths.get(inputPath).isAbsolute()) {
                     return Paths.get(imageRoot, inputPath).toString();
                 }
             } catch (Exception e) {
