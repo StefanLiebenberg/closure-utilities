@@ -7,8 +7,8 @@ import org.stefanl.closure_utilities.utilities.FsTool;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.util.Collection;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public abstract class AbstractBuildTest<A extends AbstractBuilder<B>, B> {
 
@@ -51,18 +51,28 @@ public abstract class AbstractBuildTest<A extends AbstractBuilder<B>, B> {
     }
 
     @Nonnull
-    protected Collection<File> getGssSourceDirectories() {
+    protected HashSet<File> getGssSourceDirectories() {
         return Sets.newHashSet(getApplicationDirectory("src/gss/"));
     }
 
     @Nonnull
-    protected List<String> getGssEntryPoints() {
+    protected ArrayList<String> getGssEntryPoints() {
         return Lists.newArrayList(Lists.newArrayList("company-import"));
     }
 
     @Nonnull
-    protected Collection<File> getSoySourceDirectories() {
+    protected HashSet<File> getSoySourceDirectories() {
         return Sets.newHashSet(getApplicationDirectory("src/soy"));
+    }
+
+    @Nonnull
+    protected ArrayList<String> getJavascriptEntryPoints() {
+        return Lists.newArrayList("");
+    }
+
+    @Nonnull
+    protected HashSet<File> getJavascriptSourceDirectories() {
+        return Sets.newHashSet(getApplicationDirectory("src/javascript"));
     }
 
 
