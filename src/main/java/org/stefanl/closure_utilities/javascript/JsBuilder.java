@@ -31,8 +31,15 @@ public class JsBuilder
 
     private List<ClosureSourceFile> closureSourceFiles;
 
-    public void findDependencyFiles()
+    @Nonnull
+    private ClosureSourceFile parseFile(@Nonnull File inputFile)
             throws IOException {
+        ClosureSourceFile sourceFile = new ClosureSourceFile(inputFile);
+        dependencyParser.parse(sourceFile, FsTool.read(inputFile));
+        return sourceFile;
+    }
+
+    public void findDependencyFiles() throws IOException {
         final Collection<File> sourceDirectories =
                 buildOptions.getSourceDirectories();
         if (sourceDirectories != null) {
@@ -40,11 +47,7 @@ public class JsBuilder
                     FsTool.find(sourceDirectories, JS_EXT);
             closureSourceFiles = new ArrayList<ClosureSourceFile>();
             for (File sourceFile : sourceFiles) {
-                ClosureSourceFile closureSourceFile =
-                        new ClosureSourceFile(sourceFile);
-                dependencyParser.parse(closureSourceFile,
-                        FsTool.read(sourceFile));
-                closureSourceFiles.add(closureSourceFile);
+                closureSourceFiles.add(parseFile(sourceFile));
             }
         }
     }
@@ -109,40 +112,46 @@ public class JsBuilder
             compilerOptions.setCheckMissingReturn(CheckLevel.ERROR);
             compilerOptions.setCheckProvides(CheckLevel.ERROR);
             compilerOptions.setCheckRequires(CheckLevel.ERROR);
-
-            compilerOptions.setWarningLevel(DiagnosticGroups.ACCESS_CONTROLS,
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.ACCESS_CONTROLS,
                     CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups
-                    .AMBIGUOUS_FUNCTION_DECL, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups
-                    .DEBUGGER_STATEMENT_PRESENT, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups.CHECK_REGEXP,
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.AMBIGUOUS_FUNCTION_DECL,
                     CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES,
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.DEBUGGER_STATEMENT_PRESENT,
                     CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups.CONST,
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.CHECK_REGEXP,
                     CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups
-                    .CONSTANT_PROPERTY, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups.DEPRECATED,
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.CHECK_VARIABLES,
                     CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups
-                    .DUPLICATE_MESSAGE, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups.DUPLICATE_VARS,
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.CONST, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.CONSTANT_PROPERTY, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.DEPRECATED, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.DUPLICATE_MESSAGE, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.DUPLICATE_VARS, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.ES5_STRICT, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.EXTERNS_VALIDATION, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.UNDEFINED_NAMES,
                     CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups.ES5_STRICT,
-                    CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups
-                    .EXTERNS_VALIDATION, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups.UNDEFINED_NAMES,
-                    CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups
-                    .UNDEFINED_VARIABLES, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(DiagnosticGroups
-                    .TYPE_INVALIDATION, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.UNDEFINED_VARIABLES, CheckLevel.ERROR);
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.TYPE_INVALIDATION, CheckLevel.ERROR);
 
             // we declare many unkown defines.
-            compilerOptions.setWarningLevel(DiagnosticGroups.UNKNOWN_DEFINES,
+            compilerOptions.setWarningLevel(
+                    DiagnosticGroups.UNKNOWN_DEFINES,
                     CheckLevel.OFF);
 
 
@@ -152,8 +161,8 @@ public class JsBuilder
             compilerOptions.setOptimizeParameters(true);
             compilerOptions.setOptimizeReturns(true);
             compilerOptions.setCheckSymbols(true);
-            compilerOptions.setCheckEventfulObjectDisposalPolicy
-                    (CheckEventfulObjectDisposal.DisposalCheckingPolicy
+            compilerOptions.setCheckEventfulObjectDisposalPolicy(
+                    CheckEventfulObjectDisposal.DisposalCheckingPolicy
                             .AGGRESSIVE);
             compilerOptions.setAggressiveRenaming(true);
         } else {
@@ -164,8 +173,7 @@ public class JsBuilder
             compilerOptions.setPrettyPrint(true);
         }
 
-        final Map<String, Object> globals =
-                buildOptions.getGlobals();
+        final Map<String, Object> globals = buildOptions.getGlobals();
         if (globals != null) {
             compilerOptions.setDefineReplacements(globals);
         }
@@ -207,21 +215,26 @@ public class JsBuilder
         return closureSourceFiles;
     }
 
+    public static final String UNSPECIFIED_ENTRY_POINTS =
+            "Javascript entry points have not specified.";
+
+    public static final String UNSPECIFIED_SOURCE_DIRECTORIES =
+            "Javascript source directories have not specified.";
+
     @Override
-    public void checkOptions() throws BuildException {
+    public void checkOptions() throws InvalidBuildOptionsException {
         super.checkOptions();
 
         final Collection<String> entryPoints = buildOptions.getEntryPoints();
         if (entryPoints == null || entryPoints.isEmpty()) {
-            throw new BuildException("No javascript entry points are " +
-                    "specified.");
+            throw new InvalidBuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
         }
 
         final Collection<File> sourceDirectories =
                 buildOptions.getSourceDirectories();
         if (sourceDirectories == null || sourceDirectories.isEmpty()) {
-            throw new BuildException("No javascript source directories have " +
-                    "been specified.");
+            throw new InvalidBuildOptionsException
+                    (UNSPECIFIED_SOURCE_DIRECTORIES);
         }
     }
 }

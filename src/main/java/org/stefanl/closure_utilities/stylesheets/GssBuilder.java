@@ -223,34 +223,36 @@ public class GssBuilder
 
     }
 
+    private final static String UNSPECIFIED_OUTPUT_FILE =
+            "Gss Output file is unspecified.";
+
+    private final static String UNSPECIFIED_ENTRY_POINTS =
+            "Gss Entry points are unspecified.";
+
+    private final static String UNSPECIFIED_SOURCES =
+            "Gss sources are unspecified.";
+
+
     @Override
-    public void checkOptions() throws BuildException {
+    public void checkOptions() throws InvalidBuildOptionsException {
         super.checkOptions();
 
-        String failureMessage = "Checking Build Options Failed in GssBuilder," +
-                " because ";
-        checkNotNull(buildOptions.getOutputFile(),
-                failureMessage + "you need to specify a output file");
-        if (buildOptions.getShouldCalculateDependencies()) {
-            checkNotNull(buildOptions.getEntryPoints(), "GssEntries cannot be null");
-            checkNotNull(
-                    buildOptions.getSourceDirectories(),
-                    failureMessage + "if shouldCalculateDependencies is true," +
-                            " then you must specify sourceDirectories.");
-            checkNull(buildOptions.getSourceFiles(),
-                    failureMessage + "if shouldCalculateDependencies is true," +
-                            " then you cannot specify sourceFiles");
-        } else {
-            checkNull(
-                    buildOptions.getSourceDirectories(),
-                    failureMessage + "if shouldCalculateDependencies is " +
-                            "false, then you cannot specify sourceDirectories" +
-                            ".");
-            checkNotNull(buildOptions.getSourceFiles(),
-                    failureMessage + "if shouldCalculateDependencies is " +
-                            "false, then you must specify sourceFiles");
+        final File outputFile = buildOptions.getOutputFile();
+        if (outputFile == null) {
+            throw new InvalidBuildOptionsException(UNSPECIFIED_OUTPUT_FILE);
         }
 
+        final Collection<File> sourceDirectories =
+                buildOptions.getSourceDirectories();
+        final Boolean sourceDirectoriesAreSpecified =
+                sourceDirectories != null && !sourceDirectories.isEmpty();
+        final Collection<File> sourceFiles =
+                buildOptions.getSourceFiles();
+        final Boolean sourceFilesAreSpecified =
+                sourceFiles != null && !sourceFiles.isEmpty();
+        if (!sourceDirectoriesAreSpecified && !sourceFilesAreSpecified) {
+            throw new InvalidBuildOptionsException(UNSPECIFIED_SOURCES);
+        }
 
     }
 

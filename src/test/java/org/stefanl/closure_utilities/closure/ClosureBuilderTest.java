@@ -98,7 +98,13 @@ public class ClosureBuilderTest extends
         builderOptions.setJavascriptEntryPoints(getJavascriptEntryPoints());
         builderOptions.setJavascriptSourceDirectories
                 (getJavascriptSourceDirectories());
+        builder.build();
+    }
 
+    @Test
+    public void testBuildHtml() throws Exception {
+        builderOptions.setIgnoreBuilds();
+        builderOptions.setIgnoreHtmlBuild(false);
         builder.build();
     }
 

@@ -11,6 +11,7 @@ import com.google.template.soy.xliffmsgplugin.XliffMsgPlugin;
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
 import org.stefanl.closure_utilities.internal.BuildException;
 import org.stefanl.closure_utilities.internal.IBuilder;
+import org.stefanl.closure_utilities.internal.InvalidBuildOptionsException;
 import org.stefanl.closure_utilities.utilities.FsTool;
 
 import javax.annotation.Nonnull;
@@ -144,20 +145,22 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
         }
     }
 
+    private final static String UNSPECIFIED_SOURCES =
+            "Soy sources are unspecified";
+
     @Override
-    public void checkOptions() throws BuildException {
+    public void checkOptions() throws InvalidBuildOptionsException {
         super.checkOptions();
 
-        // check that there is some sources.
         final Collection<File> srcDirs = buildOptions.getSourceDirectories();
-        final Boolean srcDirsIsEmpty = srcDirs == null || srcDirs.isEmpty();
+        final Boolean srcDirsIsSpecified =
+                srcDirs != null && !srcDirs.isEmpty();
         final Collection<File> sources = buildOptions.getSources();
-        final Boolean sourcesIsEmpty = sources == null || sources.isEmpty();
+        final Boolean sourcesIsSpecified =
+                sources != null && !sources.isEmpty();
 
-        if (srcDirsIsEmpty && sourcesIsEmpty) {
-            throw new BuildException("Sources and Source Directories cannot " +
-                    "both be empty or null for SoyBuilder. Please specify " +
-                    "some sources.");
+        if (!srcDirsIsSpecified && !sourcesIsSpecified) {
+            throw new InvalidBuildOptionsException(UNSPECIFIED_SOURCES);
         }
 
 

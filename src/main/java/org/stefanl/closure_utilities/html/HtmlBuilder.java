@@ -3,6 +3,7 @@ package org.stefanl.closure_utilities.html;
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
 import org.stefanl.closure_utilities.internal.BuildException;
 import org.stefanl.closure_utilities.internal.IBuilder;
+import org.stefanl.closure_utilities.internal.InvalidBuildOptionsException;
 import org.stefanl.closure_utilities.render.DefaultHtmlRenderer;
 import org.stefanl.closure_utilities.render.HtmlRenderer;
 import org.stefanl.closure_utilities.render.RenderException;
@@ -69,10 +70,19 @@ public class HtmlBuilder
         }
     }
 
+    private final static String UNSPECIFIED_OUTPUT_FILE =
+            "Html output file has not been specified.";
+
     @Override
-    public void checkOptions() throws BuildException {
+    public void checkOptions() throws InvalidBuildOptionsException {
+
         super.checkOptions();
-        checkNotNull(buildOptions.getOutputFile());
+
+        final File outputFile = buildOptions.getOutputFile();
+        if (outputFile == null) {
+            throw new InvalidBuildOptionsException(UNSPECIFIED_OUTPUT_FILE);
+        }
+
     }
 
     @Nullable
