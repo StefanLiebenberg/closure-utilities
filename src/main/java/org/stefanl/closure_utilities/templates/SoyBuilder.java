@@ -1,15 +1,17 @@
 package org.stefanl.closure_utilities.templates;
 
 
-import org.stefanl.closure_utilities.internal.AbstractBuilder;
-import org.stefanl.closure_utilities.internal.IBuilder;
-import org.stefanl.closure_utilities.utilities.FsTool;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.template.soy.SoyFileSet;
 import com.google.template.soy.jssrc.SoyJsSrcOptions;
 import com.google.template.soy.msgs.SoyMsgBundle;
 import com.google.template.soy.shared.SoyGeneralOptions;
 import com.google.template.soy.xliffmsgplugin.XliffMsgPlugin;
+import org.stefanl.closure_utilities.internal.AbstractBuilder;
+import org.stefanl.closure_utilities.internal.BuildException;
+import org.stefanl.closure_utilities.internal.IBuilder;
+import org.stefanl.closure_utilities.utilities.FsTool;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -42,18 +44,20 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
     @Nonnull
     private SoyFileSet.Builder getSoyBuilder() {
         final SoyFileSet.Builder builder = new SoyFileSet.Builder();
-        if (buildOptions.getGlobalStringMap() != null) {
-            builder.setCompileTimeGlobals(buildOptions.getGlobalStringMap());
-        }
         builder.setCssHandlingScheme(SoyGeneralOptions.CssHandlingScheme
                 .BACKEND_SPECIFIC);
         builder.setAllowExternalCalls(false);
+
+        ImmutableMap<String, String> globalStringMap =
+                buildOptions.getGlobalStringMap();
+        if (globalStringMap != null) {
+            builder.setCompileTimeGlobals(globalStringMap);
+        }
         return builder;
     }
 
     @Nonnull
-    private SoyFileSet getSoyFileSet(
-            @Nonnull final List<File> files)
+    private SoyFileSet getSoyFileSet(@Nonnull final List<File> files)
             throws IOException {
         final SoyFileSet.Builder builder = getSoyBuilder();
         for (File file : files) {
@@ -77,8 +81,8 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
     }
 
     @Nonnull
-    private List<String> compileList(
-            @Nonnull final List<File> files) throws IOException {
+    private List<String> compileList(@Nonnull final List<File> files)
+            throws IOException {
         final SoyFileSet soyFileSet = getSoyFileSet(files);
         final SoyJsSrcOptions jsSrcOptions = getJsSrcOptions();
         final File messageFile = buildOptions.getMessageFile();
@@ -91,12 +95,11 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
     }
 
     @Nonnull
-    private Map<File, String> compile(
-            @Nonnull final Collection<File> sources)
+    private Map<File, String> compile(@Nonnull final Collection<File> sources)
             throws IOException {
         final List<File> fileList = Lists.newArrayList(sources);
         final List<String> strSources = compileList(fileList);
-        final Map<File, String> result = new HashMap<File, String>();
+        final Map<File, String> result = new Hashtable<>();
         for (int i = 0; i < fileList.size(); i++) {
             result.put(fileList.get(i), strSources.get(i));
         }
@@ -115,12 +118,13 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
         final Collection<File> sourceDirectories =
                 buildOptions.getSourceDirectories();
         if (sourceDirectories != null && !sourceDirectories.isEmpty()) {
-            for (File sourceDirectory : sourceDirectories) {
-                sourceFiles.addAll(
-                        FsTool.find(sourceDirectory, "soy"));
-            }
+            sourceFiles.addAll(FsTool.find(sourceDirectories, "soy"));
         }
-        compiledSources = compile(sourceFiles);
+        if (!sourceFiles.isEmpty()) {
+            compiledSources = compile(sourceFiles);
+        } else {
+            compiledSources = new Hashtable<File, String>();
+        }
     }
 
 
@@ -139,6 +143,24 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
             generatedFiles.add(outputFile);
             FsTool.write(outputFile, sourceContent);
         }
+    }
+
+    @Override
+    public void checkOptions() throws BuildException {
+        super.checkOptions();
+
+        // check that there is some sources.
+        final Collection<File> srcDirs = buildOptions.getSourceDirectories();
+        final Boolean srcDirsIsEmpty = srcDirs == null || srcDirs.isEmpty();
+        final Collection<File> sources = buildOptions.getSources();
+        final Boolean sourcesIsEmpty = sources == null || sources.isEmpty();
+
+        if (srcDirsIsEmpty && sourcesIsEmpty) {
+            throw new BuildException("Sources and Source Directories cannot " +
+                    "both be empty or null for SoyBuilder. Please specify " +
+                    "some sources.");
+        }
+
 
     }
 

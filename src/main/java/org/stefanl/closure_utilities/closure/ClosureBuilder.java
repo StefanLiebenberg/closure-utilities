@@ -40,18 +40,21 @@ public class ClosureBuilder
         gssBuilder.reset();
         soyBuilder.reset();
         jsBuilder.reset();
+        htmlBuilder.reset();
     }
 
     public File getGssOutputFile() {
-        // where do generate the .css file
-        return null;
+        return new File(buildOptions.getOutputDirectory(), "style.css");
     }
 
     @Nonnull
     public GssBuildOptions getGssBuildOptions() {
-        GssBuildOptions gssBuildOptions = new GssBuildOptions();
-        gssBuildOptions.setAssetsDirectory(buildOptions.getAssetsDirectory());
+
+        final GssBuildOptions gssBuildOptions = new GssBuildOptions();
+
         gssBuildOptions.setShouldCalculateDependencies(true);
+        gssBuildOptions.setAssetsDirectory(buildOptions.getAssetsDirectory());
+        gssBuildOptions.setEntryPoints(buildOptions.getGssEntryPoints());
         gssBuildOptions.setSourceDirectories(
                 buildOptions.getGssSourceDirectories());
         gssBuildOptions.setRenameMap(
@@ -66,8 +69,10 @@ public class ClosureBuilder
 
     public void buildGss()
             throws BuildException {
-        gssBuilder.setBuildOptions(getGssBuildOptions());
-        gssBuilder.build();
+        if (!buildOptions.getIgnoreGssBuild()) {
+            gssBuilder.setBuildOptions(getGssBuildOptions());
+            gssBuilder.build();
+        }
     }
 
     @Nonnull
@@ -80,27 +85,34 @@ public class ClosureBuilder
 
     public void buildSoy()
             throws BuildException {
-        soyBuilder.setBuildOptions(getSoyBuildOptions());
-        soyBuilder.build();
+        if (!buildOptions.getIgnoreSoyBuild()) {
+            soyBuilder.setBuildOptions(getSoyBuildOptions());
+            soyBuilder.build();
+        }
     }
 
     @Nonnull
     public JsBuildOptions getJsBuildOptions() {
+
         JsBuildOptions jsBuildOptions = new JsBuildOptions();
         jsBuildOptions.setEntryPoints(
                 buildOptions.getJavascriptEntryPoints());
         jsBuildOptions.setSourceDirectories(
                 buildOptions.getJavascriptSourceDirectories());
         return jsBuildOptions;
+
     }
 
     public void buildJs() throws BuildException {
-        jsBuilder.setBuildOptions(getJsBuildOptions());
-        jsBuilder.build();
+        if (!buildOptions.getIgnoreJsBuild()) {
+            jsBuilder.setBuildOptions(getJsBuildOptions());
+            jsBuilder.build();
+        }
     }
 
     @Nonnull
     public HtmlBuildOptions getHtmlBuildOptions() {
+
         HtmlBuildOptions htmlBuildOptions = new HtmlBuildOptions();
         htmlBuildOptions.setHtmlRenderer(new DefaultHtmlRenderer());
         htmlBuildOptions.setShouldBuildInline(false);
@@ -112,9 +124,12 @@ public class ClosureBuilder
         return htmlBuildOptions;
     }
 
+
     public void buildHtml() throws BuildException {
-        htmlBuilder.setBuildOptions(getHtmlBuildOptions());
-        htmlBuilder.build();
+        if (!buildOptions.getIgnoreHtmlBuild()) {
+            htmlBuilder.setBuildOptions(getHtmlBuildOptions());
+            htmlBuilder.build();
+        }
     }
 
     @Override
@@ -123,5 +138,14 @@ public class ClosureBuilder
         buildSoy();
         buildJs();
         buildHtml();
+    }
+
+    @Override
+    public void checkOptions() throws BuildException {
+        super.checkOptions();
+        if (!buildOptions.getIgnoreBuilds()) {
+            checkNotNull(buildOptions.getOutputDirectory(),
+                    "You need to specify a output directory");
+        }
     }
 }

@@ -8,6 +8,12 @@ import java.util.Collection;
 import java.util.List;
 
 public class ClosureBuildOptions {
+
+    private Boolean ignoreGssBuild = false;
+    private Boolean ignoreSoyBuild = false;
+    private Boolean ignoreJsBuild = false;
+    private Boolean ignoreHtmlBuild = false;
+
     private File cssClassRenameMap;
     private File assetsDirectory;
     private Collection<File> gssSourceDirectories;
@@ -144,5 +150,54 @@ public class ClosureBuildOptions {
     public void setCssClassRenameMap(
             @Nullable final File cssClassRenameMap) {
         this.cssClassRenameMap = cssClassRenameMap;
+    }
+
+    @Nonnull
+    public Boolean getIgnoreGssBuild() {
+        return ignoreGssBuild;
+    }
+
+    public void setIgnoreGssBuild(@Nonnull final Boolean ignoreGssBuild) {
+        this.ignoreGssBuild = ignoreGssBuild;
+    }
+
+    @Nonnull
+    public Boolean getIgnoreSoyBuild() {
+        return ignoreSoyBuild;
+    }
+
+    public void setIgnoreSoyBuild(@Nonnull final Boolean ignoreSoyBuild) {
+        this.ignoreSoyBuild = ignoreSoyBuild;
+    }
+
+    @Nonnull
+    public Boolean getIgnoreJsBuild() {
+        return ignoreJsBuild;
+    }
+
+    public void setIgnoreJsBuild(@Nonnull final Boolean ignoreJsBuild) {
+        this.ignoreJsBuild = ignoreJsBuild;
+    }
+
+    @Nonnull
+    public Boolean getIgnoreHtmlBuild() {
+        return ignoreHtmlBuild;
+    }
+
+    public void setIgnoreHtmlBuild(@Nonnull final Boolean ignoreHtmlBuild) {
+        this.ignoreHtmlBuild = ignoreHtmlBuild;
+    }
+
+    public void setIgnoreBuilds() {
+        this.setIgnoreGssBuild(true);
+        this.setIgnoreJsBuild(true);
+        this.setIgnoreSoyBuild(true);
+        this.setIgnoreHtmlBuild(true);
+    }
+
+    @Nonnull
+    public Boolean getIgnoreBuilds() {
+        return ignoreGssBuild && ignoreHtmlBuild && ignoreJsBuild &&
+                ignoreSoyBuild;
     }
 }
