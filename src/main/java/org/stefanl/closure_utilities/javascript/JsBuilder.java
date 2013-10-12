@@ -1,11 +1,11 @@
 package org.stefanl.closure_utilities.javascript;
 
 
+import com.google.javascript.jscomp.*;
 import org.stefanl.closure_utilities.internal.*;
 import org.stefanl.closure_utilities.render.DependencyFileRenderer;
 import org.stefanl.closure_utilities.render.RenderException;
 import org.stefanl.closure_utilities.utilities.FsTool;
-import com.google.javascript.jscomp.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -210,7 +210,18 @@ public class JsBuilder
     @Override
     public void checkOptions() throws BuildException {
         super.checkOptions();
-        checkNotNull(buildOptions.getEntryPoints());
-        checkNotNull(buildOptions.getSourceDirectories());
+
+        final Collection<String> entryPoints = buildOptions.getEntryPoints();
+        if (entryPoints == null || entryPoints.isEmpty()) {
+            throw new BuildException("No javascript entry points are " +
+                    "specified.");
+        }
+
+        final Collection<File> sourceDirectories =
+                buildOptions.getSourceDirectories();
+        if (sourceDirectories == null || sourceDirectories.isEmpty()) {
+            throw new BuildException("No javascript source directories have " +
+                    "been specified.");
+        }
     }
 }

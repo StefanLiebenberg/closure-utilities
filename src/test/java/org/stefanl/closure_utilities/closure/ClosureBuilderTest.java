@@ -89,7 +89,17 @@ public class ClosureBuilderTest extends
         Collection<File> compiledSources = FsTool.find(soyOutputDir, "soy.js");
         Assert.assertEquals(sources.size(), compiledSources.size());
 
+    }
 
+    @Test
+    public void testBuildJavascript() throws Exception {
+        builderOptions.setIgnoreBuilds();
+        builderOptions.setIgnoreJsBuild(false);
+        builderOptions.setJavascriptEntryPoints(getJavascriptEntryPoints());
+        builderOptions.setJavascriptSourceDirectories
+                (getJavascriptSourceDirectories());
+
+        builder.build();
     }
 
 }

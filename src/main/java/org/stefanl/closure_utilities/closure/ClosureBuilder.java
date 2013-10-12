@@ -106,10 +106,8 @@ public class ClosureBuilder
 
     @Nonnull
     public JsBuildOptions getJsBuildOptions() {
-
         JsBuildOptions jsBuildOptions = new JsBuildOptions();
-        jsBuildOptions.setEntryPoints(
-                buildOptions.getJavascriptEntryPoints());
+        jsBuildOptions.setEntryPoints(buildOptions.getJavascriptEntryPoints());
         jsBuildOptions.setSourceDirectories(
                 buildOptions.getJavascriptSourceDirectories());
         return jsBuildOptions;
@@ -125,8 +123,7 @@ public class ClosureBuilder
 
     @Nonnull
     public HtmlBuildOptions getHtmlBuildOptions() {
-
-        HtmlBuildOptions htmlBuildOptions = new HtmlBuildOptions();
+        final HtmlBuildOptions htmlBuildOptions = new HtmlBuildOptions();
         htmlBuildOptions.setHtmlRenderer(new DefaultHtmlRenderer());
         htmlBuildOptions.setShouldBuildInline(false);
         htmlBuildOptions.setLocationMap(null);

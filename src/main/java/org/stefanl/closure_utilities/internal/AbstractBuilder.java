@@ -23,13 +23,20 @@ public abstract class AbstractBuilder<A>
     protected abstract void buildInternal() throws Exception;
 
     @Override
-    public void build()
-            throws BuildException {
+    public void build() throws BuildException {
         checkOptions();
         try {
             buildInternal();
         } catch (Exception exception) {
-            throw buildException(exception);
+            if (exception instanceof BuildException) {
+                // doing this creates a somewhat cleaner stack trace to try
+                // and debug.
+                throw (BuildException) exception;
+            } else {
+                throw new BuildException("An exception occurred during " +
+                        "build", exception);
+            }
+
         }
     }
 

@@ -69,8 +69,9 @@ public class SoyDelegateOptimizerTest {
             throws IOException {
 
         final Map<String, String> soySources = getSoySources(
-                getClass().getResource("/soy/example.soy"),
-                getClass().getResource("/soy/example_override.soy"));
+                getClass().getResource("/app/src/soy/example/example.soy"),
+                getClass().getResource("/app/src/soy/example/example_override" +
+                        ".soy"));
 
         final Compiler compiler = new Compiler();
         final CompilerOptions jsOptions = new CompilerOptions();
@@ -79,31 +80,40 @@ public class SoyDelegateOptimizerTest {
                 CommandLineRunner.getDefaultExterns();
         final List<SourceFile> inputs =
                 new ArrayList<SourceFile>();
-        inputs.add(getSourceFile("/javascript/goog/base.js"));
-        inputs.add(getSourceFile("/javascript/goog/debug/error.js"));
-        inputs.add(getSourceFile("/javascript/goog/dom/nodetype.js"));
-        inputs.add(getSourceFile("/javascript/goog/string/string.js"));
-        inputs.add(getSourceFile("/javascript/goog/asserts/asserts.js"));
-        inputs.add(getSourceFile("/javascript/goog/structs/inversionmap.js"));
-        inputs.add(getSourceFile("/javascript/goog/i18n/graphemebreak.js"));
-        inputs.add(getSourceFile("/javascript/goog/format/format.js"));
-        inputs.add(getSourceFile("/javascript/goog/array/array.js"));
-        inputs.add(getSourceFile("/javascript/goog/useragent/useragent.js"));
-        inputs.add(getSourceFile("/javascript/goog/dom/browserfeature.js"));
-        inputs.add(getSourceFile("/javascript/goog/dom/tagname.js"));
-        inputs.add(getSourceFile("/javascript/goog/dom/classes.js"));
-        inputs.add(getSourceFile("/javascript/goog/functions/functions.js"));
-        inputs.add(getSourceFile("/javascript/goog/math/math.js"));
-        inputs.add(getSourceFile("/javascript/goog/math/coordinate.js"));
-        inputs.add(getSourceFile("/javascript/goog/math/size.js"));
-        inputs.add(getSourceFile("/javascript/goog/object/object.js"));
-        inputs.add(getSourceFile("/javascript/goog/dom/dom.js"));
-        inputs.add(getSourceFile("/javascript/goog/i18n/bidiformatter.js"));
-        inputs.add(getSourceFile("/javascript/goog/i18n/bidi.js"));
-        inputs.add(getSourceFile("/javascript/goog/soy/data.js"));
-        inputs.add(getSourceFile("/javascript/goog/soy/soy.js"));
-        inputs.add(getSourceFile("/javascript/goog/string/stringbuffer.js"));
-        inputs.add(getSourceFile("/javascript/soyutils_usegoog.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/base.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/debug/error.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/dom/nodetype.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/string/string.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/asserts/asserts" +
+                ".js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/structs" +
+                "/inversionmap.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/i18n/graphemebreak" +
+                ".js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/format/format.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/array/array.js"));
+        inputs.add(getSourceFile
+                ("/app/src/javascript/goog/useragent/useragent.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/dom/browserfeature" +
+                ".js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/dom/tagname.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/dom/classes.js"));
+        inputs.add(getSourceFile
+                ("/app/src/javascript/goog/functions/functions.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/math/math.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/math/coordinate" +
+                ".js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/math/size.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/object/object.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/dom/dom.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/i18n/bidiformatter" +
+                ".js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/i18n/bidi.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/soy/data.js"));
+        inputs.add(getSourceFile("/app/src/javascript/goog/soy/soy.js"));
+        inputs.add(getSourceFile
+                ("/app/src/javascript/goog/string/stringbuffer.js"));
+        inputs.add(getSourceFile("/app/src/javascript/soyutils_usegoog.js"));
         inputs.addAll(Immuter.list(soySources.entrySet(),
                 ENTRY_SOURCE_FILE_FUNCTION));
         inputs.add(SourceFile.fromCode("path:calling",
