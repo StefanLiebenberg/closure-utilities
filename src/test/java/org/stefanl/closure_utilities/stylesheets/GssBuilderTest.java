@@ -38,11 +38,9 @@ public class GssBuilderTest extends AbstractBuildTest<GssBuilder,
 
     @Test
     public void testNormalCompile() throws Exception {
-        File srcGssDir = getApplicationDirectory("src/gss");
-        Assert.assertTrue(srcGssDir.exists());
 
-        builderOptions.setEntryPoints(Lists.newArrayList("company-import"));
-        builderOptions.setSourceDirectories(Lists.newArrayList(srcGssDir));
+        builderOptions.setEntryPoints(getGssEntryPoints());
+        builderOptions.setSourceDirectories(getGssSourceDirectories());
         builderOptions.setShouldCalculateDependencies(true);
         builder.build();
 
@@ -56,19 +54,19 @@ public class GssBuilderTest extends AbstractBuildTest<GssBuilder,
     @Test
     public void testCompileWithImagePath() throws Exception {
 
-        File srcGssDir = getApplicationDirectory("src/gss");
+        final File srcGssDir = getApplicationDirectory("src/gss");
         Assert.assertTrue(srcGssDir.exists());
 
-        File outputFile = new File(outputDirectory, "output.css");
+        final File outputFile = new File(outputDirectory, "output.css");
         builderOptions.setEntryPoints(Lists.newArrayList("company-import"));
         builderOptions.setSourceDirectories(Lists.newArrayList(srcGssDir));
         builderOptions.setShouldCalculateDependencies(true);
 
-        URI assetsDirectory = new URI("/assets");
+        final URI assetsDirectory = new URI("/assets");
         builderOptions.setAssetsUri(assetsDirectory);
         builder.build();
 
-        String content = FsTool.read(outputFile);
+        final String content = FsTool.read(outputFile);
         Assert.assertTrue(content.contains(".foo-color{background:red}"));
         Assert.assertTrue(content.contains(".foo-font{font:Arial,12px}"));
         Assert.assertTrue(content.contains(".foo-image{background:url" +

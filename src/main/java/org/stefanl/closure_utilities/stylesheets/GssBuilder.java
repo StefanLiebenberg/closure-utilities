@@ -232,6 +232,7 @@ public class GssBuilder
         checkNotNull(buildOptions.getOutputFile(),
                 failureMessage + "you need to specify a output file");
         if (buildOptions.getShouldCalculateDependencies()) {
+            checkNotNull(buildOptions.getEntryPoints(), "GssEntries cannot be null");
             checkNotNull(
                     buildOptions.getSourceDirectories(),
                     failureMessage + "if shouldCalculateDependencies is true," +
