@@ -1,7 +1,6 @@
 package org.stefanl.closure_utilities.soy;
 
 
-import org.stefanl.closure_utilities.utilities.Immuter;
 import com.google.common.base.Function;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.Compiler;
@@ -9,7 +8,9 @@ import com.google.template.soy.SoyFileSet;
 import com.google.template.soy.jssrc.SoyJsSrcOptions;
 import org.junit.Assert;
 import org.junit.Test;
+import org.stefanl.closure_utilities.utilities.Immuter;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,21 +22,24 @@ import java.util.Map;
 
 public class SoyDelegateOptimizerTest {
 
-    private SourceFile getSourceFile(String path)
+    @Nonnull
+    private SourceFile getSourceFile(@Nonnull final String path)
             throws IOException {
-        InputStream inputStream = this.getClass().getResourceAsStream(path);
+        final InputStream inputStream =
+                this.getClass().getResourceAsStream(path);
         return SourceFile.fromInputStream(path, inputStream);
     }
 
-    private Map<String, String> getSoySources(URL... soyURI) {
-        SoyFileSet.Builder fileSetBuilder = new SoyFileSet.Builder();
+    @Nonnull
+    private Map<String, String> getSoySources(@Nonnull final URL... soyURI) {
+        final SoyFileSet.Builder fileSetBuilder = new SoyFileSet.Builder();
         for (URL url : soyURI) {
             fileSetBuilder.add(url);
         }
-        SoyFileSet set = fileSetBuilder.build();
-        SoyJsSrcOptions soyOptions = new SoyJsSrcOptions();
-        List<String> listOfSources = set.compileToJsSrc(soyOptions, null);
-        Map<String, String> sources = new HashMap<String, String>();
+        final SoyFileSet set = fileSetBuilder.build();
+        final SoyJsSrcOptions soyOptions = new SoyJsSrcOptions();
+        final List<String> listOfSources = set.compileToJsSrc(soyOptions, null);
+        final Map<String, String> sources = new HashMap<String, String>();
         for (int i = 0; i < soyURI.length; i++) {
             URL url = soyURI[i];
             String content = listOfSources.get(i);
@@ -64,16 +68,16 @@ public class SoyDelegateOptimizerTest {
     public void testOptimizationPass()
             throws IOException {
 
-        Map<String, String> soySources = getSoySources(
+        final Map<String, String> soySources = getSoySources(
                 getClass().getResource("/soy/example.soy"),
                 getClass().getResource("/soy/example_override.soy"));
 
-        Compiler compiler = new Compiler();
-        CompilerOptions jsOptions = new CompilerOptions();
+        final Compiler compiler = new Compiler();
+        final CompilerOptions jsOptions = new CompilerOptions();
 
-        List<SourceFile> externs =
+        final List<SourceFile> externs =
                 CommandLineRunner.getDefaultExterns();
-        List<SourceFile> inputs =
+        final List<SourceFile> inputs =
                 new ArrayList<SourceFile>();
         inputs.add(getSourceFile("/javascript/goog/base.js"));
         inputs.add(getSourceFile("/javascript/goog/debug/error.js"));
@@ -100,26 +104,22 @@ public class SoyDelegateOptimizerTest {
         inputs.add(getSourceFile("/javascript/goog/soy/soy.js"));
         inputs.add(getSourceFile("/javascript/goog/string/stringbuffer.js"));
         inputs.add(getSourceFile("/javascript/soyutils_usegoog.js"));
-
-        inputs.addAll(Immuter.list(soySources.entrySet(), ENTRY_SOURCE_FILE_FUNCTION));
-
+        inputs.addAll(Immuter.list(soySources.entrySet(),
+                ENTRY_SOURCE_FILE_FUNCTION));
         inputs.add(SourceFile.fromCode("path:calling",
                 "alert(template.example.Foo({Variant: 'RED'}));"));
-        CompilationLevel level = CompilationLevel.ADVANCED_OPTIMIZATIONS;
+        final CompilationLevel level = CompilationLevel.ADVANCED_OPTIMIZATIONS;
         level.setDebugOptionsForCompilationLevel(jsOptions);
         level.setOptionsForCompilationLevel(jsOptions);
         level.setTypeBasedOptimizationOptions(jsOptions);
 
         SoyDelegateOptimizer.addToCompile(compiler, jsOptions);
 
-        Result result = compiler.compile(externs, inputs, jsOptions);
-
-        String source = compiler.toSource();
+        final Result result = compiler.compile(externs, inputs, jsOptions);
+        final String source = compiler.toSource();
         Assert.assertTrue(result.success);
         Assert.assertFalse(source.contains("[DELETE]"));
         Assert.assertTrue(source.contains("[KEEP]"));
-
-
     }
 
 }

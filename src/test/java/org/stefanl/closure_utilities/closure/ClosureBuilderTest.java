@@ -9,12 +9,14 @@ import org.stefanl.closure_utilities.internal.BuildException;
 import org.stefanl.closure_utilities.utilities.FsTool;
 
 import javax.annotation.Nonnull;
+import java.io.File;
+import java.util.Collection;
 
+public class ClosureBuilderTest extends
+        AbstractBuildTest<ClosureBuilder, ClosureBuildOptions> {
 
-public class ClosureBuilderTest extends AbstractBuildTest<ClosureBuilder,
-        ClosureBuildOptions> {
-
-    public ClosureBuilderTest() throws IllegalAccessException,
+    public ClosureBuilderTest() throws
+            IllegalAccessException,
             InstantiationException {
         super(ClosureBuilder.class, ClosureBuildOptions.class);
     }
@@ -73,11 +75,21 @@ public class ClosureBuilderTest extends AbstractBuildTest<ClosureBuilder,
 
     @Test
     public void testBuildSoyBuild() throws Exception {
+
+        Collection<File> sourceDirs = getSoySourceDirectories();
+        Collection<File> sources = FsTool.find(sourceDirs, "soy");
+        Assert.assertFalse("There should be sources", sources.size() == 0);
+
         builderOptions.setIgnoreBuilds();
         builderOptions.setIgnoreSoyBuild(false);
-        builderOptions.setSoySourceDirectories(getSoySourceDirectories());
-
+        builderOptions.setSoySourceDirectories(sourceDirs);
         builder.build();
+
+        File soyOutputDir = builder.getSoyOutputDirectory();
+        Collection<File> compiledSources = FsTool.find(soyOutputDir, "soy.js");
+        Assert.assertEquals(sources.size(), compiledSources.size());
+
+
     }
 
 }
