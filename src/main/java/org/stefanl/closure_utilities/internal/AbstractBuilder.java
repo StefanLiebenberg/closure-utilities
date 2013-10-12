@@ -3,6 +3,7 @@ package org.stefanl.closure_utilities.internal;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 
 public abstract class AbstractBuilder<A>
         implements IBuilder {
@@ -51,6 +52,20 @@ public abstract class AbstractBuilder<A>
     protected static BuildException buildException(
             @Nonnull final Throwable throwable) {
         return buildException("Build Failed", throwable);
+    }
+
+    protected static void checkNonEmptyCollection(
+            @Nullable final Collection collection,
+            @Nonnull final String message) throws BuildException {
+        if (collection == null || collection.isEmpty()) {
+            throw buildException(message);
+        }
+    }
+
+    protected static void checkNonEmptyCollection(
+            @Nullable final Collection collection) throws BuildException {
+        checkNonEmptyCollection(collection, "Collection cannot be null or " +
+                "empty.");
     }
 
 
