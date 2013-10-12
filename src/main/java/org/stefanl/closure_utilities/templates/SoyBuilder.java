@@ -130,7 +130,6 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
 
     @Override
     public void buildInternal() throws Exception {
-
         final File output = buildOptions.getOutputDirectory();
         compileSoyFiles();
         generatedFiles = new HashSet<File>();

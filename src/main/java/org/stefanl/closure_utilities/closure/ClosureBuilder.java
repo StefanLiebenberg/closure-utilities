@@ -75,11 +75,24 @@ public class ClosureBuilder
         }
     }
 
+
+    @Nonnull
+    public File getSoyOutputDirectory() {
+        final File soyOutputDirectory = buildOptions.getSoyOutputDirectory();
+        if (soyOutputDirectory != null) {
+            return soyOutputDirectory;
+        }
+
+        File outputDirectory = buildOptions.getOutputDirectory();
+        return new File(outputDirectory, "compiled-templates");
+    }
+
     @Nonnull
     public SoyBuildOptions getSoyBuildOptions() {
         final SoyBuildOptions soyBuildOptions = new SoyBuildOptions();
         soyBuildOptions.setSourceDirectories(
                 buildOptions.getSoySourceDirectories());
+        soyBuildOptions.setOutputDirectory(getSoyOutputDirectory());
         return soyBuildOptions;
     }
 
