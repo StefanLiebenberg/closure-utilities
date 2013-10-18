@@ -1,6 +1,8 @@
 package org.stefanl.closure_utilities.stylesheets;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import com.google.common.css.compiler.commandline.ClosureCommandLineCompiler;
 import org.stefanl.closure_utilities.internal.*;
 import org.stefanl.closure_utilities.utilities.FsTool;
@@ -16,44 +18,21 @@ import java.util.Collection;
 import java.util.List;
 
 public class GssBuilder
-        extends AbstractBuilder<GssBuildOptions>
+        extends AbstractBuilder<iGssBuildOption>
         implements IBuilder {
 
     public GssBuilder() {}
 
-    public GssBuilder(@Nonnull final GssBuildOptions buildOptions) {
+    public GssBuilder(@Nonnull final iGssBuildOption buildOptions) {
         super(buildOptions);
     }
 
     private final ImageUrlProcessor imageUrlProcessor =
             new ImageUrlProcessor();
 
-    private final static Function<File, GssSourceFile> FILE_TO_GSS_SRC =
-            new Function<File, GssSourceFile>() {
-                @Nullable
-                @Override
-                public GssSourceFile apply(@Nullable File input) {
-                    if (input != null) {
-                        return new GssSourceFile(input);
-                    } else {
-                        return null;
-                    }
-                }
-            };
 
-
-    private final static Function<GssSourceFile, File> GSS_SRC_TO_FILE =
-            new Function<GssSourceFile, File>() {
-                @Nullable
-                @Override
-                public File apply(@Nullable GssSourceFile input) {
-                    if (input != null) {
-                        return new File(input.getSourceLocation());
-                    } else {
-                        return null;
-                    }
-                }
-            };
+    private static final Function<File, GssSourceFile> FILE_TO_GSS =
+            BaseSourceFile.getTransformFunction(GssSourceFile.class);
 
     private final GssDependencyParser gssDependencyParser =
             new GssDependencyParser();
@@ -66,8 +45,7 @@ public class GssBuilder
 
     private File generatedRenameMap;
 
-
-    private List<File> sourceFiles;
+    private ImmutableList<File> sourceFiles;
 
     @Override
     public void reset() {
@@ -88,7 +66,7 @@ public class GssBuilder
             throws BuildException {
 
         if (sourceFiles == null || sourceFiles.isEmpty()) {
-            throw buildException("No input files specified.");
+            throw new BuildException("No input files specified.");
         }
 
         List<String> arguments = new ArrayList<String>();
@@ -186,11 +164,14 @@ public class GssBuilder
     }
 
 
-    private void calculateSourceFiles() throws DependencyException,
-            IOException, IllegalAccessException, InstantiationException {
-        final Collection<File> sourceDirectories =
+    private void calculateSourceFiles()
+            throws DependencyException, IOException, IllegalAccessException,
+            InstantiationException {
+        final ImmutableCollection<File> sourceDirectories =
                 buildOptions.getSourceDirectories();
-        final List<String> entryPoints = buildOptions.getEntryPoints();
+        final ImmutableList<String> entryPoints =
+                buildOptions.getEntryPoints();
+
         if (sourceDirectories != null && entryPoints != null) {
             final Collection<File> allSourceFiles =
                     FsTool.find(sourceDirectories, "gss");
@@ -199,9 +180,10 @@ public class GssBuilder
                             allSourceFiles) {
                         @Override
                         protected GssSourceFile createDependency(File input) {
-                            return new GssSourceFile(input);
+                            return FILE_TO_GSS.apply(input);
                         }
                     };
+
             sourceFiles = gssDependencyLoader.getDependenciesFor(entryPoints);
         }
     }
@@ -215,7 +197,6 @@ public class GssBuilder
         } else {
             sourceFiles = buildOptions.getSourceFiles();
         }
-
 
         temporaryOutputFile = getTemporaryFile();
         compileCssFiles();
@@ -242,6 +223,9 @@ public class GssBuilder
             throw new InvalidBuildOptionsException(UNSPECIFIED_OUTPUT_FILE);
         }
 
+        final Boolean shouldCalculate =
+                buildOptions.getShouldCalculateDependencies();
+
         final Collection<File> sourceDirectories =
                 buildOptions.getSourceDirectories();
         final Boolean sourceDirectoriesAreSpecified =
@@ -252,6 +236,12 @@ public class GssBuilder
                 sourceFiles != null && !sourceFiles.isEmpty();
         if (!sourceDirectoriesAreSpecified && !sourceFilesAreSpecified) {
             throw new InvalidBuildOptionsException(UNSPECIFIED_SOURCES);
+        }
+
+
+        final Collection<String> entryPoints = buildOptions.getEntryPoints();
+        if (shouldCalculate && (entryPoints == null || entryPoints.isEmpty())) {
+            throw new InvalidBuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
         }
 
     }

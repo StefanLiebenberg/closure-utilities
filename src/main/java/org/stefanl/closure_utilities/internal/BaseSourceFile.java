@@ -1,14 +1,65 @@
 package org.stefanl.closure_utilities.internal;
 
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 
 
 public class BaseSourceFile {
+
+    @Nonnull
+    public static <A extends BaseSourceFile> A fromFile(
+            @Nonnull final File intputFile,
+            @Nonnull final Class<A> aClass) {
+        try {
+            return aClass.getConstructor(File.class).newInstance(intputFile);
+        } catch (ReflectiveOperationException reflectException) {
+            throw new RuntimeException(reflectException);
+        }
+    }
+
+    @Nonnull
+    public static <A extends BaseSourceFile> Function<File, A>
+    getTransformFunction(@Nonnull final Class<A> aClass) {
+
+        try {
+            final Constructor<A> aConstructor =
+                    aClass.getConstructor(File.class);
+            return new Function<File, A>() {
+                @Nullable
+                @Override
+                public A apply(@Nullable File input) {
+                    try {
+                        return aConstructor.newInstance(input);
+                    } catch (ReflectiveOperationException reflectException) {
+                        throw new RuntimeException(reflectException);
+                    }
+                }
+            };
+        } catch (ReflectiveOperationException reflectException) {
+            throw new RuntimeException(reflectException);
+        }
+    }
+
+    public final static Function<BaseSourceFile, File> TO_FILE =
+            new Function<BaseSourceFile, File>() {
+                @Nullable
+                @Override
+                public File apply(@Nullable BaseSourceFile input) {
+                    if (input == null) {
+                        throw new NullPointerException("SourceFile is null " +
+                                "and cannot be converted to File.");
+                    }
+                    return new File(input.getSourceLocation());
+                }
+            };
 
     private final HashSet<String> providedNamespaces = new HashSet<String>();
 

@@ -1,6 +1,10 @@
 package org.stefanl.closure_utilities.stylesheets;
 
 
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
+import org.stefanl.closure_utilities.utilities.Immuter;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
@@ -9,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 
 
-public class GssBuildOptions {
+public class GssBuildOptions implements iGssBuildOption {
 
     private Boolean shouldCalculateDependencies = true;
 
@@ -17,11 +21,11 @@ public class GssBuildOptions {
 
     private Boolean shouldGenerateForDebug = true;
 
-    private List<File> sourceFiles;
+    private ImmutableList<File> sourceFiles;
 
-    private Collection<File> sourceDirectories;
+    private ImmutableCollection<File> sourceDirectories;
 
-    private List<String> entryPoints;
+    private ImmutableList<String> entryPoints;
 
     private File renameMap;
 
@@ -40,6 +44,15 @@ public class GssBuildOptions {
     }
 
     public void setSourceFiles(@Nullable final List<File> sourceFiles) {
+        if (sourceFiles != null) {
+            this.sourceFiles = Immuter.list(sourceFiles);
+        } else {
+            this.sourceFiles = null;
+        }
+    }
+
+    public void setSourceFiles(@Nullable final ImmutableList<File>
+                                       sourceFiles) {
         this.sourceFiles = sourceFiles;
     }
 
@@ -63,7 +76,7 @@ public class GssBuildOptions {
     }
 
     @Nullable
-    public List<File> getSourceFiles() {
+    public ImmutableList<File> getSourceFiles() {
         return sourceFiles;
     }
 
@@ -100,23 +113,40 @@ public class GssBuildOptions {
     }
 
     @Nullable
-    public Collection<File> getSourceDirectories() {
+    public ImmutableCollection<File> getSourceDirectories() {
         return sourceDirectories;
     }
 
-
     public void setSourceDirectories(
             @Nullable final Collection<File> sourceDirectories) {
+        if (sourceDirectories != null) {
+            this.sourceDirectories = Immuter.set(sourceDirectories);
+        } else {
+            this.sourceDirectories = null;
+        }
+    }
+
+    public void setSourceDirectories(
+            @Nullable final ImmutableCollection<File> sourceDirectories) {
         this.sourceDirectories = sourceDirectories;
     }
 
     @Nullable
-    public List<String> getEntryPoints() {
+    public ImmutableList<String> getEntryPoints() {
         return entryPoints;
     }
 
     public void setEntryPoints(
             @Nullable final List<String> entryPoints) {
+        if (entryPoints != null) {
+            this.entryPoints = Immuter.list(entryPoints);
+        } else {
+            this.entryPoints = null;
+        }
+    }
+
+    public void setEntryPoints(
+            @Nullable final ImmutableList<String> entryPoints) {
         this.entryPoints = entryPoints;
     }
 

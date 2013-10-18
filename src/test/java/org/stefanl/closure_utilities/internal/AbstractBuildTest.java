@@ -11,7 +11,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public abstract class AbstractBuildTest<A extends AbstractBuilder<B>, B> {
+public abstract class AbstractBuildTest<A extends AbstractBuilder<? super B>, B> {
 
     protected final A builder;
 
