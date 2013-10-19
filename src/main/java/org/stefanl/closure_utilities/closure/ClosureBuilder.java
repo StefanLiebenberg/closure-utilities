@@ -1,6 +1,5 @@
 package org.stefanl.closure_utilities.closure;
 
-import com.google.common.collect.Lists;
 import org.stefanl.closure_utilities.html.HtmlBuildOptions;
 import org.stefanl.closure_utilities.html.HtmlBuilder;
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
@@ -21,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClosureBuilder
-        extends AbstractBuilder<ClosureBuildOptions>
+        extends AbstractBuilder<iClosureBuildOptions>
         implements IBuilder {
 
     public ClosureBuilder() {}
@@ -87,7 +86,7 @@ public class ClosureBuilder
             return soyOutputDirectory;
         }
 
-        File outputDirectory = buildOptions.getOutputDirectory();
+        final File outputDirectory = buildOptions.getOutputDirectory();
         return new File(outputDirectory, "compiled-templates");
     }
 
@@ -187,6 +186,7 @@ public class ClosureBuilder
     @Override
     public void checkOptions() throws InvalidBuildOptionsException {
         super.checkOptions();
+
         if (!buildOptions.getIgnoreBuilds()) {
             final File outputDirectory = buildOptions.getOutputDirectory();
             if (outputDirectory == null) {

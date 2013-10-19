@@ -10,11 +10,13 @@ public class MultiLocaleSoyBuildOptions extends SoyBuildOptions {
 
     public Collection<File> soyMessageFiles;
 
-    public ImmutableCollection<File> getSoyMessageFiles() {
-        return Immuter.set(soyMessageFiles);
-    }
 
     public void setSoyMessagesFiles(final Collection<File> soyMessageFiles) {
         this.soyMessageFiles = soyMessageFiles;
     }
+
+    public ImmutableCollection<File> getSoyMessageFiles() {
+        return Immuter.set(soyMessageFiles);
+    }
+
 }

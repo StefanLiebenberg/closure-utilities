@@ -1,6 +1,7 @@
 package org.stefanl.closure_utilities.templates;
 
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.template.soy.SoyFileSet;
@@ -9,7 +10,6 @@ import com.google.template.soy.msgs.SoyMsgBundle;
 import com.google.template.soy.shared.SoyGeneralOptions;
 import com.google.template.soy.xliffmsgplugin.XliffMsgPlugin;
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
-import org.stefanl.closure_utilities.internal.BuildException;
 import org.stefanl.closure_utilities.internal.IBuilder;
 import org.stefanl.closure_utilities.internal.InvalidBuildOptionsException;
 import org.stefanl.closure_utilities.utilities.FsTool;
@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
+public class SoyBuilder extends AbstractBuilder<iSoyBuildOptions>
         implements IBuilder {
 
     public SoyBuilder() {}
@@ -110,7 +110,7 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
 
     public void compileSoyFiles() throws IOException {
         final Collection<File> sourceFiles = new HashSet<File>();
-        final Collection<File> sources = buildOptions.getSources();
+        final ImmutableCollection<File> sources = buildOptions.getSources();
 
         if (sources != null) {
             sourceFiles.addAll(sources);
@@ -152,17 +152,17 @@ public class SoyBuilder extends AbstractBuilder<SoyBuildOptions>
     public void checkOptions() throws InvalidBuildOptionsException {
         super.checkOptions();
 
-        final Collection<File> srcDirs = buildOptions.getSourceDirectories();
+        final ImmutableCollection<File> srcDirs =
+                buildOptions.getSourceDirectories();
         final Boolean srcDirsIsSpecified =
                 srcDirs != null && !srcDirs.isEmpty();
-        final Collection<File> sources = buildOptions.getSources();
+        final ImmutableCollection<File> sources = buildOptions.getSources();
         final Boolean sourcesIsSpecified =
                 sources != null && !sources.isEmpty();
 
         if (!srcDirsIsSpecified && !sourcesIsSpecified) {
             throw new InvalidBuildOptionsException(UNSPECIFIED_SOURCES);
         }
-
 
     }
 

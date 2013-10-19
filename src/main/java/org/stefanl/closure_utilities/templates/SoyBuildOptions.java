@@ -1,25 +1,24 @@
 package org.stefanl.closure_utilities.templates;
 
 
-import org.stefanl.closure_utilities.internal.IBuildOptions;
-import org.stefanl.closure_utilities.utilities.Immuter;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
+import org.stefanl.closure_utilities.utilities.Immuter;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
-public class SoyBuildOptions implements IBuildOptions {
+public class SoyBuildOptions implements iSoyBuildOptions {
 
     private File outputDirectory;
 
-    private Collection<File> sources;
+    private ImmutableCollection<File> sources;
 
-    private Collection<File> sourceDirectories;
+    private ImmutableCollection<File> sourceDirectories;
 
-    private Map<String, String> globalStringMap;
+    private ImmutableMap<String, String> globalStringMap;
 
     private File messageFile;
 
@@ -28,11 +27,28 @@ public class SoyBuildOptions implements IBuildOptions {
     }
 
     public void setSources(@Nullable final Collection<File> sources) {
+        if (sources != null) {
+            this.sources = Immuter.set(sources);
+        } else {
+            this.sources = null;
+        }
+    }
+
+    public void setSources(@Nullable final ImmutableCollection<File> sources) {
         this.sources = sources;
     }
 
-    public void setSourceDirectories(@Nullable final Collection<File>
-                                             sourceDirectories) {
+    public void setSourceDirectories(
+            @Nullable final Collection<File> sourceDirectories) {
+        if (sourceDirectories != null) {
+            this.sourceDirectories = Immuter.set(sourceDirectories);
+        } else {
+            this.sourceDirectories = null;
+        }
+    }
+
+    public void setSourceDirectories(
+            @Nullable final ImmutableCollection<File> sourceDirectories) {
         this.sourceDirectories = sourceDirectories;
     }
 
@@ -40,8 +56,17 @@ public class SoyBuildOptions implements IBuildOptions {
         this.messageFile = messageFile;
     }
 
-    public void setGlobalStringMap(@Nullable final Map<String,
-            String> globalStringMap) {
+    public void setGlobalStringMap(
+            @Nullable final Map<String, String> globalStringMap) {
+        if (globalStringMap != null) {
+            this.globalStringMap = Immuter.map(globalStringMap);
+        } else {
+            this.globalStringMap = null;
+        }
+    }
+
+    public void setGlobalStringMap(
+            @Nullable final ImmutableMap<String, String> globalStringMap) {
         this.globalStringMap = globalStringMap;
     }
 
@@ -52,20 +77,12 @@ public class SoyBuildOptions implements IBuildOptions {
 
     @Nullable
     public ImmutableCollection<File> getSources() {
-        if (sources != null) {
-            return Immuter.list(sources);
-        } else {
-            return null;
-        }
+        return sources;
     }
 
     @Nullable
     public ImmutableCollection<File> getSourceDirectories() {
-        if (sourceDirectories != null) {
-            return Immuter.list(sourceDirectories);
-        } else {
-            return null;
-        }
+        return sourceDirectories;
     }
 
     @Nullable
@@ -75,10 +92,6 @@ public class SoyBuildOptions implements IBuildOptions {
 
     @Nullable
     public ImmutableMap<String, String> getGlobalStringMap() {
-        if (globalStringMap != null) {
-            return Immuter.map(globalStringMap);
-        } else {
-            return null;
-        }
+        return globalStringMap;
     }
 }
