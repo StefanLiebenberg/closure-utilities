@@ -24,4 +24,4 @@ before_install:
 - test ${TRAVIS_SECURE_ENV_VARS} && git config --global user.email "$EMAIL"
 after_success:
 - echo ${TRAVIS_PULL_REQUEST} ${TRAVIS_SECURE_ENV_VARS};
-- test ${TRAVIS_PULL_REQUEST} = false && mvn deploy
+- test ${TRAVIS_PULL_REQUEST} = false && mvn deploy -DskipTests
