@@ -192,8 +192,6 @@ public class ClosureBuilderTest extends
         actualPath =
                 Paths.get(htmlOutput.getParentFile().getAbsolutePath(),
                         scripts.get(0).attr("src")).normalize();
-        System.out.println("EXP: " + expectedPath.toString());
-        System.out.println("ACT: " + actualPath.toString());
         Assert.assertEquals(expectedPath, actualPath);
 
 
@@ -202,8 +200,6 @@ public class ClosureBuilderTest extends
         actualPath =
                 Paths.get(htmlOutput.getParentFile().getAbsolutePath(),
                         scripts.get(1).attr("src")).normalize();
-        System.out.println("EXP: " + expectedPath.toString());
-        System.out.println("ACT: " + actualPath.toString());
         Assert.assertEquals(expectedPath, actualPath);
 
         Elements stylesheets = headElement.select("link");
