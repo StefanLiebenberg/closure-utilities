@@ -1,10 +1,14 @@
 package org.stefanl.closure_utilities.javascript;
 
 
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.javascript.jscomp.*;
+import com.google.javascript.jscomp.Compiler;
 import org.stefanl.closure_utilities.internal.*;
 import org.stefanl.closure_utilities.render.DependencyFileRenderer;
 import org.stefanl.closure_utilities.render.RenderException;
+import org.stefanl.closure_utilities.soy.SoyDelegateOptimizer;
 import org.stefanl.closure_utilities.utilities.FsTool;
 
 import javax.annotation.Nonnull;
@@ -15,15 +19,19 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
 
+/**
+ * The javascript build builds dependencies and compiles the JavaScript aspect
+ * of a closure project.
+ */
 public class JsBuilder
         extends AbstractBuilder<JsBuildOptions>
-        implements IBuilder {
+        implements BuilderInterface {
 
     private final ClosureDependencyParser dependencyParser =
             new ClosureDependencyParser();
 
     private final DependencyBuilder<ClosureSourceFile> dependencyBuilder =
-            new DependencyBuilder<ClosureSourceFile>();
+            new DependencyBuilder<>();
 
     private static final String JS_EXT = "js";
 
@@ -45,7 +53,7 @@ public class JsBuilder
         if (sourceDirectories != null) {
             final Collection<File> sourceFiles =
                     FsTool.find(sourceDirectories, JS_EXT);
-            closureSourceFiles = new ArrayList<ClosureSourceFile>();
+            closureSourceFiles = new ArrayList<>();
             for (File sourceFile : sourceFiles) {
                 closureSourceFiles.add(parseFile(sourceFile));
             }
@@ -75,7 +83,7 @@ public class JsBuilder
             final Collection<File> allSourceFiles =
                     FsTool.find(srcDirectories, JS_EXT);
             final Collection<ClosureSourceFile> dependencies =
-                    new HashSet<ClosureSourceFile>();
+                    new HashSet<>();
 
             for (File sourceFile : allSourceFiles) {
                 ClosureSourceFile closureSourceFile =
@@ -88,7 +96,7 @@ public class JsBuilder
 
             final DependencyBuildOptions<ClosureSourceFile>
                     depBuildOptions =
-                    new DependencyBuildOptions<ClosureSourceFile>();
+                    new DependencyBuildOptions<>();
             depBuildOptions.setEntryPoints(buildOptions.getEntryPoints());
             depBuildOptions.setSourceFiles(dependencies);
             dependencyBuilder.setBuildOptions(depBuildOptions);
@@ -97,96 +105,127 @@ public class JsBuilder
         sourceFiles = dependencyBuilder.getResolvedFiles();
     }
 
+    private void setCompilerOptionsForCompile(CompilerOptions o) {
+        final CompilationLevel level =
+                CompilationLevel.ADVANCED_OPTIMIZATIONS;
+        final CheckLevel err = CheckLevel.ERROR, off = CheckLevel.OFF;
+        level.setOptionsForCompilationLevel(o);
+        level.setTypeBasedOptimizationOptions(o);
+        o.setAggressiveVarCheck(err);
+        o.setBrokenClosureRequiresLevel(err);
+        o.setCheckGlobalNamesLevel(err);
+        o.setCheckGlobalThisLevel(err);
+        o.setCheckMissingReturn(err);
+        o.setCheckProvides(err);
+        o.setCheckRequires(err);
+        o.setWarningLevel(DiagnosticGroups.ACCESS_CONTROLS, err);
+        o.setWarningLevel(DiagnosticGroups.AMBIGUOUS_FUNCTION_DECL, err);
+        o.setWarningLevel(DiagnosticGroups.DEBUGGER_STATEMENT_PRESENT, err);
+        o.setWarningLevel(DiagnosticGroups.CHECK_REGEXP, err);
+        o.setWarningLevel(DiagnosticGroups.CHECK_VARIABLES, err);
+        o.setWarningLevel(DiagnosticGroups.CONST, err);
+        o.setWarningLevel(DiagnosticGroups.CONSTANT_PROPERTY, err);
+        o.setWarningLevel(DiagnosticGroups.DEPRECATED, err);
+        o.setWarningLevel(DiagnosticGroups.DUPLICATE_MESSAGE, err);
+        o.setWarningLevel(DiagnosticGroups.DUPLICATE_VARS, err);
+        o.setWarningLevel(DiagnosticGroups.ES5_STRICT, err);
+        o.setWarningLevel(DiagnosticGroups.EXTERNS_VALIDATION, err);
+        o.setWarningLevel(DiagnosticGroups.UNDEFINED_NAMES, err);
+        o.setWarningLevel(DiagnosticGroups.UNDEFINED_VARIABLES, err);
+        o.setWarningLevel(DiagnosticGroups.TYPE_INVALIDATION, err);
+        o.setCheckEventfulObjectDisposalPolicy(
+                CheckEventfulObjectDisposal.DisposalCheckingPolicy.AGGRESSIVE);
+        // we declare many unkown defines.
+        o.setWarningLevel(DiagnosticGroups.UNKNOWN_DEFINES, off);
+        o.setCheckTypes(true);
+        o.setOptimizeArgumentsArray(true);
+        o.setOptimizeCalls(true);
+        o.setOptimizeParameters(true);
+        o.setOptimizeReturns(true);
+        o.setCheckSymbols(true);
+        o.setAggressiveRenaming(true);
+    }
+
+    public void setCompilerOptionsForDebug(@Nonnull final CompilerOptions o) {
+        final CompilationLevel level = CompilationLevel.SIMPLE_OPTIMIZATIONS;
+        level.setOptionsForCompilationLevel(o);
+        level.setTypeBasedOptimizationOptions(o);
+        o.setPrettyPrint(true);
+    }
+
     @Nonnull
     private CompilerOptions getCompilerOptions(final File sourceMap) {
-        final CompilerOptions compilerOptions = new CompilerOptions();
-        if (buildOptions.getShouldDebug()) {
-            final CompilationLevel level =
-                    CompilationLevel.ADVANCED_OPTIMIZATIONS;
-            level.setOptionsForCompilationLevel(compilerOptions);
-            level.setTypeBasedOptimizationOptions(compilerOptions);
-            compilerOptions.setAggressiveVarCheck(CheckLevel.ERROR);
-            compilerOptions.setBrokenClosureRequiresLevel(CheckLevel.ERROR);
-            compilerOptions.setCheckGlobalNamesLevel(CheckLevel.ERROR);
-            compilerOptions.setCheckGlobalThisLevel(CheckLevel.ERROR);
-            compilerOptions.setCheckMissingReturn(CheckLevel.ERROR);
-            compilerOptions.setCheckProvides(CheckLevel.ERROR);
-            compilerOptions.setCheckRequires(CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.ACCESS_CONTROLS,
-                    CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.AMBIGUOUS_FUNCTION_DECL,
-                    CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.DEBUGGER_STATEMENT_PRESENT,
-                    CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.CHECK_REGEXP,
-                    CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.CHECK_VARIABLES,
-                    CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.CONST, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.CONSTANT_PROPERTY, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.DEPRECATED, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.DUPLICATE_MESSAGE, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.DUPLICATE_VARS, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.ES5_STRICT, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.EXTERNS_VALIDATION, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.UNDEFINED_NAMES,
-                    CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.UNDEFINED_VARIABLES, CheckLevel.ERROR);
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.TYPE_INVALIDATION, CheckLevel.ERROR);
+        final CompilerOptions cOpts = new CompilerOptions();
 
-            // we declare many unkown defines.
-            compilerOptions.setWarningLevel(
-                    DiagnosticGroups.UNKNOWN_DEFINES,
-                    CheckLevel.OFF);
-
-
-            compilerOptions.setCheckTypes(true);
-            compilerOptions.setOptimizeArgumentsArray(true);
-            compilerOptions.setOptimizeCalls(true);
-            compilerOptions.setOptimizeParameters(true);
-            compilerOptions.setOptimizeReturns(true);
-            compilerOptions.setCheckSymbols(true);
-            compilerOptions.setCheckEventfulObjectDisposalPolicy(
-                    CheckEventfulObjectDisposal.DisposalCheckingPolicy
-                            .AGGRESSIVE);
-            compilerOptions.setAggressiveRenaming(true);
+        if (!buildOptions.getShouldDebug()) {
+            setCompilerOptionsForCompile(cOpts);
         } else {
-            final CompilationLevel level =
-                    CompilationLevel.SIMPLE_OPTIMIZATIONS;
-            level.setOptionsForCompilationLevel(compilerOptions);
-            level.setTypeBasedOptimizationOptions(compilerOptions);
-            compilerOptions.setPrettyPrint(true);
+            setCompilerOptionsForDebug(cOpts);
         }
 
         final Map<String, Object> globals = buildOptions.getGlobals();
         if (globals != null) {
-            compilerOptions.setDefineReplacements(globals);
+            cOpts.setDefineReplacements(globals);
         }
 
         if (sourceMap != null) {
-            compilerOptions.setSourceMapFormat(SourceMap.Format.V3);
-            //compilerOptions.setSourceMapDetailLevel(SourceMap.DetailLevel
-            // .ALL);
-            compilerOptions.setSourceMapDetailLevel(SourceMap.DetailLevel
-                    .SYMBOLS);
-            compilerOptions.setSourceMapOutputPath(sourceMap.getPath());
+            cOpts.setSourceMapFormat(SourceMap.Format.V3);
+            cOpts.setSourceMapDetailLevel(SourceMap.DetailLevel.ALL);
+            cOpts.setSourceMapOutputPath(sourceMap.getPath());
         }
-        return compilerOptions;
+        return cOpts;
+    }
+
+    private Result compilerResult;
+
+    private File outputFile;
+
+    public File getOutputFile() {
+        return outputFile;
+    }
+
+    public List<SourceFile> getExternFiles() throws IOException {
+        final List<SourceFile> externs = new ArrayList<>();
+        externs.addAll(CommandLineRunner.getDefaultExterns());
+        return externs;
+    }
+
+    public List<SourceFile> getCompilerSourceFiles() {
+        return Lists.transform(getSourceFiles(),
+                new Function<File, SourceFile>() {
+                    @Nullable
+                    @Override
+                    public SourceFile apply(@Nullable File input) {
+                        return SourceFile.fromFile(input);
+                    }
+                });
+    }
+
+    public void addCustomBuildPasses(@Nonnull Compiler compiler,
+                                     @Nonnull CompilerOptions compilerOptions) {
+
+        SoyDelegateOptimizer.addToCompile(compiler, compilerOptions);
+
+        // todo, add space here for user to specify custom passes.
+
+    }
+
+    public void compileScriptFile() throws BuildException, IOException {
+        final Compiler compiler = new Compiler();
+        final CompilerOptions options = getCompilerOptions(null);
+        final List<SourceFile> externs = getExternFiles();
+        final List<SourceFile> sources = getCompilerSourceFiles();
+
+        addCustomBuildPasses(compiler, options);
+
+        compilerResult = compiler.compile(externs, sources, options);
+        if (compilerResult.success) {
+            final String source = compiler.toSource();
+            outputFile = buildOptions.getOutputFile();
+            FsTool.write(outputFile, source);
+        } else {
+            throw new BuildException("Compilation Failure");
+        }
     }
 
     @Override
@@ -194,7 +233,9 @@ public class JsBuilder
         findDependencyFiles();
         buildDependenciesFile();
         calculateDependencies();
-        // compileScriptFile();
+        if (buildOptions.getShouldCompile()) {
+            compileScriptFile();
+        }
     }
 
     @Override
@@ -203,6 +244,8 @@ public class JsBuilder
         dependencyBuilder.reset();
         dependencyFileRenderer.reset();
         sourceFiles = null;
+        compilerResult = null;
+        outputFile = null;
     }
 
     @Nullable
@@ -215,6 +258,9 @@ public class JsBuilder
         return closureSourceFiles;
     }
 
+    public static final String UNSPECIFIED_OUTPUT_FILE =
+            "Javascript output file not specified";
+
     public static final String UNSPECIFIED_ENTRY_POINTS =
             "Javascript entry points have not specified.";
 
@@ -224,6 +270,11 @@ public class JsBuilder
     @Override
     public void checkOptions() throws InvalidBuildOptionsException {
         super.checkOptions();
+
+        final File outFile = buildOptions.getOutputFile();
+        if (outFile == null) {
+            throw new NullPointerException(UNSPECIFIED_OUTPUT_FILE);
+        }
 
         final Collection<String> entryPoints = buildOptions.getEntryPoints();
         if (entryPoints == null || entryPoints.isEmpty()) {

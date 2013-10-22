@@ -1,7 +1,6 @@
 package org.stefanl.closure_utilities.html;
 
 
-import org.stefanl.closure_utilities.internal.IBuildOptions;
 import org.stefanl.closure_utilities.render.HtmlRenderer;
 
 import javax.annotation.Nonnull;
@@ -11,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class HtmlBuildOptions implements IBuildOptions {
+public class HtmlBuildOptions {
 
     private File outputFile;
 

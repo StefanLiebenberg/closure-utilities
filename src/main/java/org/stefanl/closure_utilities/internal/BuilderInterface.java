@@ -1,7 +1,7 @@
 package org.stefanl.closure_utilities.internal;
 
 
-public interface IBuilder {
+public interface BuilderInterface {
 
     public void checkOptions() throws InvalidBuildOptionsException;
 

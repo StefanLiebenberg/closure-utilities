@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.stefanl.closure_utilities.internal.AbstractBuildTest;
 import org.stefanl.closure_utilities.templates.SoyBuildOptions;
 import org.stefanl.closure_utilities.templates.SoyBuilder;
+import org.stefanl.closure_utilities.templates.SoyBuilder;
 import org.stefanl.closure_utilities.utilities.FsTool;
 
 import java.io.File;

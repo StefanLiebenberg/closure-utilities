@@ -24,12 +24,19 @@ public class ClosureBuildOptions
         }
     }
 
+    public void setExternalStylesheets(
+            @Nullable final List<File> externalStylesheets) {
+        if (externalStylesheets != null) {
+            gssExternalStylesheets = Immuter.list(externalStylesheets);
+        } else {
+            gssExternalStylesheets = null;
+        }
+    }
 
     public void setGssSourceDirectories(
             @Nullable final ImmutableCollection<File> gssSourceDirectories) {
         this.gssSourceDirectories = gssSourceDirectories;
     }
-
 
     public void setGssEntryPoints(
             @Nullable final List<String> gssEntryPoints) {
@@ -45,7 +52,6 @@ public class ClosureBuildOptions
         this.gssEntryPoints = gssEntryPoints;
     }
 
-
     public void setJavascriptSourceDirectories(
             @Nullable final Collection<File> javascriptSourceDirectories) {
         if (javascriptSourceDirectories != null) {
@@ -56,6 +62,14 @@ public class ClosureBuildOptions
         }
     }
 
+    public void setExternalScripts(
+            @Nullable final Collection<File> externalScripts) {
+        if (externalScripts != null) {
+            this.externalJavascriptFiles = Immuter.list(externalScripts);
+        } else {
+            this.externalJavascriptFiles = null;
+        }
+    }
 
     public void setJavascriptEntryPoints(
             @Nullable final List<String> javascriptEntryPoints) {
@@ -66,7 +80,6 @@ public class ClosureBuildOptions
         }
     }
 
-
     public void setSoySourceDirectories(
             @Nullable final Collection<File> soySourceDirectories) {
         if (soySourceDirectories != null) {
@@ -76,69 +89,35 @@ public class ClosureBuildOptions
         }
     }
 
-
-    public void setSoyOutputDirectory(
-            @Nonnull final File soyOutputDirectory) {
+    public void setSoyOutputDirectory(@Nonnull final File soyOutputDirectory) {
         this.soyOutputDirectory = soyOutputDirectory;
     }
 
-
-    public void setOutputDirectory(
-            @Nullable final File outputDirectory) {
+    public void setOutputDirectory(@Nullable final File outputDirectory) {
         this.outputDirectory = outputDirectory;
     }
 
-
-    public void setShouldCompile(
-            @Nonnull final Boolean shouldCompile) {
+    public void setShouldCompile(@Nonnull final Boolean shouldCompile) {
         this.shouldCompile = shouldCompile;
     }
-
 
     public void setShouldInline(@Nonnull final Boolean shouldInline) {
         this.shouldInline = shouldInline;
     }
 
-
     public void setShouldDebug(@Nonnull final Boolean shouldDebug) {
         this.shouldDebug = shouldDebug;
     }
-
 
     public void setAssetsDirectory(@Nullable final File assetsDirectory) {
         this.assetsDirectory = assetsDirectory;
     }
 
-
-    public void setCssClassRenameMap(
-            @Nullable final File cssClassRenameMap) {
+    public void setCssClassRenameMap(@Nullable final File cssClassRenameMap) {
         this.cssClassRenameMap = cssClassRenameMap;
     }
 
-
-    public void setIgnoreGssBuild(@Nonnull final Boolean ignoreGssBuild) {
-        this.ignoreGssBuild = ignoreGssBuild;
-    }
-
-
-    public void setIgnoreSoyBuild(@Nonnull final Boolean ignoreSoyBuild) {
-        this.ignoreSoyBuild = ignoreSoyBuild;
-    }
-
-
-    public void setIgnoreJsBuild(@Nonnull final Boolean ignoreJsBuild) {
-        this.ignoreJsBuild = ignoreJsBuild;
-    }
-
-
-    public void setIgnoreHtmlBuild(@Nonnull final Boolean ignoreHtmlBuild) {
-        this.ignoreHtmlBuild = ignoreHtmlBuild;
-    }
-
-    public void setIgnoreBuilds() {
-        this.setIgnoreGssBuild(true);
-        this.setIgnoreJsBuild(true);
-        this.setIgnoreSoyBuild(true);
-        this.setIgnoreHtmlBuild(true);
+    public void setHtmlContent(@Nullable final String htmlContent) {
+        this.htmlContent = htmlContent;
     }
 }

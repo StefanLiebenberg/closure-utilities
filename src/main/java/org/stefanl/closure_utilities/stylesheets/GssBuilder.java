@@ -19,7 +19,7 @@ import java.util.List;
 
 public class GssBuilder
         extends AbstractBuilder<iGssBuildOption>
-        implements IBuilder {
+        implements BuilderInterface {
 
     public GssBuilder() {}
 
@@ -159,7 +159,7 @@ public class GssBuilder
         try {
             return FsTool.getTempFile("css_", "pass1");
         } catch (IOException e) {
-            throw buildException(e);
+            throw new BuildException(e);
         }
     }
 

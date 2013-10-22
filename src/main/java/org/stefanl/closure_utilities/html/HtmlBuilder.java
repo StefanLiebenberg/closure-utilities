@@ -1,9 +1,8 @@
 package org.stefanl.closure_utilities.html;
 
+import org.stefanl.closure_utilities.internal.*;
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
-import org.stefanl.closure_utilities.internal.BuildException;
-import org.stefanl.closure_utilities.internal.IBuilder;
-import org.stefanl.closure_utilities.internal.InvalidBuildOptionsException;
+import org.stefanl.closure_utilities.internal.BuilderInterface;
 import org.stefanl.closure_utilities.render.DefaultHtmlRenderer;
 import org.stefanl.closure_utilities.render.HtmlRenderer;
 import org.stefanl.closure_utilities.render.RenderException;
@@ -17,7 +16,7 @@ import java.io.IOException;
 
 public class HtmlBuilder
         extends AbstractBuilder<HtmlBuildOptions>
-        implements IBuilder {
+        implements BuilderInterface {
 
     private File generatedHtmlFile;
 

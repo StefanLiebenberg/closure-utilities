@@ -16,34 +16,32 @@ public class ImmutableClosureBuildOptions extends BaseClosureBuildOptions {
             @Nullable final File cssClassRenameMap,
             @Nullable final File assetsDirectory,
             @Nullable final ImmutableCollection<File> gssSourceDirectories,
+            @Nullable final ImmutableList<File> externalStylesheets,
             @Nullable final ImmutableList<String> gssEntryPoints,
             @Nullable final ImmutableCollection<File>
                     javascriptSourceDirectories,
+            @Nullable final ImmutableList<File> externalScripts,
             @Nullable final ImmutableList<String> javascriptEntryPoints,
             @Nullable final File soyOutputDirectory,
             @Nullable final File outputDirectory,
+            @Nullable final String htmlContent,
             @Nonnull final Boolean shouldCompile,
             @Nonnull final Boolean shouldDebug,
-            @Nonnull final Boolean shouldInline,
-            @Nonnull final Boolean ignoreGssBuild,
-            @Nonnull final Boolean ignoreSoyBuild,
-            @Nonnull final Boolean ignoreJsBuild,
-            @Nonnull final Boolean ignoreHtmlBuild) {
+            @Nonnull final Boolean shouldInline) {
         this.soySourceDirectories = soySourceDirectories;
         this.cssClassRenameMap = cssClassRenameMap;
         this.assetsDirectory = assetsDirectory;
         this.gssSourceDirectories = gssSourceDirectories;
+        this.gssExternalStylesheets = externalStylesheets;
         this.gssEntryPoints = gssEntryPoints;
         this.javascriptSourceDirectories = javascriptSourceDirectories;
+        this.externalJavascriptFiles = externalScripts;
         this.javascriptEntryPoints = javascriptEntryPoints;
         this.soyOutputDirectory = soyOutputDirectory;
         this.outputDirectory = outputDirectory;
+        this.htmlContent = htmlContent;
         this.shouldCompile = shouldCompile;
         this.shouldDebug = shouldDebug;
         this.shouldInline = shouldInline;
-        this.ignoreGssBuild = ignoreGssBuild;
-        this.ignoreSoyBuild = ignoreSoyBuild;
-        this.ignoreJsBuild = ignoreJsBuild;
-        this.ignoreHtmlBuild = ignoreHtmlBuild;
     }
 }

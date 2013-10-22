@@ -10,7 +10,8 @@ import com.google.template.soy.msgs.SoyMsgBundle;
 import com.google.template.soy.shared.SoyGeneralOptions;
 import com.google.template.soy.xliffmsgplugin.XliffMsgPlugin;
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
-import org.stefanl.closure_utilities.internal.IBuilder;
+import org.stefanl.closure_utilities.internal.AbstractBuilder;
+import org.stefanl.closure_utilities.internal.BuilderInterface;
 import org.stefanl.closure_utilities.internal.InvalidBuildOptionsException;
 import org.stefanl.closure_utilities.utilities.FsTool;
 
@@ -20,7 +21,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class SoyBuilder extends AbstractBuilder<iSoyBuildOptions>
-        implements IBuilder {
+        implements BuilderInterface {
 
     public SoyBuilder() {}
 

@@ -13,10 +13,16 @@ public interface iClosureBuildOptions {
     public ImmutableCollection<File> getGssSourceDirectories();
 
     @Nullable
+    public ImmutableList<File> getExternalStylesheets();
+
+    @Nullable
     public ImmutableList<String> getGssEntryPoints();
 
     @Nullable
     public ImmutableCollection<File> getJavascriptSourceDirectories();
+
+    @Nullable
+    public ImmutableList<File> getExternalScriptFiles();
 
     @Nullable
     public ImmutableList<String> getJavascriptEntryPoints();
@@ -47,18 +53,6 @@ public interface iClosureBuildOptions {
     @Nullable
     public File getCssClassRenameMap();
 
-    @Nonnull
-    public Boolean getIgnoreGssBuild();
-
-    @Nonnull
-    public Boolean getIgnoreSoyBuild();
-
-    @Nonnull
-    public Boolean getIgnoreJsBuild();
-
-    @Nonnull
-    public Boolean getIgnoreHtmlBuild();
-
-    @Nonnull
-    public Boolean getIgnoreBuilds();
+    @Nullable
+    public String getHtmlContent();
 }

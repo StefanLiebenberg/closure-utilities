@@ -149,7 +149,7 @@ public class DefaultHtmlRenderer
 
     @Nonnull
     protected String renderHeadTag() throws IOException {
-        return render_tag("html",
+        return render_tag("head",
                 renderTitle(),
                 renderScripts(),
                 renderStylesheets());

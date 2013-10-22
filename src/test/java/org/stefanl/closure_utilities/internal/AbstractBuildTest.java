@@ -11,7 +11,25 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public abstract class AbstractBuildTest<A extends AbstractBuilder<? super B>, B> {
+public abstract class AbstractBuildTest<A extends AbstractBuilder<? super B>,
+        B> {
+
+    public enum Flavour {
+        /**
+         * A very basic build.
+         */
+        BASIC,
+
+        /**
+         * A utility library.
+         */
+        LIBRARY,
+
+        /**
+         * A fully fledged application.
+         */
+        APPLICATION
+    }
 
     protected final A builder;
 
@@ -58,7 +76,8 @@ public abstract class AbstractBuildTest<A extends AbstractBuilder<? super B>, B>
     }
 
     @Nonnull
-    protected ArrayList<String> getGssEntryPoints() {
+    protected ArrayList<String> getGssEntryPoints(
+            @Nonnull Flavour flavour) {
         return Lists.newArrayList(Lists.newArrayList("company-import"));
     }
 
@@ -68,8 +87,18 @@ public abstract class AbstractBuildTest<A extends AbstractBuilder<? super B>, B>
     }
 
     @Nonnull
-    protected ArrayList<String> getJavascriptEntryPoints() {
-        return Lists.newArrayList("company.package");
+    protected ArrayList<String> getJavascriptEntryPoints(
+            @Nonnull Flavour flavour) {
+        switch (flavour) {
+            case BASIC:
+                return Lists.newArrayList("company.pack");
+            case LIBRARY:
+                return Lists.newArrayList("company.pack");
+            case APPLICATION:
+                return Lists.newArrayList("company.pack");
+            default:
+                return new ArrayList<>();
+        }
     }
 
     @Nonnull

@@ -39,7 +39,7 @@ public class GssBuilderTest extends AbstractBuildTest<GssBuilder,
     @Test
     public void testNormalCompile() throws Exception {
 
-        builderOptions.setEntryPoints(getGssEntryPoints());
+        builderOptions.setEntryPoints(getGssEntryPoints(Flavour.BASIC));
         builderOptions.setSourceDirectories(getGssSourceDirectories());
         builderOptions.setShouldCalculateDependencies(true);
         builder.build();

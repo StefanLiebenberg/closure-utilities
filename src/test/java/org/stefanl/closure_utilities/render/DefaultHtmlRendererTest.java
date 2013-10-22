@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DefaultHtmlRendererTest {
 
@@ -114,47 +116,105 @@ public class DefaultHtmlRendererTest {
 //    }
 
     @Test
-    public void testRenderStylesheets() throws Exception {
+    public void testRenderEmptyStylesheets() throws Exception {
+        final String actual = htmlRenderer.renderStylesheets();
+        final String expected = "";
+        Assert.assertEquals(expected, actual);
+    }
 
+    @Test
+    public void testRenderStylesheets() throws Exception {
+        final List<File> stylesheets = new ArrayList<File>();
+        stylesheets.add(new File("/a/stylesheet.css"));
+        htmlRenderer.setStylesheets(stylesheets);
+        final String actual = htmlRenderer.renderStylesheets();
+        final String expected = "<link rel=\"stylesheet\" " +
+                "href=\"/a/stylesheet.css\"/>";
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testRenderEmptyScripts() throws Exception {
+        final String actual = htmlRenderer.renderScripts();
+        final String expected = "";
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testRenderScripts() throws Exception {
+        final List<File> scripts = new ArrayList<File>();
+        scripts.add(new File("/a/script.js"));
+        htmlRenderer.setScripts(scripts);
+        final String actual = htmlRenderer.renderScripts();
+        final String expected = "<script src=\"/a/script.js\" " +
+                "type=\"text/javascript\"></script>";
+        Assert.assertEquals(expected, actual);
+    }
 
+    @Test
+    public void testRenderEmptyContent() throws Exception {
+        final String actual = htmlRenderer.renderContent();
+        final String expected = "";
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testRenderContent() throws Exception {
+        final String content = "CONTENT";
+        htmlRenderer.setContent(content);
+        final String actual = htmlRenderer.renderContent();
+        final String expected = content;
+        Assert.assertEquals(expected, actual);
+    }
 
+    @Test
+    public void testRenderEmptyTitle() throws Exception {
+        final String actual = htmlRenderer.renderTitle();
+        final String expected = "";
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testRenderTitle() throws Exception {
-
+        final String title = "page title";
+        htmlRenderer.setTitle(title);
+        final String actual = htmlRenderer.renderTitle();
+        final String expected = "<title>" + title + "</title>";
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testRenderHeadTag() throws Exception {
-
+        final String actual = htmlRenderer.renderHeadTag();
+        final String expected = "<head></head>";
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testRenderBodyTag() throws Exception {
-
+        final String actual = htmlRenderer.renderBodyTag();
+        final String expected = "<body></body>";
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testRenderHtmlTag() throws Exception {
-
+        final String actual = htmlRenderer.renderHtmlTag();
+        final String expected = "<html><head></head><body></body></html>";
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testRenderDoctype() throws Exception {
-
+        final String actual = htmlRenderer.renderDoctype();
+        final String expected = "<!DOCTYPE html>";
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
     public void testRender() throws Exception {
-
+        final String actual = htmlRenderer.render();
+        final String expected = "<!DOCTYPE html><html><head></head><body></body></html>";
+        Assert.assertEquals(expected, actual);
     }
 }

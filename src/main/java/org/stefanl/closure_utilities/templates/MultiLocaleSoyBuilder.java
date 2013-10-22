@@ -2,13 +2,13 @@ package org.stefanl.closure_utilities.templates;
 
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
 import org.stefanl.closure_utilities.internal.BuildException;
-import org.stefanl.closure_utilities.internal.IBuilder;
+import org.stefanl.closure_utilities.internal.BuilderInterface;
 
 import java.io.File;
 
 public class MultiLocaleSoyBuilder
         extends AbstractBuilder<MultiLocaleSoyBuildOptions>
-        implements IBuilder {
+        implements BuilderInterface {
 
     private final SoyBuilder soyBuilder = new SoyBuilder();
 

@@ -13,6 +13,7 @@ public class JsBuildOptions {
     private Collection<File> sourceDirectories;
     private List<String> entryPoints;
     private Map<String, Object> globals;
+    private File outputFile;
 
     private Boolean shouldDebug = true;
     private Boolean shouldCompile = false;
@@ -71,5 +72,13 @@ public class JsBuildOptions {
 
     public void setShouldCompile(@Nonnull final Boolean shouldCompile) {
         this.shouldCompile = shouldCompile;
+    }
+
+    public File getOutputFile() {
+        return outputFile;
+    }
+
+    public void setOutputFile(File outputFile) {
+        this.outputFile = outputFile;
     }
 }

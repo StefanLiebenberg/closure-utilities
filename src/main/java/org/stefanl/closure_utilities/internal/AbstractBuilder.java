@@ -2,15 +2,14 @@ package org.stefanl.closure_utilities.internal;
 
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
 
 public abstract class AbstractBuilder<A>
-        implements IBuilder {
+        implements BuilderInterface {
 
-    public AbstractBuilder() {}
 
     protected A buildOptions;
+
+    public AbstractBuilder() {}
 
     public AbstractBuilder(@Nonnull final A buildOptions) {
         this.buildOptions = buildOptions;
@@ -22,21 +21,21 @@ public abstract class AbstractBuilder<A>
 
     protected abstract void buildInternal() throws Exception;
 
+    public static final String BUILD_EXCEPTION_MESSAGE =
+            "An exception occured during the build.";
+
     @Override
     public void build() throws BuildException {
         checkOptions();
         try {
             buildInternal();
         } catch (Exception exception) {
-
             if (exception instanceof BuildException) {
                 // doing this creates a somewhat cleaner
                 // stack trace to debug.
                 throw (BuildException) exception;
             }
-
-            final String message = "An exception occurred during build";
-            throw new BuildException(message, exception);
+            throw new BuildException(BUILD_EXCEPTION_MESSAGE, exception);
         }
     }
 
@@ -45,55 +44,8 @@ public abstract class AbstractBuilder<A>
         buildOptions = null;
     }
 
-    protected static BuildException buildException(
-            @Nonnull final String message) {
-        return new BuildException(message);
-    }
 
-    protected static BuildException buildException(
-            @Nonnull final String message,
-            @Nullable final Throwable e) {
-        return new BuildException(message, e);
-    }
-
-    protected static BuildException buildException(
-            @Nonnull final Throwable throwable) {
-        return buildException("Build Failed", throwable);
-    }
-
-    protected static void checkNonEmptyCollection(
-            @Nullable final Collection collection,
-            @Nonnull final String message) throws BuildException {
-        if (collection == null || collection.isEmpty()) {
-            throw buildException(message);
-        }
-    }
-
-    protected static void checkNonEmptyCollection(
-            @Nullable final Collection collection) throws BuildException {
-        checkNonEmptyCollection(collection, "Collection cannot be null or " +
-                "empty.");
-    }
-
-
-    protected static void checkNotNull(
-            @Nullable final Object object,
-            @Nonnull final String message)
-            throws BuildException {
-        if (object == null) {
-            throw buildException(message, new NullPointerException());
-        }
-    }
-
-    protected static void checkNull(
-            @Nullable final Object object,
-            @Nonnull final String message) throws BuildException {
-        if (object != null) {
-            throw buildException(message);
-        }
-    }
-
-    private final String BUILD_OPTIONS_ERROR =
+    private static final String BUILD_OPTIONS_ERROR =
             "Build options have not been set.";
 
     @Override

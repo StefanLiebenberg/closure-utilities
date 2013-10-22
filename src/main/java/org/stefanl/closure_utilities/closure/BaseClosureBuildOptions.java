@@ -43,6 +43,14 @@ public abstract class BaseClosureBuildOptions implements iClosureBuildOptions {
         return gssSourceDirectories;
     }
 
+    protected ImmutableList<File> gssExternalStylesheets;
+
+    @Nullable
+    @Override
+    public ImmutableList<File> getExternalStylesheets() {
+        return gssExternalStylesheets;
+    }
+
     protected ImmutableList<String> gssEntryPoints;
 
     @Nullable
@@ -59,7 +67,16 @@ public abstract class BaseClosureBuildOptions implements iClosureBuildOptions {
         return javascriptSourceDirectories;
     }
 
+    protected ImmutableList<File> externalJavascriptFiles;
+
+    @Nullable
+    @Override
+    public ImmutableList<File> getExternalScriptFiles() {
+        return externalJavascriptFiles;
+    }
+
     protected ImmutableList<String> javascriptEntryPoints;
+
 
     @Nullable
     @Override
@@ -112,43 +129,12 @@ public abstract class BaseClosureBuildOptions implements iClosureBuildOptions {
         return shouldInline;
     }
 
-    protected Boolean ignoreGssBuild = false;
+    protected String htmlContent;
 
-    @Nonnull
     @Override
-    public Boolean getIgnoreGssBuild() {
-        return ignoreGssBuild;
+    @Nullable
+    public String getHtmlContent() {
+        return htmlContent;
     }
 
-    protected Boolean ignoreSoyBuild = false;
-
-    @Nonnull
-    @Override
-    public Boolean getIgnoreSoyBuild() {
-        return ignoreSoyBuild;
-    }
-
-    protected Boolean ignoreJsBuild = false;
-
-    @Nonnull
-    @Override
-    public Boolean getIgnoreJsBuild() {
-        return ignoreJsBuild;
-    }
-
-    protected Boolean ignoreHtmlBuild = false;
-
-
-    @Nonnull
-    @Override
-    public Boolean getIgnoreHtmlBuild() {
-        return ignoreHtmlBuild;
-    }
-
-    @Nonnull
-    @Override
-    public Boolean getIgnoreBuilds() {
-        return ignoreGssBuild && ignoreHtmlBuild && ignoreJsBuild &&
-                ignoreSoyBuild;
-    }
 }

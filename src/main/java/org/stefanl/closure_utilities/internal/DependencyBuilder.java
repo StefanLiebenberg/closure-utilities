@@ -12,7 +12,7 @@ import java.util.List;
 
 public class DependencyBuilder<A extends BaseSourceFile>
         extends AbstractBuilder<DependencyBuildOptions<A>>
-        implements IBuilder {
+        implements BuilderInterface {
 
     private DependencyCalculator<A> dependencyCalculator;
 

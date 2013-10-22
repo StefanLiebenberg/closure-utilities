@@ -2,8 +2,8 @@ package org.stefanl.closure_utilities.internal;
 
 
 public class DependencyException extends Exception {
-    public DependencyException() {
-    }
+
+    public DependencyException() {}
 
     public DependencyException(String message) {
         super(message);
