@@ -14,6 +14,7 @@ import org.stefanl.closure_utilities.utilities.FsTool;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -184,17 +185,26 @@ public class ClosureBuilderTest extends
 
         final File jsDirectory = getApplicationDirectory("src/javascript");
 
-        Assert.assertEquals(
-                new File(jsDirectory, "company/constants.js").getAbsolutePath(),
-                Paths.get(new File("").getAbsolutePath(),
-                        scripts.get(0).attr("src")).normalize()
-                        .toAbsolutePath().toString());
+        Path expectedPath, actualPath;
+        expectedPath =
+            Paths.get(jsDirectory.getAbsolutePath(), "company/constants.js");
 
-        Assert.assertEquals(
-                new File(jsDirectory, "company/package.js").getAbsolutePath(),
-                Paths.get(new File("").getAbsolutePath(),
-                        scripts.get(1).attr("src")).normalize()
-                        .toAbsolutePath().toString());
+        actualPath =
+                Paths.get(htmlOutput.getParentFile().getAbsolutePath(),
+                        scripts.get(0).attr("src")).normalize();
+        System.out.println("EXP: " + expectedPath.toString());
+        System.out.println("ACT: " + actualPath.toString());
+        Assert.assertEquals(expectedPath, actualPath);
+
+
+        expectedPath =
+                Paths.get(jsDirectory.getAbsolutePath(), "company/package.js");
+        actualPath =
+                Paths.get(htmlOutput.getParentFile().getAbsolutePath(),
+                        scripts.get(1).attr("src")).normalize();
+        System.out.println("EXP: " + expectedPath.toString());
+        System.out.println("ACT: " + actualPath.toString());
+        Assert.assertEquals(expectedPath, actualPath);
 
         Elements stylesheets = headElement.select("link");
         Assert.assertEquals(1, stylesheets.size());
