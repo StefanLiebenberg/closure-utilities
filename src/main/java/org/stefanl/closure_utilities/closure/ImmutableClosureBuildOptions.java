@@ -10,7 +10,7 @@ import javax.annotation.concurrent.Immutable;
 import java.io.File;
 
 @Immutable
-public class ImmutableClosureBuildOptions extends BaseClosureBuildOptions {
+public class ImmutableClosureBuildOptions extends AbstractClosureBuildOptions {
     public ImmutableClosureBuildOptions(
             @Nullable final ImmutableCollection<File> soySourceDirectories,
             @Nullable final File cssClassRenameMap,
@@ -22,6 +22,7 @@ public class ImmutableClosureBuildOptions extends BaseClosureBuildOptions {
                     javascriptSourceDirectories,
             @Nullable final ImmutableList<File> externalScripts,
             @Nullable final ImmutableList<String> javascriptEntryPoints,
+            @Nullable final File javascriptDependencyOutputFile,
             @Nullable final File soyOutputDirectory,
             @Nullable final File outputDirectory,
             @Nullable final String htmlContent,
@@ -35,6 +36,7 @@ public class ImmutableClosureBuildOptions extends BaseClosureBuildOptions {
         this.gssExternalStylesheets = externalStylesheets;
         this.gssEntryPoints = gssEntryPoints;
         this.javascriptSourceDirectories = javascriptSourceDirectories;
+        this.javascriptDependencyOutputFile = javascriptDependencyOutputFile;
         this.externalJavascriptFiles = externalScripts;
         this.javascriptEntryPoints = javascriptEntryPoints;
         this.soyOutputDirectory = soyOutputDirectory;

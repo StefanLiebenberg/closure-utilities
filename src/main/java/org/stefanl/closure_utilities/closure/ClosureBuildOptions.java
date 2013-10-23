@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class ClosureBuildOptions
-        extends BaseClosureBuildOptions
+        extends AbstractClosureBuildOptions
         implements iClosureBuildOptions {
 
     public void setGssSourceDirectories(
@@ -119,5 +119,15 @@ public class ClosureBuildOptions
 
     public void setHtmlContent(@Nullable final String htmlContent) {
         this.htmlContent = htmlContent;
+    }
+
+    public void setJavascriptDependencyOutputFile(
+            @Nullable final File depsFile) {
+        this.javascriptDependencyOutputFile = depsFile;
+    }
+
+    public void setOutputStylesheetFile(@Nullable final File cssFile) {
+        this.outputStylesheetFile = cssFile;
+
     }
 }

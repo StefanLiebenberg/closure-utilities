@@ -1,25 +1,28 @@
 package org.stefanl.closure_utilities.internal;
 
 
-public class BuildException extends Exception {
-    public BuildException() {
-    }
+import javax.annotation.Nonnull;
 
-    public BuildException(String message) {
+public class BuildException extends Exception {
+    public BuildException() {}
+
+    public BuildException(@Nonnull final String message) {
         super(message);
     }
 
-    public BuildException(String message, Throwable cause) {
+    public BuildException(@Nonnull final String message,
+                          @Nonnull final Throwable cause) {
         super(message, cause);
     }
 
-    public BuildException(Throwable cause) {
+    public BuildException(@Nonnull final Throwable cause) {
         super(cause);
     }
 
-    public BuildException(String message, Throwable cause,
-                          boolean enableSuppression,
-                          boolean writableStackTrace) {
+    public BuildException(@Nonnull final String message,
+                          @Nonnull final Throwable cause,
+                          final boolean enableSuppression,
+                          final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

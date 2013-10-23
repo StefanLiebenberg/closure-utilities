@@ -1,7 +1,7 @@
 package org.stefanl.closure_utilities.render;
 
 import org.stefanl.closure_utilities.javascript.ClosureSourceFile;
-import org.stefanl.closure_utilities.utilities.FsTool;
+import org.stefanl.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,7 +39,7 @@ public class DependencyFileRenderer
                                         @Nonnull final StringBuffer sb) {
         final String path = dep.getSourceLocation().toString();
         if (basePath != null) {
-            final String relative = FsTool.getRelativePath(Paths.get(path),
+            final String relative = FS.getRelativePath(Paths.get(path),
                     Paths.get(basePath)).toString();
             sb.append(relative);
         } else {

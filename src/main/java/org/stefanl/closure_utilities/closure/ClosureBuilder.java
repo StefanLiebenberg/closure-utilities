@@ -4,17 +4,14 @@ import org.stefanl.closure_utilities.html.HtmlBuildOptions;
 import org.stefanl.closure_utilities.html.HtmlBuilder;
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
 import org.stefanl.closure_utilities.internal.BuildException;
+import org.stefanl.closure_utilities.internal.BuildOptionsException;
 import org.stefanl.closure_utilities.internal.BuilderInterface;
-import org.stefanl.closure_utilities.internal.InvalidBuildOptionsException;
 import org.stefanl.closure_utilities.javascript.JsBuildOptions;
-import org.stefanl.closure_utilities.javascript.JsBuilder;
 import org.stefanl.closure_utilities.javascript.JsBuilder;
 import org.stefanl.closure_utilities.render.DefaultHtmlRenderer;
 import org.stefanl.closure_utilities.stylesheets.GssBuildOptions;
 import org.stefanl.closure_utilities.stylesheets.GssBuilder;
-import org.stefanl.closure_utilities.stylesheets.GssBuilder;
 import org.stefanl.closure_utilities.templates.SoyBuildOptions;
-import org.stefanl.closure_utilities.templates.SoyBuilder;
 import org.stefanl.closure_utilities.templates.SoyBuilder;
 
 import javax.annotation.Nonnull;
@@ -53,16 +50,22 @@ public class ClosureBuilder
 
     public static final String DEFAULT_STYLESHEET_FILENAME = "style.css";
 
+    @Nonnull
     public File getGssOutputFile() {
-        return new File(buildOptions.getOutputDirectory(),
-                DEFAULT_STYLESHEET_FILENAME);
+        final File outputStylesheetFile =
+                buildOptions.getOutputStylesheetFile();
+        if (outputStylesheetFile != null) {
+            return outputStylesheetFile;
+        } else {
+            return new File(buildOptions.getOutputDirectory(),
+                    DEFAULT_STYLESHEET_FILENAME);
+        }
     }
+
 
     @Nonnull
     public GssBuildOptions getGssBuildOptions() {
-
         final GssBuildOptions gssBuildOptions = new GssBuildOptions();
-
         gssBuildOptions.setShouldCalculateDependencies(true);
         gssBuildOptions.setAssetsDirectory(buildOptions.getAssetsDirectory());
         gssBuildOptions.setEntryPoints(buildOptions.getGssEntryPoints());
@@ -72,9 +75,10 @@ public class ClosureBuilder
                 buildOptions.getCssClassRenameMap());
         gssBuildOptions.setShouldGenerateForDebug(
                 buildOptions.getShouldDebug());
-        gssBuildOptions.setShouldGenerateForProduction(
-                buildOptions.getShouldCompile());
+        gssBuildOptions.setShouldGenerateForProduction(buildOptions
+                .getShouldCompile());
         gssBuildOptions.setOutputFile(getGssOutputFile());
+        gssBuildOptions.setAssetsUri(buildOptions.getAssetsUri());
         return gssBuildOptions;
     }
 
@@ -90,7 +94,6 @@ public class ClosureBuilder
     @Nonnull
     public File getSoyOutputDirectory() {
         final File soyOutputDirectory = buildOptions.getSoyOutputDirectory();
-
         if (soyOutputDirectory != null) {
             return soyOutputDirectory;
         } else {
@@ -138,15 +141,14 @@ public class ClosureBuilder
                 buildOptions.getJavascriptSourceDirectories());
         jsBuildOptions.setShouldCompile(buildOptions.getShouldCompile());
         jsBuildOptions.setShouldDebug(buildOptions.getShouldDebug());
+        jsBuildOptions.setOutputDependencyFile(
+                buildOptions.getJavascriptDependencyOutputFile());
         return jsBuildOptions;
-
     }
 
     public void buildJs() throws BuildException {
-
         jsBuilder.setBuildOptions(getJsBuildOptions());
         jsBuilder.build();
-
     }
 
     public final static String DEFAULT_HTML_PAGE_NAME =
@@ -154,11 +156,16 @@ public class ClosureBuilder
 
     @Nonnull
     public File getHtmlOutputFile() {
-        return getOutputFile(DEFAULT_HTML_PAGE_NAME);
+        final File htmlFile = buildOptions.getOutputHtmlFile();
+        if (htmlFile != null) {
+            return htmlFile;
+        } else {
+            return getOutputFile(DEFAULT_HTML_PAGE_NAME);
+        }
     }
 
     @Nonnull
-    public List<File> getStylesheets() {
+    public List<File> getStylesheetsForHtmlBuild() {
         final List<File> stylesheets = new ArrayList<>();
 
         final List<File> externalStylesheets =
@@ -175,7 +182,8 @@ public class ClosureBuilder
     }
 
     @Nonnull
-    public List<File> getJavascriptFiles() {
+    public List<File> getJavascriptFilesForHtmlBuild() {
+
         final List<File> javascriptFiles = new ArrayList<>();
         final List<File> externalScripts = buildOptions
                 .getExternalScriptFiles();
@@ -201,8 +209,8 @@ public class ClosureBuilder
     public HtmlBuildOptions getHtmlBuildOptions() {
         final HtmlBuildOptions htmlBuildOptions = new HtmlBuildOptions();
         htmlBuildOptions.setOutputFile(getHtmlOutputFile());
-        htmlBuildOptions.setStylesheetFiles(getStylesheets());
-        htmlBuildOptions.setJavascriptFiles(getJavascriptFiles());
+        htmlBuildOptions.setStylesheetFiles(getStylesheetsForHtmlBuild());
+        htmlBuildOptions.setJavascriptFiles(getJavascriptFilesForHtmlBuild());
         htmlBuildOptions.setHtmlRenderer(new DefaultHtmlRenderer());
         htmlBuildOptions.setContent(buildOptions.getHtmlContent());
         htmlBuildOptions.setLocationMap(null);
@@ -229,11 +237,11 @@ public class ClosureBuilder
             "Closure output directory has not been specified.";
 
     @Override
-    public void checkOptions() throws InvalidBuildOptionsException {
+    public void checkOptions() throws BuildOptionsException {
         super.checkOptions();
         final File outputDirectory = buildOptions.getOutputDirectory();
         if (outputDirectory == null) {
-            throw new InvalidBuildOptionsException
+            throw new BuildOptionsException
                     (UNSPECIFIED_OUTPUT_DIRECTORY);
         }
     }

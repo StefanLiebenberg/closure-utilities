@@ -4,7 +4,7 @@ package org.stefanl.closure_utilities.internal;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
-import org.stefanl.closure_utilities.utilities.FsTool;
+import org.stefanl.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -50,7 +50,7 @@ public abstract class AbstractBuildTest<A extends AbstractBuilder<? super B>,
     protected void setUp() throws Exception {
         builderOptions = buildOptionsClass.newInstance();
         builder.setBuildOptions(builderOptions);
-        outputDirectory = FsTool.getTempDirectory();
+        outputDirectory = FS.getTempDirectory();
     }
 
     protected void tearDown() throws Exception {

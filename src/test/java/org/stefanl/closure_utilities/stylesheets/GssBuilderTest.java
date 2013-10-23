@@ -1,12 +1,12 @@
 package org.stefanl.closure_utilities.stylesheets;
 
-import org.stefanl.closure_utilities.internal.AbstractBuildTest;
-import org.stefanl.closure_utilities.utilities.FsTool;
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.stefanl.closure_utilities.internal.AbstractBuildTest;
+import org.stefanl.closure_utilities.utilities.FS;
 
 import java.io.File;
 import java.net.URI;
@@ -44,7 +44,7 @@ public class GssBuilderTest extends AbstractBuildTest<GssBuilder,
         builderOptions.setShouldCalculateDependencies(true);
         builder.build();
 
-        String content = FsTool.read(outputFile);
+        String content = FS.read(outputFile);
         Assert.assertTrue(content.contains(".foo-color{background:red}"));
         Assert.assertTrue(content.contains(".foo-font{font:Arial,12px}"));
         Assert.assertTrue(content.contains(".foo-image{background:url" +
@@ -66,7 +66,7 @@ public class GssBuilderTest extends AbstractBuildTest<GssBuilder,
         builderOptions.setAssetsUri(assetsDirectory);
         builder.build();
 
-        final String content = FsTool.read(outputFile);
+        final String content = FS.read(outputFile);
         Assert.assertTrue(content.contains(".foo-color{background:red}"));
         Assert.assertTrue(content.contains(".foo-font{font:Arial,12px}"));
         Assert.assertTrue(content.contains(".foo-image{background:url" +

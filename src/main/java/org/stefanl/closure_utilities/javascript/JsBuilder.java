@@ -9,7 +9,7 @@ import org.stefanl.closure_utilities.internal.*;
 import org.stefanl.closure_utilities.render.DependencyFileRenderer;
 import org.stefanl.closure_utilities.render.RenderException;
 import org.stefanl.closure_utilities.soy.SoyDelegateOptimizer;
-import org.stefanl.closure_utilities.utilities.FsTool;
+import org.stefanl.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -43,7 +43,7 @@ public class JsBuilder
     private ClosureSourceFile parseFile(@Nonnull File inputFile)
             throws IOException {
         ClosureSourceFile sourceFile = new ClosureSourceFile(inputFile);
-        dependencyParser.parse(sourceFile, FsTool.read(inputFile));
+        dependencyParser.parse(sourceFile, FS.read(inputFile));
         return sourceFile;
     }
 
@@ -52,7 +52,7 @@ public class JsBuilder
                 buildOptions.getSourceDirectories();
         if (sourceDirectories != null) {
             final Collection<File> sourceFiles =
-                    FsTool.find(sourceDirectories, JS_EXT);
+                    FS.find(sourceDirectories, JS_EXT);
             closureSourceFiles = new ArrayList<>();
             for (File sourceFile : sourceFiles) {
                 closureSourceFiles.add(parseFile(sourceFile));
@@ -67,7 +67,7 @@ public class JsBuilder
     public void buildDependenciesFile() throws RenderException, IOException {
         File dependencyFile = buildOptions.getOutputDependencyFile();
         if (dependencyFile != null) {
-            FsTool.write(dependencyFile, dependencyFileRenderer
+            FS.write(dependencyFile, dependencyFileRenderer
                     .setBasePath(null)
                     .setDependencies(closureSourceFiles)
                     .render());
@@ -81,7 +81,7 @@ public class JsBuilder
                 .getSourceDirectories();
         if (srcDirectories != null && entryPoints != null) {
             final Collection<File> allSourceFiles =
-                    FsTool.find(srcDirectories, JS_EXT);
+                    FS.find(srcDirectories, JS_EXT);
             final Collection<ClosureSourceFile> dependencies =
                     new HashSet<>();
 
@@ -222,7 +222,7 @@ public class JsBuilder
         if (compilerResult.success) {
             final String source = compiler.toSource();
             outputFile = buildOptions.getOutputFile();
-            FsTool.write(outputFile, source);
+            FS.write(outputFile, source);
         } else {
             throw new BuildException("Compilation Failure");
         }
@@ -268,7 +268,7 @@ public class JsBuilder
             "Javascript source directories have not specified.";
 
     @Override
-    public void checkOptions() throws InvalidBuildOptionsException {
+    public void checkOptions() throws BuildOptionsException {
         super.checkOptions();
 
         final File outFile = buildOptions.getOutputFile();
@@ -278,13 +278,13 @@ public class JsBuilder
 
         final Collection<String> entryPoints = buildOptions.getEntryPoints();
         if (entryPoints == null || entryPoints.isEmpty()) {
-            throw new InvalidBuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
+            throw new BuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
         }
 
         final Collection<File> sourceDirectories =
                 buildOptions.getSourceDirectories();
         if (sourceDirectories == null || sourceDirectories.isEmpty()) {
-            throw new InvalidBuildOptionsException
+            throw new BuildOptionsException
                     (UNSPECIFIED_SOURCE_DIRECTORIES);
         }
     }

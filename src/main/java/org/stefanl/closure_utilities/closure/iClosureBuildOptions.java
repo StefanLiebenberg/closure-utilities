@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.net.URI;
 
 public interface iClosureBuildOptions {
 
@@ -39,7 +40,6 @@ public interface iClosureBuildOptions {
     @Nonnull
     public Boolean getShouldCompile();
 
-
     @Nonnull
     public Boolean getShouldDebug();
 
@@ -51,7 +51,19 @@ public interface iClosureBuildOptions {
     public File getAssetsDirectory();
 
     @Nullable
+    public URI getAssetsUri();
+
+    @Nullable
     public File getCssClassRenameMap();
+
+    @Nullable
+    public File getOutputHtmlFile();
+
+    @Nullable
+    public File getJavascriptDependencyOutputFile();
+
+    @Nullable
+    public File getOutputStylesheetFile();
 
     @Nullable
     public String getHtmlContent();

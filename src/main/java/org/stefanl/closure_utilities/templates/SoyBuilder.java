@@ -10,10 +10,10 @@ import com.google.template.soy.msgs.SoyMsgBundle;
 import com.google.template.soy.shared.SoyGeneralOptions;
 import com.google.template.soy.xliffmsgplugin.XliffMsgPlugin;
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
-import org.stefanl.closure_utilities.internal.AbstractBuilder;
+import org.stefanl.closure_utilities.internal.BuildOptionsException;
 import org.stefanl.closure_utilities.internal.BuilderInterface;
-import org.stefanl.closure_utilities.internal.InvalidBuildOptionsException;
-import org.stefanl.closure_utilities.utilities.FsTool;
+import org.stefanl.closure_utilities.utilities.FS;
+
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -63,7 +63,7 @@ public class SoyBuilder extends AbstractBuilder<iSoyBuildOptions>
             throws IOException {
         final SoyFileSet.Builder builder = getSoyBuilder();
         for (File file : files) {
-            builder.add(FsTool.read(file), file.getPath());
+            builder.add(FS.read(file), file.getPath());
         }
         return builder.build();
     }
@@ -91,7 +91,7 @@ public class SoyBuilder extends AbstractBuilder<iSoyBuildOptions>
         SoyMsgBundle bundle = null;
         if (messageFile != null && messageFile.exists()) {
             bundle = xliffMsgPlugin.parseTranslatedMsgsFile(
-                    FsTool.read(messageFile));
+                    FS.read(messageFile));
         }
         return soyFileSet.compileToJsSrc(jsSrcOptions, bundle);
     }
@@ -120,7 +120,7 @@ public class SoyBuilder extends AbstractBuilder<iSoyBuildOptions>
         final Collection<File> sourceDirectories =
                 buildOptions.getSourceDirectories();
         if (sourceDirectories != null && !sourceDirectories.isEmpty()) {
-            sourceFiles.addAll(FsTool.find(sourceDirectories, "soy"));
+            sourceFiles.addAll(FS.find(sourceDirectories, "soy"));
         }
         if (!sourceFiles.isEmpty()) {
             compiledSources = compile(sourceFiles);
@@ -142,7 +142,7 @@ public class SoyBuilder extends AbstractBuilder<iSoyBuildOptions>
             sourceContent = entry.getValue();
             outputFile = new File(output, sourceFile.getPath() + ".js");
             generatedFiles.add(outputFile);
-            FsTool.write(outputFile, sourceContent);
+            FS.write(outputFile, sourceContent);
         }
     }
 
@@ -150,7 +150,7 @@ public class SoyBuilder extends AbstractBuilder<iSoyBuildOptions>
             "Soy sources are unspecified";
 
     @Override
-    public void checkOptions() throws InvalidBuildOptionsException {
+    public void checkOptions() throws BuildOptionsException {
         super.checkOptions();
 
         final ImmutableCollection<File> srcDirs =
@@ -162,7 +162,7 @@ public class SoyBuilder extends AbstractBuilder<iSoyBuildOptions>
                 sources != null && !sources.isEmpty();
 
         if (!srcDirsIsSpecified && !sourcesIsSpecified) {
-            throw new InvalidBuildOptionsException(UNSPECIFIED_SOURCES);
+            throw new BuildOptionsException(UNSPECIFIED_SOURCES);
         }
 
     }

@@ -9,7 +9,7 @@ import org.stefanl.closure_utilities.internal.AbstractBuildTest;
 import org.stefanl.closure_utilities.templates.SoyBuildOptions;
 import org.stefanl.closure_utilities.templates.SoyBuilder;
 import org.stefanl.closure_utilities.templates.SoyBuilder;
-import org.stefanl.closure_utilities.utilities.FsTool;
+import org.stefanl.closure_utilities.utilities.FS;
 
 import java.io.File;
 import java.util.Collection;
@@ -28,7 +28,7 @@ public class SoyBuilderTest extends
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        outputDirectory = FsTool.getTempDirectory();
+        outputDirectory = FS.getTempDirectory();
         builderOptions.setOutputDirectory(outputDirectory);
     }
 

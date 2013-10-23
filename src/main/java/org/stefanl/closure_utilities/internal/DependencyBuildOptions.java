@@ -13,7 +13,7 @@ public class DependencyBuildOptions<A extends BaseSourceFile> {
 
     private Collection<A> sourceFiles;
 
-    private List<String> entryPoints;
+    private ImmutableList<String> entryPoints;
 
     public void setSourceFiles(
             @Nonnull final Collection<A> sourceFiles) {
@@ -22,7 +22,7 @@ public class DependencyBuildOptions<A extends BaseSourceFile> {
 
     public void setEntryPoints(
             @Nonnull final List<String> entryPoints) {
-        this.entryPoints = entryPoints;
+        this.entryPoints = Immuter.list(entryPoints);
     }
 
     @Nullable

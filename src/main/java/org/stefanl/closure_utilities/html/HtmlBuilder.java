@@ -1,12 +1,12 @@
 package org.stefanl.closure_utilities.html;
 
-import org.stefanl.closure_utilities.internal.*;
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
+import org.stefanl.closure_utilities.internal.BuildOptionsException;
 import org.stefanl.closure_utilities.internal.BuilderInterface;
 import org.stefanl.closure_utilities.render.DefaultHtmlRenderer;
 import org.stefanl.closure_utilities.render.HtmlRenderer;
 import org.stefanl.closure_utilities.render.RenderException;
-import org.stefanl.closure_utilities.utilities.FsTool;
+import org.stefanl.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -64,7 +64,7 @@ public class HtmlBuilder
     public void buildInternal() throws Exception {
         final File outputFile = buildOptions.getOutputFile();
         if (outputFile != null) {
-            FsTool.write(outputFile, renderHtmlFile(outputFile));
+            FS.write(outputFile, renderHtmlFile(outputFile));
             generatedHtmlFile = outputFile;
         }
     }
@@ -73,13 +73,13 @@ public class HtmlBuilder
             "Html output file has not been specified.";
 
     @Override
-    public void checkOptions() throws InvalidBuildOptionsException {
+    public void checkOptions() throws BuildOptionsException {
 
         super.checkOptions();
 
         final File outputFile = buildOptions.getOutputFile();
         if (outputFile == null) {
-            throw new InvalidBuildOptionsException(UNSPECIFIED_OUTPUT_FILE);
+            throw new BuildOptionsException(UNSPECIFIED_OUTPUT_FILE);
         }
 
     }

@@ -5,7 +5,8 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.css.compiler.commandline.ClosureCommandLineCompiler;
 import org.stefanl.closure_utilities.internal.*;
-import org.stefanl.closure_utilities.utilities.FsTool;
+import org.stefanl.closure_utilities.utilities.FS;
+import org.stefanl.closure_utilities.utilities.FS;
 import org.stefanl.closure_utilities.utilities.Immuter;
 
 import javax.annotation.Nonnull;
@@ -74,7 +75,7 @@ public class GssBuilder
         arguments.add("--allow-unrecognized-properties");
 
         if (renameMap != null) {
-            FsTool.ensureDirectoryFor(renameMap);
+            FS.ensureDirectoryFor(renameMap);
             arguments.add("--output-renaming-map");
             arguments.add(renameMap.getPath());
         }
@@ -98,9 +99,9 @@ public class GssBuilder
 
 
         arguments.add("--output-file");
-        FsTool.ensureDirectoryFor(outputFile);
-        arguments.add(FsTool.FILE_TO_FILEPATH.apply(outputFile));
-        arguments.addAll(Immuter.list(sourceFiles, FsTool.FILE_TO_FILEPATH));
+        FS.ensureDirectory(outputFile);
+        arguments.add(FS.FILE_TO_FILEPATH.apply(outputFile));
+        arguments.addAll(Immuter.list(sourceFiles, FS.FILE_TO_FILEPATH));
         ClosureCommandLineCompiler.main(Immuter.stringArray(arguments));
         generatedRenameMap = renameMap;
     }
@@ -134,7 +135,7 @@ public class GssBuilder
 
         File assetsDirectory = buildOptions.getAssetsDirectory();
         if (assetsDirectory != null) {
-            return FsTool.getRelative(assetsDirectory,
+            return FS.getRelative(assetsDirectory,
                     outputFile.getParentFile());
         }
 
@@ -145,9 +146,9 @@ public class GssBuilder
             throws IOException {
         final File outputFile = buildOptions.getOutputFile();
         if (outputFile != null) {
-            final String content = FsTool.read(temporaryOutputFile);
+            final String content = FS.read(temporaryOutputFile);
             final String base = getBasePath(outputFile);
-            FsTool.write(outputFile, parseCssFunctions(content, base));
+            FS.write(outputFile, parseCssFunctions(content, base));
             generatedStylesheet = outputFile;
         }
     }
@@ -157,7 +158,7 @@ public class GssBuilder
     private File getTemporaryFile()
             throws BuildException {
         try {
-            return FsTool.getTempFile("css_", "pass1");
+            return FS.getTempFile("css_", "pass1");
         } catch (IOException e) {
             throw new BuildException(e);
         }
@@ -174,7 +175,7 @@ public class GssBuilder
 
         if (sourceDirectories != null && entryPoints != null) {
             final Collection<File> allSourceFiles =
-                    FsTool.find(sourceDirectories, "gss");
+                    FS.find(sourceDirectories, "gss");
             gssDependencyLoader =
                     new DependencyLoader<GssSourceFile>(gssDependencyParser,
                             allSourceFiles) {
@@ -215,12 +216,12 @@ public class GssBuilder
 
 
     @Override
-    public void checkOptions() throws InvalidBuildOptionsException {
+    public void checkOptions() throws BuildOptionsException {
         super.checkOptions();
 
         final File outputFile = buildOptions.getOutputFile();
         if (outputFile == null) {
-            throw new InvalidBuildOptionsException(UNSPECIFIED_OUTPUT_FILE);
+            throw new BuildOptionsException(UNSPECIFIED_OUTPUT_FILE);
         }
 
         final Boolean shouldCalculate =
@@ -235,13 +236,13 @@ public class GssBuilder
         final Boolean sourceFilesAreSpecified =
                 sourceFiles != null && !sourceFiles.isEmpty();
         if (!sourceDirectoriesAreSpecified && !sourceFilesAreSpecified) {
-            throw new InvalidBuildOptionsException(UNSPECIFIED_SOURCES);
+            throw new BuildOptionsException(UNSPECIFIED_SOURCES);
         }
 
 
         final Collection<String> entryPoints = buildOptions.getEntryPoints();
         if (shouldCalculate && (entryPoints == null || entryPoints.isEmpty())) {
-            throw new InvalidBuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
+            throw new BuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
         }
 
     }

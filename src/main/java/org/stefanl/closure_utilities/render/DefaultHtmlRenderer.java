@@ -1,7 +1,7 @@
 package org.stefanl.closure_utilities.render;
 
 
-import org.stefanl.closure_utilities.utilities.FsTool;
+import org.stefanl.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,7 +15,7 @@ public class DefaultHtmlRenderer
     @Nonnull
     protected String getFilePath(@Nonnull File file) {
         if (outputPath != null) {
-            return FsTool.getRelative(file, outputPath.getParentFile());
+            return FS.getRelative(file, outputPath.getParentFile());
         } else {
             return file.getPath();
         }
@@ -98,7 +98,7 @@ public class DefaultHtmlRenderer
             if (shouldInline) {
                 final StringBuilder content = new StringBuilder();
                 for (File stylesheet : stylesheets) {
-                    content.append(FsTool.read(stylesheet));
+                    content.append(FS.read(stylesheet));
                 }
                 html.append(renderStylesheet(content.toString()));
             } else {
@@ -117,7 +117,7 @@ public class DefaultHtmlRenderer
             if (shouldInline) {
                 StringBuilder content = new StringBuilder();
                 for (File script : scripts) {
-                    content.append(FsTool.read(script));
+                    content.append(FS.read(script));
                 }
                 html.append(renderScript(content.toString()));
             } else {

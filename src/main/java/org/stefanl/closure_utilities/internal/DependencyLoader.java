@@ -1,7 +1,7 @@
 package org.stefanl.closure_utilities.internal;
 
 
-import org.stefanl.closure_utilities.utilities.FsTool;
+import org.stefanl.closure_utilities.utilities.FS;
 import org.stefanl.closure_utilities.utilities.Immuter;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -30,7 +30,7 @@ public abstract class DependencyLoader<A extends BaseSourceFile> {
         dependencies = new HashSet<A>();
         for (File file : fileDependencies) {
             A dep = createDependency(file);
-            depParser.parse(dep, FsTool.read(file));
+            depParser.parse(dep, FS.read(file));
             dependencies.add(dep);
         }
 

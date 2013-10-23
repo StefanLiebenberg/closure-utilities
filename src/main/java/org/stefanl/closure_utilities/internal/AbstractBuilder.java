@@ -22,19 +22,16 @@ public abstract class AbstractBuilder<A>
     protected abstract void buildInternal() throws Exception;
 
     public static final String BUILD_EXCEPTION_MESSAGE =
-            "An exception occured during the build.";
+            "An exception occurred during the build";
 
     @Override
     public void build() throws BuildException {
         checkOptions();
         try {
             buildInternal();
+        } catch (BuildException buildException) {
+            throw buildException;
         } catch (Exception exception) {
-            if (exception instanceof BuildException) {
-                // doing this creates a somewhat cleaner
-                // stack trace to debug.
-                throw (BuildException) exception;
-            }
             throw new BuildException(BUILD_EXCEPTION_MESSAGE, exception);
         }
     }
@@ -50,9 +47,9 @@ public abstract class AbstractBuilder<A>
 
     @Override
     public void checkOptions()
-            throws InvalidBuildOptionsException {
+            throws BuildOptionsException {
         if (buildOptions == null) {
-            throw new InvalidBuildOptionsException(
+            throw new BuildOptionsException(
                     BUILD_OPTIONS_ERROR,
                     new NullPointerException());
         }

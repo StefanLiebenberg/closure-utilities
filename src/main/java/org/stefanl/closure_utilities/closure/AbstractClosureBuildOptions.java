@@ -7,9 +7,10 @@ import com.google.common.collect.ImmutableList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.net.URI;
 
-public abstract class BaseClosureBuildOptions implements iClosureBuildOptions {
-
+public abstract class AbstractClosureBuildOptions implements
+        iClosureBuildOptions {
 
     protected ImmutableCollection<File> soySourceDirectories;
 
@@ -135,6 +136,39 @@ public abstract class BaseClosureBuildOptions implements iClosureBuildOptions {
     @Nullable
     public String getHtmlContent() {
         return htmlContent;
+    }
+
+    protected File javascriptDependencyOutputFile;
+
+    @Nullable
+    @Override
+    public File getJavascriptDependencyOutputFile() {
+        return javascriptDependencyOutputFile;
+    }
+
+    protected File outputHtmlFile;
+
+    @Nullable
+    @Override
+    public File getOutputHtmlFile() {
+        return outputHtmlFile;
+    }
+
+
+    protected File outputStylesheetFile;
+
+    @Nullable
+    @Override
+    public File getOutputStylesheetFile() {
+        return outputStylesheetFile;
+    }
+
+    protected URI assetsUri;
+
+    @Nullable
+    @Override
+    public URI getAssetsUri() {
+        return assetsUri;
     }
 
 }

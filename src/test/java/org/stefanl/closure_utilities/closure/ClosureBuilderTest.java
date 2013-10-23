@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.stefanl.closure_utilities.internal.AbstractBuildTest;
 import org.stefanl.closure_utilities.internal.BuildException;
-import org.stefanl.closure_utilities.utilities.FsTool;
+import org.stefanl.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -83,7 +83,7 @@ public class ClosureBuilderTest extends
         builder.buildGss();
 
         Assert.assertNotNull(builder.getGssOutputFile());
-        final String content = FsTool.read(builder.getGssOutputFile());
+        final String content = FS.read(builder.getGssOutputFile());
         Assert.assertTrue(content.contains(".foo-color{background:red}"));
     }
 
@@ -93,12 +93,12 @@ public class ClosureBuilderTest extends
         builder.buildSoy();
 
         final File soyOutputDir = builder.getSoyOutputDirectory();
-        final Collection<File> compiledSources = FsTool.find(soyOutputDir,
+        final Collection<File> compiledSources = FS.find(soyOutputDir,
                 "soy.js");
         final Collection<File> sourceDirs =
                 builderOptions.getSoySourceDirectories();
         if (sourceDirs != null) {
-            final Collection<File> sources = FsTool.find(sourceDirs, "soy");
+            final Collection<File> sources = FS.find(sourceDirs, "soy");
             Assert.assertEquals(sources.size(), compiledSources.size());
         }
     }
@@ -117,7 +117,7 @@ public class ClosureBuilderTest extends
         final File htmlOutputFile = builder.getHtmlOutputFile();
         Assert.assertTrue("Output file exists", htmlOutputFile.exists());
 
-        final String actual = FsTool.read(htmlOutputFile);
+        final String actual = FS.read(htmlOutputFile);
         final String expected =
                 "<!DOCTYPE html><html><head></head><body></body></html>";
         Assert.assertEquals(expected, actual);
@@ -140,7 +140,7 @@ public class ClosureBuilderTest extends
 
         builder.buildHtml();
         final File htmlOutputFile = builder.getHtmlOutputFile();
-        final String actual = FsTool.read(htmlOutputFile);
+        final String actual = FS.read(htmlOutputFile);
 
         final String expectedScripts =
                 "<script src=\"one.js\" type=\"text/javascript\"></script>" +
@@ -174,7 +174,7 @@ public class ClosureBuilderTest extends
         builder.build();
 
         final File htmlOutput = builder.getHtmlOutputFile();
-        final String htmlContent = FsTool.read(htmlOutput);
+        final String htmlContent = FS.read(htmlOutput);
         Document htmlDocument = Jsoup.parse(htmlContent);
 
         Element headElement = htmlDocument.select("head").first();
@@ -225,7 +225,7 @@ public class ClosureBuilderTest extends
         builder.build();
 
         final File htmlOutput = builder.getHtmlOutputFile();
-        final String htmlContent = FsTool.read(htmlOutput);
+        final String htmlContent = FS.read(htmlOutput);
         Document htmlDocument = Jsoup.parse(htmlContent);
 
         Element headElement = htmlDocument.select("head").first();
@@ -253,7 +253,7 @@ public class ClosureBuilderTest extends
         builder.build();
 
         final File htmlOutput = builder.getHtmlOutputFile();
-        final String htmlContent = FsTool.read(htmlOutput);
+        final String htmlContent = FS.read(htmlOutput);
         Document htmlDocument = Jsoup.parse(htmlContent);
 
         Element headElement = htmlDocument.select("head").first();

@@ -28,6 +28,8 @@ public class Immuter {
     @Nonnull
     public static <A> ImmutableList<A> list(
             @Nonnull final Collection<A> collection) {
+
+
         return ImmutableList.copyOf(collection);
     }
 
