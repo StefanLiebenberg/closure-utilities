@@ -1,8 +1,7 @@
 package org.stefanl.closure_utilities.stylesheets;
 
-import org.stefanl.closure_utilities.internal.PreProcessor;
 import org.apache.commons.io.IOUtils;
-import org.codehaus.plexus.util.StringUtils;
+import org.stefanl.closure_utilities.internal.PreProcessor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,9 +20,10 @@ public class ImageUrlProcessor implements PreProcessor {
 
     private static final String DOUBLE_QUOTE = "\"";
 
-    private static String stripQoutes(String quotedString) {
-        return StringUtils.strip(StringUtils.strip(quotedString,
-                DOUBLE_QUOTE), SINGLE_QUOTE);
+    private static String stripQuotes(String quotedString) {
+        return quotedString
+                .replaceAll(SINGLE_QUOTE, "")
+                .replaceAll(DOUBLE_QUOTE, "");
     }
 
     private String imageRoot;
@@ -60,7 +60,7 @@ public class ImageUrlProcessor implements PreProcessor {
         while (matcher.find()) {
             if (matcher.groupCount() == 1) {
                 urlSegment = matcher.group(1);
-                stripped = stripQoutes(urlSegment);
+                stripped = stripQuotes(urlSegment);
                 path = getStringPath(stripped);
                 matcher.appendReplacement(sb, "url(" + path + ")");
             }
