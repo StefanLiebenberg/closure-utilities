@@ -2,6 +2,7 @@ package org.stefanl.closure_utilities.javascript;
 
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.Compiler;
@@ -35,6 +36,8 @@ public class JsBuilder
 
     private static final String JS_EXT = "js";
 
+    private File baseFile;
+
     private List<File> sourceFiles;
 
     private List<ClosureSourceFile> closureSourceFiles;
@@ -44,6 +47,9 @@ public class JsBuilder
             throws IOException {
         ClosureSourceFile sourceFile = new ClosureSourceFile(inputFile);
         dependencyParser.parse(sourceFile, FS.read(inputFile));
+        if (sourceFile.getIsBaseFile()) {
+            baseFile = inputFile;
+        }
         return sourceFile;
     }
 
@@ -68,7 +74,7 @@ public class JsBuilder
         File dependencyFile = buildOptions.getOutputDependencyFile();
         if (dependencyFile != null) {
             FS.write(dependencyFile, dependencyFileRenderer
-                    .setBasePath(null)
+                    .setBasePath(baseFile.getAbsolutePath())
                     .setDependencies(closureSourceFiles)
                     .render());
         }
@@ -77,28 +83,13 @@ public class JsBuilder
     public void calculateDependencies()
             throws DependencyException, IOException, BuildException {
         final List<String> entryPoints = buildOptions.getEntryPoints();
-        final Collection<File> srcDirectories = buildOptions
-                .getSourceDirectories();
-        if (srcDirectories != null && entryPoints != null) {
-            final Collection<File> allSourceFiles =
-                    FS.find(srcDirectories, JS_EXT);
-            final Collection<ClosureSourceFile> dependencies =
-                    new HashSet<>();
 
-            for (File sourceFile : allSourceFiles) {
-                ClosureSourceFile closureSourceFile =
-                        new ClosureSourceFile(sourceFile);
-                try (Reader fileReader = new FileReader(sourceFile)) {
-                    dependencyParser.parse(closureSourceFile, fileReader);
-                }
-                dependencies.add(closureSourceFile);
-            }
-
+        if (entryPoints != null) {
             final DependencyBuildOptions<ClosureSourceFile>
                     depBuildOptions =
                     new DependencyBuildOptions<>();
             depBuildOptions.setEntryPoints(buildOptions.getEntryPoints());
-            depBuildOptions.setSourceFiles(dependencies);
+            depBuildOptions.setSourceFiles(closureSourceFiles);
             dependencyBuilder.setBuildOptions(depBuildOptions);
             dependencyBuilder.build();
         }
@@ -191,7 +182,7 @@ public class JsBuilder
     }
 
     public List<SourceFile> getCompilerSourceFiles() {
-        return Lists.transform(getSourceFiles(),
+        return Lists.transform(getScriptsFilesToCompile(),
                 new Function<File, SourceFile>() {
                     @Nullable
                     @Override
@@ -251,6 +242,23 @@ public class JsBuilder
     @Nullable
     public List<File> getSourceFiles() {
         return sourceFiles;
+    }
+
+    @Nonnull
+    public ImmutableList<File> getScriptsFilesToCompile() {
+        final ImmutableList.Builder<File> toCompileFiles =
+                new ImmutableList.Builder<File>();
+
+        toCompileFiles.add(baseFile);
+
+        File outputDepsFile = buildOptions.getOutputDependencyFile();
+        if (outputDepsFile != null) {
+            toCompileFiles.add(outputDepsFile);
+        }
+        // add rename map
+        // add defines.js
+        toCompileFiles.addAll(sourceFiles);
+        return toCompileFiles.build();
     }
 
     @Nullable

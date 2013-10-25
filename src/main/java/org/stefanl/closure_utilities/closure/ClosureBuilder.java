@@ -197,7 +197,8 @@ public class ClosureBuilder
                 javascriptFiles.add(outFile);
             }
         } else {
-            final List<File> calculatedSourceFiles = jsBuilder.getSourceFiles();
+            final List<File> calculatedSourceFiles =
+                    jsBuilder.getScriptsFilesToCompile();
             if (calculatedSourceFiles != null) {
                 javascriptFiles.addAll(calculatedSourceFiles);
             }

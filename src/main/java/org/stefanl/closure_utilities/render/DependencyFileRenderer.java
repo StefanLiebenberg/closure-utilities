@@ -37,9 +37,10 @@ public class DependencyFileRenderer
 
     protected void renderDependencyPath(@Nonnull final ClosureSourceFile dep,
                                         @Nonnull final StringBuffer sb) {
-        final String path = dep.getSourceLocation().toString();
+        final String path = dep.getSourceLocation().getPath();
         if (basePath != null) {
-            final String relative = FS.getRelativePath(Paths.get(path),
+            final String relative = FS.getRelativePath(
+                    Paths.get(path),
                     Paths.get(basePath)).toString();
             sb.append(relative);
         } else {
@@ -69,14 +70,17 @@ public class DependencyFileRenderer
         renderNamespaceArray(dep.getProvidedNamespaces(), sb);
         sb.append(", ");
         renderNamespaceArray(dep.getRequiredNamespaces(), sb);
-        sb.append(");\n");
+        sb.append(");");
     }
 
 
     @Override
     public void render(@Nonnull StringBuffer sb) throws RenderException {
+        String delim = "";
         for (ClosureSourceFile dep : dependencies) {
+            sb.append(delim);
             renderDependency(dep, sb);
+            delim = "\n";
         }
     }
 

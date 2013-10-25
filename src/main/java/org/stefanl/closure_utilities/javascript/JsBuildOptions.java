@@ -16,6 +16,7 @@ public class JsBuildOptions {
     private File outputFile;
 
     private Boolean shouldDebug = true;
+
     private Boolean shouldCompile = false;
 
     @Nullable
