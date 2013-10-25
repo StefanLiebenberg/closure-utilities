@@ -96,7 +96,8 @@ public class JsBuilder
         sourceFiles = dependencyBuilder.getResolvedFiles();
     }
 
-    private void setCompilerOptionsForCompile(CompilerOptions o) {
+    private void setCompilerOptionsForCompile(
+            @Nonnull final CompilerOptions o) {
         final CompilationLevel level =
                 CompilationLevel.ADVANCED_OPTIMIZATIONS;
         final CheckLevel err = CheckLevel.ERROR, off = CheckLevel.OFF;
@@ -145,12 +146,16 @@ public class JsBuilder
     }
 
     @Nonnull
-    private CompilerOptions getCompilerOptions(final File sourceMap) {
+    private CompilerOptions getCompilerOptions(
+            @Nullable final File sourceMap) {
+
         final CompilerOptions cOpts = new CompilerOptions();
 
         if (!buildOptions.getShouldDebug()) {
+            System.out.println("Setting compiler options for production!");
             setCompilerOptionsForCompile(cOpts);
         } else {
+            System.out.println("Setting compiler options for debug!");
             setCompilerOptionsForDebug(cOpts);
         }
 
