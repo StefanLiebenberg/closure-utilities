@@ -11,8 +11,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public abstract class AbstractBuildTest<A extends AbstractBuilder<? super B>,
-        B> {
+public abstract class AbstractBuildTest
+        <A extends AbstractBuilder<? super B>, B>
+        extends AbstractApplicationTest  {
 
     public enum Flavour {
         /**
@@ -58,16 +59,6 @@ public abstract class AbstractBuildTest<A extends AbstractBuilder<? super B>,
         outputDirectory = null;
         builderOptions = null;
         builder.reset();
-    }
-
-    @Nonnull
-    protected File getApplicationDirectory() {
-        return new File("src/test/resources/app");
-    }
-
-    @Nonnull
-    protected File getApplicationDirectory(String path) {
-        return new File(getApplicationDirectory(), path);
     }
 
     @Nonnull

@@ -54,6 +54,8 @@ public class BaseSourceFileTest {
         Assert.assertFalse(requires.contains("d"));
     }
 
+
+
     @Test
     public void testGetSourceLocation() throws Exception {
         Assert.assertEquals(new URI("/path"),

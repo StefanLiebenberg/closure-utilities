@@ -1,9 +1,9 @@
 package org.stefanl.closure_utilities.javascript;
 
+import com.google.javascript.rhino.head.Node;
+import com.google.javascript.rhino.head.Parser;
+import com.google.javascript.rhino.head.ast.*;
 import org.stefanl.closure_utilities.internal.IDependencyParser;
-import org.mozilla.javascript.Node;
-import org.mozilla.javascript.Parser;
-import org.mozilla.javascript.ast.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

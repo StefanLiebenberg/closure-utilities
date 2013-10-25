@@ -79,11 +79,10 @@ public class DependencyFileRendererTest {
         ClosureSourceFile dependency = new ClosureSourceFile(file);
         dependency.addProvideNamespace("package.one");
         dependency.addRequireNamespace("package.two");
-        dependency.addRequireNamespace("package.three");
         StringBuffer sb = new StringBuffer();
         renderer.renderDependency(dependency, sb);
         String expected = "goog.addDependency('/path.js', ['package.one'], " +
-                "['package.two', 'package.three']);";
+                "['package.two']);";
         Assert.assertEquals(expected, sb.toString());
     }
 

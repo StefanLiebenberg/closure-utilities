@@ -69,9 +69,10 @@ public class JsBuilder
     private final DependencyFileRenderer dependencyFileRenderer =
             new DependencyFileRenderer();
 
+    File dependencyFile;
 
     public void buildDependenciesFile() throws RenderException, IOException {
-        File dependencyFile = buildOptions.getOutputDependencyFile();
+        dependencyFile = buildOptions.getOutputDependencyFile();
         if (dependencyFile != null) {
             FS.write(dependencyFile, dependencyFileRenderer
                     .setBasePath(baseFile.getAbsolutePath())
@@ -242,6 +243,7 @@ public class JsBuilder
         sourceFiles = null;
         compilerResult = null;
         outputFile = null;
+        dependencyFile = null;
     }
 
     @Nullable
@@ -253,16 +255,18 @@ public class JsBuilder
     public ImmutableList<File> getScriptsFilesToCompile() {
         final ImmutableList.Builder<File> toCompileFiles =
                 new ImmutableList.Builder<File>();
+        if (baseFile != null) {
+            toCompileFiles.add(baseFile);
+        }
 
-        toCompileFiles.add(baseFile);
-
-        File outputDepsFile = buildOptions.getOutputDependencyFile();
-        if (outputDepsFile != null) {
-            toCompileFiles.add(outputDepsFile);
+        if (dependencyFile != null) {
+            toCompileFiles.add(dependencyFile);
         }
         // add rename map
         // add defines.js
-        toCompileFiles.addAll(sourceFiles);
+        if (sourceFiles != null) {
+            toCompileFiles.addAll(sourceFiles);
+        }
         return toCompileFiles.build();
     }
 
