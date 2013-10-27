@@ -11,14 +11,14 @@ import org.stefanl.closure_utilities.utilities.FS;
 import java.io.File;
 import java.net.URI;
 
-public class GssBuilderTest extends AbstractBuildTest<GssBuilder,
-        GssBuildOptions> {
+public class DefaultGssBuilderTest
+        extends AbstractBuildTest<DefaultGssBuilder, GssBuildOptions> {
 
     protected File outputFile;
 
-    public GssBuilderTest()
+    public DefaultGssBuilderTest()
             throws InstantiationException, IllegalAccessException {
-        super(GssBuilder.class, GssBuildOptions.class);
+        super(DefaultGssBuilder.class, GssBuildOptions.class);
     }
 
     @Override
@@ -48,6 +48,29 @@ public class GssBuilderTest extends AbstractBuildTest<GssBuilder,
         Assert.assertTrue(content.contains(".foo-color{background:red}"));
         Assert.assertTrue(content.contains(".foo-font{font:Arial,12px}"));
         Assert.assertTrue(content.contains(".foo-image{background:url" +
+                "(images/path-to-chicken.jpg)}"));
+
+
+        builderOptions.setEntryPoints(getGssEntryPoints(Flavour.BASIC));
+        builderOptions.setSourceDirectories(getGssSourceDirectories());
+        builderOptions.setShouldCalculateDependencies(true);
+        builder.build();
+
+        content = FS.read(outputFile);
+        Assert.assertTrue(content.contains(".foo-color{background:red}"));
+        Assert.assertTrue(content.contains(".foo-font{font:Arial,12px}"));
+        Assert.assertTrue(content.contains(".foo-image{background:url" +
+                "(images/path-to-chicken.jpg)}"));
+
+        builderOptions.setEntryPoints(Lists.newArrayList("shared-reset"));
+        builderOptions.setSourceDirectories(getGssSourceDirectories());
+        builderOptions.setShouldCalculateDependencies(true);
+        builder.build();
+
+        content = FS.read(outputFile);
+        Assert.assertFalse(content.contains(".foo-color{background:red}"));
+        Assert.assertFalse(content.contains(".foo-font{font:Arial,12px}"));
+        Assert.assertFalse(content.contains(".foo-image{background:url" +
                 "(images/path-to-chicken.jpg)}"));
     }
 

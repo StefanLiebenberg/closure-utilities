@@ -25,9 +25,6 @@ public interface iGssBuildOption {
     @Nonnull
     public Boolean getShouldGenerateForDebug();
 
-    @Nonnull
-    public Boolean getShouldCalculateDependencies();
-
     @Nullable
     public ImmutableCollection<File> getSourceDirectories();
 

@@ -3,8 +3,6 @@ package org.stefanl.closure_utilities.internal;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.commons.io.FileUtils;
-import org.stefanl.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -13,7 +11,7 @@ import java.util.HashSet;
 
 public abstract class AbstractBuildTest
         <A extends AbstractBuilder<? super B>, B>
-        extends AbstractApplicationTest  {
+        extends AbstractApplicationTest {
 
     public enum Flavour {
         /**
@@ -38,8 +36,6 @@ public abstract class AbstractBuildTest
 
     protected B builderOptions;
 
-    protected File outputDirectory;
-
     protected AbstractBuildTest(@Nonnull Class<A> builderClass,
                                 @Nonnull Class<B> buildOptionsClass)
             throws InstantiationException, IllegalAccessException {
@@ -48,17 +44,18 @@ public abstract class AbstractBuildTest
     }
 
 
+    @Override
     protected void setUp() throws Exception {
+        super.setUp();
         builderOptions = buildOptionsClass.newInstance();
         builder.setBuildOptions(builderOptions);
-        outputDirectory = FS.getTempDirectory();
     }
 
+    @Override
     protected void tearDown() throws Exception {
-        FileUtils.deleteDirectory(outputDirectory);
-        outputDirectory = null;
         builderOptions = null;
         builder.reset();
+        super.tearDown();
     }
 
     @Nonnull

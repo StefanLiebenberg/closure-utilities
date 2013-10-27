@@ -9,8 +9,8 @@ import org.stefanl.closure_utilities.internal.BuilderInterface;
 import org.stefanl.closure_utilities.javascript.JsBuildOptions;
 import org.stefanl.closure_utilities.javascript.JsBuilder;
 import org.stefanl.closure_utilities.render.DefaultHtmlRenderer;
+import org.stefanl.closure_utilities.stylesheets.DefaultGssBuilder;
 import org.stefanl.closure_utilities.stylesheets.GssBuildOptions;
-import org.stefanl.closure_utilities.stylesheets.GssBuilder;
 import org.stefanl.closure_utilities.templates.SoyBuildOptions;
 import org.stefanl.closure_utilities.templates.SoyBuilder;
 
@@ -25,12 +25,12 @@ public class ClosureBuilder
 
     public ClosureBuilder() {}
 
-    public ClosureBuilder(@Nonnull final iClosureBuildOptions
-                                  buildOptions) {
+    public ClosureBuilder(
+            @Nonnull final iClosureBuildOptions buildOptions) {
         super(buildOptions);
     }
 
-    private final GssBuilder gssBuilder = new GssBuilder();
+    private final DefaultGssBuilder gssBuilder = new DefaultGssBuilder();
 
     private final SoyBuilder soyBuilder = new SoyBuilder();
 

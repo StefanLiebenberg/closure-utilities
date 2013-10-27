@@ -1,7 +1,9 @@
 package org.stefanl.closure_utilities.internal;
 
 
-public interface BuilderInterface {
+import javax.annotation.Nonnull;
+
+public interface BuilderInterface<A> {
 
     public void checkOptions() throws BuildOptionsException;
 

@@ -79,10 +79,10 @@ public class FS {
     }
 
     @Nonnull
-    public static Collection<File> find(
+    public static HashSet<File> find(
             @Nonnull final Collection<File> directories,
             @Nonnull final String... extensions) {
-        final Collection<File> files = new HashSet<File>();
+        final HashSet<File> files = new HashSet<File>();
         collectFiles(directories, files, extensions);
         return files;
     }
@@ -105,6 +105,8 @@ public class FS {
         ensureDirectoryFor(output);
         try (final FileWriter writer = new FileWriter(output)) {
             writer.write(content);
+            writer.flush();
+            writer.close();
         }
     }
 

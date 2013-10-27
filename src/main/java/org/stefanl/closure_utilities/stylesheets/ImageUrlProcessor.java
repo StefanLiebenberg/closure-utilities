@@ -1,59 +1,21 @@
 package org.stefanl.closure_utilities.stylesheets;
 
-import org.apache.commons.io.IOUtils;
-import org.stefanl.closure_utilities.internal.PreProcessor;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.*;
-import java.net.URI;
-import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ImageUrlProcessor implements PreProcessor {
+public class ImageUrlProcessor extends AbstractGssProcessor
+        implements GssProcessor {
 
     private static final Pattern IMAGE_URL_PATTERN =
             Pattern.compile("image-url\\(([^\\)]+)\\)");
 
-    private static final String SINGLE_QUOTE = "'";
-
-    private static final String DOUBLE_QUOTE = "\"";
-
-    private static String stripQuotes(String quotedString) {
-        return quotedString
-                .replaceAll(SINGLE_QUOTE, "")
-                .replaceAll(DOUBLE_QUOTE, "");
-    }
-
-    private String imageRoot;
-
-    public void setImageRoot(@Nullable final String imageRoot) {
-        this.imageRoot = imageRoot;
-    }
-
-    @Nonnull
-    private String getStringPath(@Nonnull String inputPath) {
-        if (imageRoot != null) {
-            try {
-                if (!new URI(inputPath).isAbsolute() &&
-                        !Paths.get(inputPath).isAbsolute()) {
-                    return Paths.get(imageRoot, inputPath).toString();
-                }
-            } catch (Exception e) {
-                System.err.println("WARNING: getStringPath exception");
-                e.printStackTrace();
-
-            }
-        }
-        return inputPath;
-    }
-
-
     @Nonnull
     @Override
     public String processString(
-            @Nonnull final String inputString) {
+            @Nonnull final String inputString,
+            @Nullable final String imagePath) {
         final Matcher matcher = IMAGE_URL_PATTERN.matcher(inputString);
         final StringBuffer sb = new StringBuffer();
         String urlSegment, stripped, path;
@@ -61,7 +23,7 @@ public class ImageUrlProcessor implements PreProcessor {
             if (matcher.groupCount() == 1) {
                 urlSegment = matcher.group(1);
                 stripped = stripQuotes(urlSegment);
-                path = getStringPath(stripped);
+                path = getStringPath(stripped, imagePath);
                 matcher.appendReplacement(sb, "url(" + path + ")");
             }
         }
@@ -69,14 +31,5 @@ public class ImageUrlProcessor implements PreProcessor {
         return sb.toString();
     }
 
-    @Override
-    public void processStream(InputStream inputStream,
-                              OutputStream outputStream)
-            throws IOException {
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(inputStream, writer);
-        String result = processString(writer.toString());
-        StringReader reader = new StringReader(result);
-        IOUtils.copy(reader, outputStream);
-    }
+
 }

@@ -22,8 +22,7 @@ public class ImageUrlProcessorTest {
         final String expected = getExpected(expectedPath);
         final String input = getInput(inputPath);
         final ImageUrlProcessor imageUrlProcessor = new ImageUrlProcessor();
-        imageUrlProcessor.setImageRoot(imageRoot);
-        final String result = imageUrlProcessor.processString(input);
+        final String result = imageUrlProcessor.processString(input, imageRoot);
         Assert.assertEquals(expected, result);
     }
 
