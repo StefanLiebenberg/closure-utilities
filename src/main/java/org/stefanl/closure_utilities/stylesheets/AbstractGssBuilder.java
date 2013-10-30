@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public abstract class AbstractGssBuilder
         extends AbstractBuilder<iGssBuildOption>
@@ -33,8 +34,6 @@ public abstract class AbstractGssBuilder
     protected static final ImageUrlProcessor imageUrlProcessor =
             new ImageUrlProcessor();
 
-    protected DependencyLoader<GssSourceFile> gssDependencyLoader;
-
     protected ImmutableSet<File> sourceFiles;
 
     protected File generatedStylesheet;
@@ -43,23 +42,25 @@ public abstract class AbstractGssBuilder
 
     protected ImmutableList<File> resolvedSourceFiles;
 
-    protected File temporaryOutputFile;
-
     protected AbstractGssBuilder() { }
 
     protected AbstractGssBuilder(@Nonnull final iGssBuildOption buildOptions) {
         super(buildOptions);
     }
 
+    public abstract void scan() throws Exception;
+
+    public abstract void parse() throws Exception;
+
+    public abstract void compile() throws Exception;
+
     @Override
     public void reset() {
         super.reset();
-        gssDependencyLoader = null;
         sourceFiles = null;
         generatedStylesheet = null;
         generatedRenameMap = null;
         resolvedSourceFiles = null;
-        temporaryOutputFile = null;
     }
 
     @Nonnull
@@ -169,6 +170,79 @@ public abstract class AbstractGssBuilder
         ClosureCommandLineCompiler.main(Immuter.stringArray(arguments.build()));
     }
 
+    @Nullable
+    protected File compileInternal(
+            @Nullable List<File> resolvedFiles,
+            @Nullable File outputFile,
+            @Nullable File renameMap,
+            @Nonnull Boolean shouldCompile,
+            @Nonnull Boolean shouldDebug,
+            @Nullable URI assetUri,
+            @Nullable File assetDir)
+            throws IOException, BuildException {
+        if (resolvedFiles != null && !resolvedFiles.isEmpty()) {
+            File tempFile = getTemporaryFile();
+            compileSourceFiles(
+                    resolvedFiles,
+                    tempFile,
+                    renameMap,
+                    shouldCompile,
+                    shouldDebug);
+            return parseFunctionsFromCss(tempFile, outputFile, assetUri,
+                    assetDir);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    protected File parseFunctionsFromCss(
+            @Nonnull File tempFile,
+            @Nullable File outputFile,
+            @Nullable URI assetUri,
+            @Nullable File assetDir)
+            throws IOException {
+        if (outputFile != null) {
+            if (!outputFile.isAbsolute()) {
+                outputFile = outputFile.getAbsoluteFile();
+            }
+            final String content = FS.read(tempFile);
+            final String base = getBasePath(assetUri, assetDir,
+                    outputFile.getParentFile());
+            FS.write(outputFile, parseCssFunctions(content, base));
+            return outputFile;
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    protected ImmutableSet<File> scanInternal(
+            @Nullable final ImmutableCollection<File> directories)
+            throws IOException {
+        if (directories != null && !directories.isEmpty()) {
+            return findSourceFiles(directories);
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    protected ImmutableList<File> parseInternal(
+            @Nullable final Set<File> files,
+            @Nullable final List<String> entryPoints,
+            @Nonnull final GssDependencyParser parser)
+            throws DependencyException, IOException,
+            ReflectiveOperationException {
+        if (entryPoints != null && files != null) {
+            final DependencyLoader<GssSourceFile> dependencyLoader =
+                    getDependencyLoader(parser, files);
+            return dependencyLoader.getDependenciesFor(entryPoints);
+        } else {
+            return null;
+        }
+    }
+
     @Nonnull
     protected String parseCssFunctions(
             @Nonnull final String inputContent,
@@ -176,6 +250,50 @@ public abstract class AbstractGssBuilder
         return imageUrlProcessor.processString(inputContent, base);
     }
 
+    @Override
+    public void buildInternal() throws Exception {
+        scan();
+        parse();
+        compile();
+    }
+
+    private final static String UNSPECIFIED_OUTPUT_FILE =
+            "Gss Output file is unspecified.";
+
+    private final static String UNSPECIFIED_ENTRY_POINTS =
+            "Gss Entry points are unspecified.";
+
+    private final static String UNSPECIFIED_SOURCES =
+            "Gss sources are unspecified.";
+
+
+    @Override
+    public void checkOptions() throws BuildOptionsException {
+        super.checkOptions();
+
+        final File outputFile = buildOptions.getOutputFile();
+        if (outputFile == null) {
+            throw new BuildOptionsException(UNSPECIFIED_OUTPUT_FILE);
+        }
+
+        final Collection<File> sourceDirectories =
+                buildOptions.getSourceDirectories();
+        final Boolean sourceDirectoriesAreSpecified =
+                sourceDirectories != null && !sourceDirectories.isEmpty();
+        final Collection<File> sourceFiles =
+                buildOptions.getSourceFiles();
+        final Boolean sourceFilesAreSpecified =
+                sourceFiles != null && !sourceFiles.isEmpty();
+        if (!sourceDirectoriesAreSpecified && !sourceFilesAreSpecified) {
+            throw new BuildOptionsException(UNSPECIFIED_SOURCES);
+        }
+
+        final Collection<String> entryPoints = buildOptions.getEntryPoints();
+        if (entryPoints == null || entryPoints.isEmpty()) {
+            throw new BuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
+        }
+
+    }
 
     /**
      * @return The rename map file generated by this build.
