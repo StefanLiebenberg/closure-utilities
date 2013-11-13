@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.List;
 
 
-public class GssBuildOptions implements iGssBuildOption {
+public class GssOptions {
 
     private Boolean shouldCalculateDependencies = true;
 

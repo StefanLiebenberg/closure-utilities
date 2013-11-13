@@ -1,6 +1,5 @@
 package org.stefanl.closure_utilities.closure;
 
-
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import org.stefanl.closure_utilities.utilities.Immuter;
@@ -8,12 +7,157 @@ import org.stefanl.closure_utilities.utilities.Immuter;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.net.URI;
 import java.util.Collection;
 import java.util.List;
 
-public class ClosureBuildOptions
-        extends AbstractClosureBuildOptions
-        implements iClosureBuildOptions {
+public class ClosureOptions {
+
+    private ImmutableCollection<File> soySourceDirectories;
+
+    @Nullable
+    public ImmutableCollection<File> getSoySourceDirectories() {
+        return soySourceDirectories;
+    }
+
+    private File cssClassRenameMap;
+
+    @Nullable
+    public File getCssClassRenameMap() {
+        return cssClassRenameMap;
+    }
+
+    private File assetsDirectory;
+
+    @Nullable
+    public File getAssetsDirectory() {
+        return assetsDirectory;
+    }
+
+    private ImmutableCollection<File> gssSourceDirectories;
+
+    @Nullable
+    public ImmutableCollection<File> getGssSourceDirectories() {
+        return gssSourceDirectories;
+    }
+
+    private ImmutableList<File> gssExternalStylesheets;
+
+    @Nullable
+    public ImmutableList<File> getExternalStylesheets() {
+        return gssExternalStylesheets;
+    }
+
+    private ImmutableList<String> gssEntryPoints;
+
+    @Nullable
+    public ImmutableList<String> getGssEntryPoints() {
+        return gssEntryPoints;
+    }
+
+    private ImmutableCollection<File> javascriptSourceDirectories;
+
+    @Nullable
+    public ImmutableCollection<File> getJavascriptSourceDirectories() {
+        return javascriptSourceDirectories;
+    }
+
+    private ImmutableList<File> externalJavascriptFiles;
+
+    @Nullable
+    public ImmutableList<File> getExternalScriptFiles() {
+        return externalJavascriptFiles;
+    }
+
+    private ImmutableList<String> javascriptEntryPoints;
+
+
+    @Nullable
+
+    public ImmutableList<String> getJavascriptEntryPoints() {
+        return javascriptEntryPoints;
+    }
+
+    private File soyOutputDirectory;
+
+    @Nullable
+
+    public File getSoyOutputDirectory() {
+        return soyOutputDirectory;
+    }
+
+
+    private File outputDirectory;
+
+    @Nullable
+
+    public File getOutputDirectory() {
+        return outputDirectory;
+    }
+
+
+    private Boolean shouldCompile = false;
+
+    @Nonnull
+
+    public Boolean getShouldCompile() {
+        return shouldCompile;
+    }
+
+
+    private Boolean shouldDebug = false;
+
+    @Nonnull
+
+    public Boolean getShouldDebug() {
+        return shouldDebug;
+    }
+
+    @Deprecated
+    private Boolean shouldInline = false;
+
+    @Nonnull
+    @Deprecated
+    public Boolean getShouldInline() {
+        return shouldInline;
+    }
+
+    private String htmlContent;
+
+
+    @Nullable
+    public String getHtmlContent() {
+        return htmlContent;
+    }
+
+    private File javascriptDependencyOutputFile;
+
+    @Nullable
+    public File getJavascriptDependencyOutputFile() {
+        return javascriptDependencyOutputFile;
+    }
+
+    private File outputHtmlFile;
+
+    @Nullable
+    public File getOutputHtmlFile() {
+        return outputHtmlFile;
+    }
+
+
+    private File outputStylesheetFile;
+
+    @Nullable
+    public File getOutputStylesheetFile() {
+        return outputStylesheetFile;
+    }
+
+    private URI assetsUri;
+
+    @Nullable
+    public URI getAssetsUri() {
+        return assetsUri;
+    }
 
     public void setGssSourceDirectories(
             @Nullable final Collection<File> gssSourceDirectories) {
@@ -128,6 +272,6 @@ public class ClosureBuildOptions
 
     public void setOutputStylesheetFile(@Nullable final File cssFile) {
         this.outputStylesheetFile = cssFile;
-
     }
+
 }

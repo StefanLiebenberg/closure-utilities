@@ -20,14 +20,16 @@ public abstract class AbstractApplicationTest {
         outputDirectory = null;
     }
 
+    public static final File APPLICATION_DIRECTORY =
+            new File("src/test/resources/app");
+
     @Nonnull
     protected File getApplicationDirectory() {
-        return new File("src/test/resources/app");
+        return APPLICATION_DIRECTORY;
     }
 
     @Nonnull
     protected File getApplicationDirectory(String path) {
         return new File(getApplicationDirectory(), path);
     }
-
 }

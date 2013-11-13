@@ -3,7 +3,6 @@ package org.stefanl.closure_utilities.stylesheets;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.stefanl.closure_utilities.internal.BuilderInterface;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,42 +16,31 @@ import java.util.*;
  * This build tries to cache it's values and skips builds when possible,
  * in future this is meant to go into a loop-type watch task.
  */
-public class AdvancedGssBuilder
-        extends AbstractGssBuilder
-        implements BuilderInterface, GssBuilderInterface {
-
-    public AdvancedGssBuilder() {}
-
-    public AdvancedGssBuilder(@Nonnull final iGssBuildOption buildOptions) {
-        super(buildOptions);
-    }
+public class AdvancedGssBuilder extends AbstractGssBuilder {
 
     private final Map<File, String> cachedChecksums = new Hashtable<>();
 
-    private final Map<File, String> cachedResolvedChecksums = new Hashtable<>();
+    private final Map<File, String> cachedResolvedChecksums = new
+            Hashtable<>();
 
     private final List<String> cachedEntryPoints = new ArrayList<>();
 
     private final List<File> cachedResolvedFiles = new ArrayList<>();
 
-    @Override
-    public void reset() {
-        super.reset();
-        cachedChecksums.clear();
-        cachedEntryPoints.clear();
-        cachedResolvedFiles.clear();
-        cachedResolvedChecksums.clear();
-    }
+    public AdvancedGssBuilder() {}
 
     @Override
-    public void scan() throws Exception {
+    public void scan(@Nonnull final GssOptions options,
+                     @Nonnull final InternalResults internalResults)
+            throws Exception {
         final ImmutableCollection<File> sourceDirectories =
-                buildOptions.getSourceDirectories();
-        sourceFiles = scanInternal(sourceDirectories);
+                options.getSourceDirectories();
+        internalResults.sourceFiles = scanInternal(sourceDirectories);
     }
 
     @Nonnull
-    private String getChecksum(@Nonnull File inputFile) throws IOException {
+    private String getChecksum(@Nonnull final File inputFile) throws
+            IOException {
         try (FileInputStream inputStream = new FileInputStream(inputFile)) {
             return DigestUtils.md5Hex(inputStream);
         }
@@ -74,52 +62,51 @@ public class AdvancedGssBuilder
     }
 
     @Override
-    public void parse() throws Exception {
+    public void parse(@Nonnull GssOptions options,
+                      @Nonnull InternalResults internalResults)
+            throws Exception {
+        final ImmutableList<String> entryPoints = options.getEntryPoints();
+        Boolean entryPointsChanged = false, sourceFilesChanged = false;
 
-        final ImmutableList<String> currentEntryPoints =
-                buildOptions.getEntryPoints();
-
-        Boolean entryPointsChanged = false;
-        if (!cachedEntryPoints.equals(currentEntryPoints)) {
+        if (!cachedEntryPoints.equals(entryPoints)) {
             entryPointsChanged = true;
             cachedEntryPoints.clear();
-            if (currentEntryPoints != null) {
-                cachedEntryPoints.addAll(currentEntryPoints);
+            if (entryPoints != null) {
+                cachedEntryPoints.addAll(entryPoints);
             }
         }
 
-        Boolean sourceFilesChanged = false;
-        final Map<File, String> currentChecksums = getChecksums(sourceFiles);
-        if (!cachedChecksums.equals(currentChecksums)) {
+        final Map<File, String> checksums =
+                getChecksums(internalResults.sourceFiles);
+        if (!cachedChecksums.equals(checksums)) {
             sourceFilesChanged = true;
             cachedChecksums.clear();
-            if (currentChecksums != null) {
-                cachedChecksums.putAll(currentChecksums);
+            if (checksums != null) {
+                cachedChecksums.putAll(checksums);
             }
         }
 
         if (entryPointsChanged || sourceFilesChanged) {
-            resolvedSourceFiles =
-                    parseInternal(sourceFiles, currentEntryPoints,
-                            dependencyParser);
+            internalResults.resolvedSourceFiles =
+                    parseInternal(internalResults.sourceFiles,
+                            entryPoints, dependencyParser);
         }
     }
 
     @Override
-    public void compile() throws Exception {
+    public void compile(@Nonnull final GssOptions options,
+                        @Nonnull final InternalResults internalResults)
+            throws Exception {
 
-        Boolean configHasChanged = false;
-
-        Boolean resolvedFilesHaveChanged = false;
-
-        if (!cachedResolvedFiles.equals(resolvedSourceFiles)) {
+        Boolean configHasChanged = false, resolvedFilesHaveChanged = false;
+        if (!cachedResolvedFiles.equals(internalResults.resolvedSourceFiles)) {
             resolvedFilesHaveChanged = true;
             cachedResolvedFiles.clear();
-            cachedResolvedFiles.addAll(resolvedSourceFiles);
+            cachedResolvedFiles.addAll(internalResults.resolvedSourceFiles);
         }
 
         final Map<File, String> resolvedChecksums = new Hashtable<>();
-        for (File resolvedFile : resolvedSourceFiles) {
+        for (File resolvedFile : internalResults.resolvedSourceFiles) {
             resolvedChecksums.put(resolvedFile,
                     cachedChecksums.get(resolvedFile));
         }
@@ -131,24 +118,24 @@ public class AdvancedGssBuilder
         }
 
         if (configHasChanged || resolvedFilesHaveChanged) {
-            final File outputFile = buildOptions.getOutputFile();
-            final File renameMap = buildOptions.getRenameMap();
+            final File outputFile = options.getOutputFile();
+            final File renameMap = options.getRenameMap();
             final Boolean shouldCompile =
-                    buildOptions.getShouldGenerateForProduction();
+                    options.getShouldGenerateForProduction();
             final Boolean shouldDebug =
-                    buildOptions.getShouldGenerateForDebug();
-            final URI assetUri = buildOptions.getAssetsUri();
-            final File assetDir = buildOptions.getAssetsDirectory();
-            generatedStylesheet =
-                    compileInternal(resolvedSourceFiles, outputFile, renameMap,
-                            shouldCompile, shouldDebug, assetUri, assetDir);
-            if (generatedStylesheet != null) {
-                generatedRenameMap = renameMap;
+                    options.getShouldGenerateForDebug();
+            final URI assetUri = options.getAssetsUri();
+            final File assetDir = options.getAssetsDirectory();
+            internalResults.generatedStylesheet =
+                    compileInternal(internalResults.resolvedSourceFiles,
+                            outputFile, renameMap, shouldCompile, shouldDebug,
+                            assetUri, assetDir);
+            if (internalResults.generatedStylesheet != null) {
+                internalResults.generatedRenameMap = renameMap;
             } else {
-                generatedRenameMap = null;
+                internalResults.generatedRenameMap = null;
             }
         }
-
     }
 
 

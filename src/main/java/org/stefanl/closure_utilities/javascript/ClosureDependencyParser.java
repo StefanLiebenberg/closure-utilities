@@ -14,28 +14,6 @@ import java.net.URI;
 public class ClosureDependencyParser implements
         IDependencyParser<ClosureSourceFile> {
 
-    @Override
-    public void parse(@Nonnull final ClosureSourceFile dependency,
-                      @Nonnull final Reader content)
-            throws IOException {
-        final URI sourceLocation = dependency.getSourceLocation();
-        final Parser parser = new Parser();
-        final String srcString = sourceLocation.toString();
-        final AstRoot astRoot = parser.parse(content, srcString, 1);
-        visit(dependency, astRoot.getFirstChild());
-    }
-
-    @Override
-    public void parse(@Nonnull final ClosureSourceFile dependency,
-                      @Nonnull final String content)
-            throws IOException {
-        final URI sourceLocation = dependency.getSourceLocation();
-        final String srcString = sourceLocation.toString();
-        final Parser parser = new Parser();
-        final AstRoot astRoot = parser.parse(content, srcString, 1);
-        visit(dependency, astRoot.getFirstChild());
-    }
-
     private boolean isName(
             @Nonnull final AstNode node) {
         return node instanceof Name;
@@ -89,8 +67,8 @@ public class ClosureDependencyParser implements
     private String getStringArgumentValue(
             @Nonnull final FunctionCall functionCall,
             @Nonnull final Integer index) {
-        StringLiteral stringNode = getArgument(functionCall, index,
-                StringLiteral.class);
+        final StringLiteral stringNode =
+                getArgument(functionCall, index, StringLiteral.class);
         if (stringNode != null) {
             return stringNode.getValue();
         } else {
@@ -138,8 +116,8 @@ public class ClosureDependencyParser implements
             visit(dependency, node.getNext());
         }
 
-
         if (!dependency.getIsBaseFile()) {
+
             // why are we going in here?
             if (node instanceof ExpressionStatement) {
                 visit(dependency, ((ExpressionStatement) node).getExpression());
@@ -154,5 +132,27 @@ public class ClosureDependencyParser implements
             }
         }
         visit(dependency, node.getNext());
+    }
+
+    @Override
+    public void parse(@Nonnull final ClosureSourceFile dependency,
+                      @Nonnull final Reader content)
+            throws IOException {
+        final URI sourceLocation = dependency.getSourceLocation();
+        final Parser parser = new Parser();
+        final String srcString = sourceLocation.toString();
+        final AstRoot astRoot = parser.parse(content, srcString, 1);
+        visit(dependency, astRoot.getFirstChild());
+    }
+
+    @Override
+    public void parse(@Nonnull final ClosureSourceFile dependency,
+                      @Nonnull final String content)
+            throws IOException {
+        final URI sourceLocation = dependency.getSourceLocation();
+        final String srcString = sourceLocation.toString();
+        final Parser parser = new Parser();
+        final AstRoot astRoot = parser.parse(content, srcString, 1);
+        visit(dependency, astRoot.getFirstChild());
     }
 }

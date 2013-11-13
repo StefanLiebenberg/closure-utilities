@@ -21,12 +21,12 @@ import java.util.Collection;
 import java.util.List;
 
 public class ClosureBuilderTest extends
-        AbstractBuildTest<ClosureBuilder, ClosureBuildOptions> {
+        AbstractBuildTest<ClosureBuilder, ClosureOptions, ClosureResult> {
 
     public ClosureBuilderTest() throws
             IllegalAccessException,
             InstantiationException {
-        super(ClosureBuilder.class, ClosureBuildOptions.class);
+        super(ClosureBuilder.class, ClosureOptions.class);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ClosureBuilderTest extends
     @Nonnull
     public Boolean testBuildForFailure() {
         try {
-            builder.build();
+            builder.build(builderOptions);
             return false;
         } catch (BuildException buildException) {
             return true;
@@ -77,24 +77,26 @@ public class ClosureBuilderTest extends
 
     @Test
     public void testBuildGssBuild() throws Exception {
-
         setupGssBuildOptions(Flavour.BASIC);
-
-        builder.buildGss();
-
-        Assert.assertNotNull(builder.getGssOutputFile());
-        final String content = FS.read(builder.getGssOutputFile());
+        final ClosureResult closureResult = builder.buildGssOnly(builderOptions);
+        final File gssOutputFile = closureResult.getGeneratedStylesheet();
+        Assert.assertNotNull(gssOutputFile);
+        Assert.assertTrue(gssOutputFile.exists());
+        Assert.assertTrue(gssOutputFile.isFile());
+        final String content = FS.read(gssOutputFile);
         Assert.assertTrue(content.contains(".foo-color{background:red}"));
     }
 
     @Test
     public void testBuildSoyBuild() throws Exception {
         setupSoyBuildOptions(Flavour.BASIC);
-        builder.buildSoy();
-
-        final File soyOutputDir = builder.getSoyOutputDirectory();
-        final Collection<File> compiledSources = FS.find(soyOutputDir,
-                "soy.js");
+        ClosureResult closureResult = builder.buildSoyOnly(builderOptions);
+        final File soyOutputDir = closureResult.getSoyOutputDirectory();
+        Assert.assertNotNull(soyOutputDir);
+        Assert.assertTrue(soyOutputDir.exists());
+        Assert.assertTrue(soyOutputDir.isDirectory());
+        final Collection<File> compiledSources =
+                FS.find(soyOutputDir, "soy.js");
         final Collection<File> sourceDirs =
                 builderOptions.getSoySourceDirectories();
         if (sourceDirs != null) {
@@ -106,16 +108,19 @@ public class ClosureBuilderTest extends
     @Test
     public void testBuildJavascript() throws Exception {
         setupJavascriptBuildOptions(Flavour.BASIC);
-        builder.buildJs();
+        final ClosureResult closureResult = builder.buildJsOnly(builderOptions);
     }
 
 
     @Test
     public void testEmptyBuildHtml() throws Exception {
-        builder.buildHtml();
+        final ClosureResult closureResult =
+                builder.buildHtmlOnly(builderOptions);
 
-        final File htmlOutputFile = builder.getHtmlOutputFile();
+        final File htmlOutputFile = closureResult.getHtmlOutputFile();
+        Assert.assertNotNull(htmlOutputFile);
         Assert.assertTrue("Output file exists", htmlOutputFile.exists());
+        Assert.assertTrue("Output file is a file", htmlOutputFile.isFile());
 
         final String actual = FS.read(htmlOutputFile);
         final String expected =
@@ -138,8 +143,11 @@ public class ClosureBuilderTest extends
         builderOptions.setExternalStylesheets(stylesheets);
         builderOptions.setHtmlContent("CONTENT!!");
 
-        builder.buildHtml();
-        final File htmlOutputFile = builder.getHtmlOutputFile();
+        ClosureResult closureResult = builder.buildHtmlOnly(builderOptions);
+        final File htmlOutputFile = closureResult.getHtmlOutputFile();
+        Assert.assertNotNull(htmlOutputFile);
+        Assert.assertTrue(htmlOutputFile.exists());
+        Assert.assertTrue(htmlOutputFile.isFile());
         final String actual = FS.read(htmlOutputFile);
 
         final String expectedScripts =
@@ -171,14 +179,19 @@ public class ClosureBuilderTest extends
         setupSoyBuildOptions(Flavour.BASIC);
         setupJavascriptBuildOptions(Flavour.BASIC);
 
-        builder.build();
+        ClosureResult closureResult = builder.build(builderOptions);
 
-        final File htmlOutput = builder.getHtmlOutputFile();
+        final File htmlOutput = closureResult.getHtmlOutputFile();
+        Assert.assertNotNull(htmlOutput);
+        Assert.assertTrue(htmlOutput.exists());
+        Assert.assertTrue(htmlOutput.isFile());
         final String htmlContent = FS.read(htmlOutput);
         Document htmlDocument = Jsoup.parse(htmlContent);
 
         Element headElement = htmlDocument.select("head").first();
+        Assert.assertNotNull(headElement);
         Element bodyElement = htmlDocument.select("body").first();
+        Assert.assertNotNull(bodyElement);
 
         Elements scripts = headElement.select("script");
         Assert.assertEquals(3, scripts.size()); // 3 because extra stuff
@@ -187,7 +200,8 @@ public class ClosureBuilderTest extends
 
         Path expectedPath, actualPath;
         expectedPath =
-            Paths.get(jsDirectory.getAbsolutePath(), "company/constants.js");
+                Paths.get(jsDirectory.getAbsolutePath(),
+                        "company/constants.js");
 
         actualPath =
                 Paths.get(htmlOutput.getParentFile().getAbsolutePath(),
@@ -222,9 +236,12 @@ public class ClosureBuilderTest extends
         builderOptions.setShouldCompile(true);
         builderOptions.setShouldDebug(false);
 
-        builder.build();
+        ClosureResult closureResult = builder.build(builderOptions);
 
-        final File htmlOutput = builder.getHtmlOutputFile();
+        final File htmlOutput = closureResult.getHtmlOutputFile();
+        Assert.assertNotNull(htmlOutput);
+        Assert.assertTrue(htmlOutput.exists());
+        Assert.assertTrue(htmlOutput.isFile());
         final String htmlContent = FS.read(htmlOutput);
         Document htmlDocument = Jsoup.parse(htmlContent);
 
@@ -250,9 +267,12 @@ public class ClosureBuilderTest extends
         builderOptions.setShouldDebug(true);
 
 
-        builder.build();
+        ClosureResult closureResult = builder.build(builderOptions);
 
-        final File htmlOutput = builder.getHtmlOutputFile();
+        final File htmlOutput = closureResult.getHtmlOutputFile();
+        Assert.assertNotNull(htmlOutput);
+        Assert.assertTrue(htmlOutput.exists());
+        Assert.assertTrue(htmlOutput.isFile());
         final String htmlContent = FS.read(htmlOutput);
         Document htmlDocument = Jsoup.parse(htmlContent);
 

@@ -2,43 +2,35 @@ package org.stefanl.closure_utilities.html;
 
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
 import org.stefanl.closure_utilities.internal.BuildOptionsException;
-import org.stefanl.closure_utilities.internal.BuilderInterface;
 import org.stefanl.closure_utilities.render.DefaultHtmlRenderer;
 import org.stefanl.closure_utilities.render.HtmlRenderer;
 import org.stefanl.closure_utilities.render.RenderException;
 import org.stefanl.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 
-
 public class HtmlBuilder
-        extends AbstractBuilder<HtmlBuildOptions>
-        implements BuilderInterface {
+        extends AbstractBuilder<HtmlOptions, HtmlResult> {
 
-    private File generatedHtmlFile;
+    private static class InternalData {
+        private File generatedHtmlFile;
+
+        private HtmlResult toResult() {
+            return new HtmlResult(generatedHtmlFile);
+        }
+    }
 
     public HtmlBuilder() {}
-
-    public HtmlBuilder(@Nonnull final HtmlBuildOptions options) {
-        super(options);
-    }
 
     @Nonnull
     public static HtmlRenderer getDefaultRenderer() {
         return new DefaultHtmlRenderer();
     }
 
-    @Override
-    public void reset() {
-        super.reset();
-        generatedHtmlFile = null;
-    }
-
     @Nonnull
-    public HtmlRenderer getHtmlRenderer() {
+    public HtmlRenderer getHtmlRenderer(HtmlOptions buildOptions) {
         HtmlRenderer htmlRenderer = buildOptions.getHtmlRenderer();
         if (htmlRenderer == null) {
             htmlRenderer = getDefaultRenderer();
@@ -48,9 +40,9 @@ public class HtmlBuilder
 
 
     @Nonnull
-    public String renderHtmlFile(File outputPath)
+    public String renderHtmlFile(HtmlOptions buildOptions, File outputPath)
             throws IOException, RenderException {
-        return getHtmlRenderer()
+        return getHtmlRenderer(buildOptions)
                 .setShouldInline(buildOptions.getShouldBuildInline())
                 .setContent(buildOptions.getContent())
                 .setScripts(buildOptions.getJavascriptFiles())
@@ -61,31 +53,29 @@ public class HtmlBuilder
 
 
     @Override
-    public void buildInternal() throws Exception {
+    @Nonnull
+    public HtmlResult buildInternal(
+            @Nonnull final HtmlOptions buildOptions)
+            throws Exception {
+        final InternalData internalData = new InternalData();
         final File outputFile = buildOptions.getOutputFile();
         if (outputFile != null) {
-            FS.write(outputFile, renderHtmlFile(outputFile));
-            generatedHtmlFile = outputFile;
+            FS.write(outputFile, renderHtmlFile(buildOptions, outputFile));
+            internalData.generatedHtmlFile = outputFile;
         }
+        return internalData.toResult();
     }
 
     private final static String UNSPECIFIED_OUTPUT_FILE =
             "Html output file has not been specified.";
 
     @Override
-    public void checkOptions() throws BuildOptionsException {
-
-        super.checkOptions();
-
+    public void checkOptions(
+            @Nonnull final HtmlOptions buildOptions) throws
+            BuildOptionsException {
         final File outputFile = buildOptions.getOutputFile();
         if (outputFile == null) {
             throw new BuildOptionsException(UNSPECIFIED_OUTPUT_FILE);
         }
-
-    }
-
-    @Nullable
-    public File getGeneratedHtmlFile() {
-        return generatedHtmlFile;
     }
 }

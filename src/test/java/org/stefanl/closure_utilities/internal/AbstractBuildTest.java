@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 public abstract class AbstractBuildTest
-        <A extends AbstractBuilder<? super B>, B>
+        <A extends AbstractBuilder<B, C>, B, C>
         extends AbstractApplicationTest {
 
     public enum Flavour {
@@ -48,13 +48,11 @@ public abstract class AbstractBuildTest
     protected void setUp() throws Exception {
         super.setUp();
         builderOptions = buildOptionsClass.newInstance();
-        builder.setBuildOptions(builderOptions);
     }
 
     @Override
     protected void tearDown() throws Exception {
         builderOptions = null;
-        builder.reset();
         super.tearDown();
     }
 

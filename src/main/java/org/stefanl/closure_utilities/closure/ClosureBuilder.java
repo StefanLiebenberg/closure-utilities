@@ -1,18 +1,21 @@
 package org.stefanl.closure_utilities.closure;
 
-import org.stefanl.closure_utilities.html.HtmlBuildOptions;
 import org.stefanl.closure_utilities.html.HtmlBuilder;
+import org.stefanl.closure_utilities.html.HtmlOptions;
+import org.stefanl.closure_utilities.html.HtmlResult;
 import org.stefanl.closure_utilities.internal.AbstractBuilder;
 import org.stefanl.closure_utilities.internal.BuildException;
 import org.stefanl.closure_utilities.internal.BuildOptionsException;
-import org.stefanl.closure_utilities.internal.BuilderInterface;
-import org.stefanl.closure_utilities.javascript.JsBuildOptions;
 import org.stefanl.closure_utilities.javascript.JsBuilder;
+import org.stefanl.closure_utilities.javascript.JsOptions;
+import org.stefanl.closure_utilities.javascript.JsResult;
 import org.stefanl.closure_utilities.render.DefaultHtmlRenderer;
 import org.stefanl.closure_utilities.stylesheets.DefaultGssBuilder;
-import org.stefanl.closure_utilities.stylesheets.GssBuildOptions;
-import org.stefanl.closure_utilities.templates.SoyBuildOptions;
-import org.stefanl.closure_utilities.templates.SoyBuilder;
+import org.stefanl.closure_utilities.stylesheets.GssOptions;
+import org.stefanl.closure_utilities.stylesheets.GssResult;
+import org.stefanl.closure_utilities.templates.DefaultSoyBuilder;
+import org.stefanl.closure_utilities.templates.SoyOptions;
+import org.stefanl.closure_utilities.templates.SoyResult;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -20,90 +23,101 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClosureBuilder
-        extends AbstractBuilder<iClosureBuildOptions>
-        implements BuilderInterface {
+        extends AbstractBuilder<ClosureOptions, ClosureResult> {
+
+
+    private static class InternalData {
+        private File generatedStylesheet;
+        private File generatedRenameMap;
+        private File soyOutputDirectory;
+        private File htmlOutputFile;
+        private File jsOutputFile;
+        private List<File> calculatedScriptFiles;
+
+        @Nonnull
+        private ClosureResult toResult() {
+            return new ClosureResult(generatedStylesheet,
+                    generatedRenameMap, soyOutputDirectory, htmlOutputFile,
+                    jsOutputFile);
+        }
+    }
 
     public ClosureBuilder() {}
 
-    public ClosureBuilder(
-            @Nonnull final iClosureBuildOptions buildOptions) {
-        super(buildOptions);
-    }
-
     private final DefaultGssBuilder gssBuilder = new DefaultGssBuilder();
 
-    private final SoyBuilder soyBuilder = new SoyBuilder();
+    private final DefaultSoyBuilder soyBuilder = new DefaultSoyBuilder();
 
     private final JsBuilder jsBuilder = new JsBuilder();
 
     private final HtmlBuilder htmlBuilder = new HtmlBuilder();
 
-    @Override
-    public void reset() {
-        super.reset();
-        gssBuilder.reset();
-        soyBuilder.reset();
-        jsBuilder.reset();
-        htmlBuilder.reset();
-    }
-
-
     public static final String DEFAULT_STYLESHEET_FILENAME = "style.css";
 
     @Nonnull
-    public File getGssOutputFile() {
-        final File outputStylesheetFile =
-                buildOptions.getOutputStylesheetFile();
+    public File getGssOutputFile(@Nonnull final ClosureOptions options) {
+        final File outputStylesheetFile = options.getOutputStylesheetFile();
         if (outputStylesheetFile != null) {
             return outputStylesheetFile;
         } else {
-            return new File(buildOptions.getOutputDirectory(),
+            return new File(options.getOutputDirectory(),
                     DEFAULT_STYLESHEET_FILENAME);
         }
     }
 
 
     @Nonnull
-    public GssBuildOptions getGssBuildOptions() {
-        final GssBuildOptions gssBuildOptions = new GssBuildOptions();
+    public GssOptions getGssBuildOptions(
+            @Nonnull final ClosureOptions options) {
+        final GssOptions gssBuildOptions = new GssOptions();
         gssBuildOptions.setShouldCalculateDependencies(true);
-        gssBuildOptions.setAssetsDirectory(buildOptions.getAssetsDirectory());
-        gssBuildOptions.setEntryPoints(buildOptions.getGssEntryPoints());
-        gssBuildOptions.setSourceDirectories(
-                buildOptions.getGssSourceDirectories());
-        gssBuildOptions.setRenameMap(
-                buildOptions.getCssClassRenameMap());
-        gssBuildOptions.setShouldGenerateForDebug(
-                buildOptions.getShouldDebug());
-        gssBuildOptions.setShouldGenerateForProduction(buildOptions
+        gssBuildOptions.setAssetsDirectory(options.getAssetsDirectory());
+        gssBuildOptions.setEntryPoints(options.getGssEntryPoints());
+        gssBuildOptions.setSourceDirectories(options.getGssSourceDirectories());
+        gssBuildOptions.setRenameMap(options.getCssClassRenameMap());
+        gssBuildOptions.setShouldGenerateForDebug(options.getShouldDebug());
+        gssBuildOptions.setShouldGenerateForProduction(options
                 .getShouldCompile());
-        gssBuildOptions.setOutputFile(getGssOutputFile());
-        gssBuildOptions.setAssetsUri(buildOptions.getAssetsUri());
+        gssBuildOptions.setOutputFile(getGssOutputFile(options));
+        gssBuildOptions.setAssetsUri(options.getAssetsUri());
         return gssBuildOptions;
     }
 
-    public void buildGss()
+    protected void buildGss(@Nonnull final ClosureOptions options,
+                            @Nonnull final InternalData internalData)
             throws BuildException {
-        gssBuilder.setBuildOptions(getGssBuildOptions());
-        gssBuilder.build();
+        final GssOptions gssOptions = getGssBuildOptions(options);
+        final GssResult gssResult = gssBuilder.build(gssOptions);
+        internalData.generatedStylesheet = gssResult.getGeneratedStylesheet();
+        internalData.generatedRenameMap = gssResult.getGeneratedRenameMap();
+    }
+
+
+    public ClosureResult buildGssOnly(@Nonnull final ClosureOptions options)
+            throws BuildException {
+        final InternalData internalData = new InternalData();
+        buildGss(options, internalData);
+        return internalData.toResult();
     }
 
     public final static String COMPILED_TEMPLATES_DIRECTORY_NAME =
             "compiled-templates";
 
     @Nonnull
-    public File getSoyOutputDirectory() {
-        final File soyOutputDirectory = buildOptions.getSoyOutputDirectory();
+    public File getSoyOutputDirectory(
+            @Nonnull final ClosureOptions options) {
+        final File soyOutputDirectory = options.getSoyOutputDirectory();
         if (soyOutputDirectory != null) {
             return soyOutputDirectory;
         } else {
-            return getOutputFile(COMPILED_TEMPLATES_DIRECTORY_NAME);
+            return getOutputFile(options, COMPILED_TEMPLATES_DIRECTORY_NAME);
         }
     }
 
     @Nonnull
-    public File getOutputDirectory() {
-        final File outputDirectory = buildOptions.getOutputDirectory();
+    public File getOutputDirectory(@Nonnull final ClosureOptions
+                                           options) {
+        final File outputDirectory = options.getOutputDirectory();
         if (outputDirectory != null) {
             return outputDirectory;
         } else {
@@ -113,92 +127,116 @@ public class ClosureBuilder
 
     @Nonnull
     private File getOutputFile(
+            @Nonnull final ClosureOptions options,
             @Nonnull final String fileName) {
-        return new File(getOutputDirectory(), fileName);
+        return new File(getOutputDirectory(options), fileName);
     }
 
     @Nonnull
-    public SoyBuildOptions getSoyBuildOptions() {
-        final SoyBuildOptions soyBuildOptions = new SoyBuildOptions();
-        soyBuildOptions.setSourceDirectories(
-                buildOptions.getSoySourceDirectories());
-        soyBuildOptions.setOutputDirectory(getSoyOutputDirectory());
-        return soyBuildOptions;
+    private SoyOptions getSoyBuildOptions(@Nonnull final ClosureOptions
+                                                  options) {
+        final SoyOptions soyOptions = new SoyOptions();
+        soyOptions.setSourceDirectories(options.getSoySourceDirectories());
+        soyOptions.setOutputDirectory(getSoyOutputDirectory(options));
+        return soyOptions;
     }
 
-    public void buildSoy()
+    private void buildSoy(@Nonnull final ClosureOptions options,
+                          @Nonnull final InternalData internalData)
             throws BuildException {
-        soyBuilder.setBuildOptions(getSoyBuildOptions());
-        soyBuilder.build();
+        final SoyOptions soyOptions = getSoyBuildOptions(options);
+        final SoyResult soyResult = soyBuilder.build(soyOptions);
+        internalData.soyOutputDirectory = soyResult.getOutputDirectory();
+    }
+
+    public ClosureResult buildSoyOnly(@Nonnull final ClosureOptions options)
+            throws BuildException {
+        final InternalData internalData = new InternalData();
+        buildSoy(options, internalData);
+        return internalData.toResult();
     }
 
     @Nonnull
-    public JsBuildOptions getJsBuildOptions() {
-        JsBuildOptions jsBuildOptions = new JsBuildOptions();
-        jsBuildOptions.setOutputFile(getOutputFile("script.js"));
-        jsBuildOptions.setEntryPoints(buildOptions.getJavascriptEntryPoints());
-        jsBuildOptions.setSourceDirectories(
-                buildOptions.getJavascriptSourceDirectories());
-        jsBuildOptions.setShouldCompile(buildOptions.getShouldCompile());
-        jsBuildOptions.setShouldDebug(buildOptions.getShouldDebug());
-        jsBuildOptions.setOutputDependencyFile(
-                buildOptions.getJavascriptDependencyOutputFile());
-        return jsBuildOptions;
+    private JsOptions getJsBuildOptions(@Nonnull final
+                                        ClosureOptions options) {
+        JsOptions jsOptions = new JsOptions();
+        jsOptions.setOutputFile(getOutputFile(options, "script.js"));
+        jsOptions.setEntryPoints(options.getJavascriptEntryPoints());
+        jsOptions.setSourceDirectories(
+                options.getJavascriptSourceDirectories());
+        jsOptions.setShouldCompile(options.getShouldCompile());
+        jsOptions.setShouldDebug(options.getShouldDebug());
+        jsOptions.setOutputDependencyFile(
+                options.getJavascriptDependencyOutputFile());
+        return jsOptions;
     }
 
-    public void buildJs() throws BuildException {
-        jsBuilder.setBuildOptions(getJsBuildOptions());
-        jsBuilder.build();
+    private void buildJs(@Nonnull final ClosureOptions options,
+                         @Nonnull final InternalData internalData)
+            throws BuildException {
+        final JsOptions jsOptions = getJsBuildOptions(options);
+        JsResult jsResult = jsBuilder.build(jsOptions);
+        internalData.jsOutputFile = jsResult.getOutputFile();
+        internalData.calculatedScriptFiles = jsResult.getScriptFiles();
     }
 
-    public final static String DEFAULT_HTML_PAGE_NAME =
+    public ClosureResult buildJsOnly(@Nonnull final ClosureOptions options)
+            throws BuildException {
+        final InternalData internalData = new InternalData();
+        buildJs(options, internalData);
+        return internalData.toResult();
+    }
+
+    private final static String DEFAULT_HTML_PAGE_NAME =
             "index.html";
 
     @Nonnull
-    public File getHtmlOutputFile() {
-        final File htmlFile = buildOptions.getOutputHtmlFile();
+    private File getHtmlOutputFile(@Nonnull final ClosureOptions options) {
+        final File htmlFile = options.getOutputHtmlFile();
         if (htmlFile != null) {
             return htmlFile;
         } else {
-            return getOutputFile(DEFAULT_HTML_PAGE_NAME);
+            return getOutputFile(options, DEFAULT_HTML_PAGE_NAME);
         }
     }
 
     @Nonnull
-    public List<File> getStylesheetsForHtmlBuild() {
+    private List<File> getStylesheetsForHtmlBuild(
+            @Nonnull final ClosureOptions options,
+            @Nonnull final InternalData internalData) {
         final List<File> stylesheets = new ArrayList<>();
-
         final List<File> externalStylesheets =
-                buildOptions.getExternalStylesheets();
+                options.getExternalStylesheets();
         if (externalStylesheets != null && !externalStylesheets.isEmpty()) {
             stylesheets.addAll(externalStylesheets);
         }
 
-        final File generatedStylesheet = gssBuilder.getGeneratedStylesheet();
-        if (generatedStylesheet != null) {
-            stylesheets.add(generatedStylesheet);
+        if (internalData.generatedStylesheet != null) {
+            stylesheets.add(internalData.generatedStylesheet);
         }
         return stylesheets;
     }
 
     @Nonnull
-    public List<File> getJavascriptFilesForHtmlBuild() {
+    private List<File> getJavascriptFilesForHtmlBuild(
+            @Nonnull final ClosureOptions options,
+            @Nonnull final InternalData internalData) {
 
         final List<File> javascriptFiles = new ArrayList<>();
-        final List<File> externalScripts = buildOptions
-                .getExternalScriptFiles();
+        final List<File> externalScripts = options.getExternalScriptFiles();
         if (externalScripts != null && !externalScripts.isEmpty()) {
             javascriptFiles.addAll(externalScripts);
         }
 
-        if (buildOptions.getShouldCompile()) {
-            final File outFile = jsBuilder.getOutputFile();
+        if (options.getShouldCompile()) {
+            final File outFile = internalData.jsOutputFile;
             if (outFile != null) {
                 javascriptFiles.add(outFile);
             }
         } else {
             final List<File> calculatedSourceFiles =
-                    jsBuilder.getScriptsFilesToCompile();
+                    internalData.calculatedScriptFiles;
+            // jsBuilder.getScriptsFilesToCompile();
             if (calculatedSourceFiles != null) {
                 javascriptFiles.addAll(calculatedSourceFiles);
             }
@@ -207,43 +245,62 @@ public class ClosureBuilder
     }
 
     @Nonnull
-    public HtmlBuildOptions getHtmlBuildOptions() {
-        final HtmlBuildOptions htmlBuildOptions = new HtmlBuildOptions();
-        htmlBuildOptions.setOutputFile(getHtmlOutputFile());
-        htmlBuildOptions.setStylesheetFiles(getStylesheetsForHtmlBuild());
-        htmlBuildOptions.setJavascriptFiles(getJavascriptFilesForHtmlBuild());
-        htmlBuildOptions.setHtmlRenderer(new DefaultHtmlRenderer());
-        htmlBuildOptions.setContent(buildOptions.getHtmlContent());
-        htmlBuildOptions.setLocationMap(null);
-        htmlBuildOptions.setShouldBuildInline(false);
-        return htmlBuildOptions;
+    private HtmlOptions getHtmlBuildOptions(
+            @Nonnull final ClosureOptions options,
+            @Nonnull final InternalData internalData) {
+        final HtmlOptions htmlOptions = new HtmlOptions();
+        htmlOptions.setOutputFile(getHtmlOutputFile(options));
+        htmlOptions.setStylesheetFiles(getStylesheetsForHtmlBuild(options,
+                internalData));
+        htmlOptions.setJavascriptFiles(getJavascriptFilesForHtmlBuild
+                (options, internalData));
+        htmlOptions.setHtmlRenderer(new DefaultHtmlRenderer());
+        htmlOptions.setContent(options.getHtmlContent());
+        htmlOptions.setLocationMap(null);
+        htmlOptions.setShouldBuildInline(false);
+        return htmlOptions;
     }
 
 
-    public void buildHtml() throws BuildException {
-        htmlBuilder.setBuildOptions(getHtmlBuildOptions());
-        htmlBuilder.build();
+    private void buildHtml(@Nonnull final ClosureOptions options,
+                           @Nonnull final InternalData internalData)
+            throws BuildException {
+        final HtmlOptions htmlOptions = getHtmlBuildOptions(options,
+                internalData);
+        final HtmlResult result = htmlBuilder.build(htmlOptions);
+        internalData.htmlOutputFile = result.getGeneratedHtmlFile();
     }
 
+    @Nonnull
+    public ClosureResult buildHtmlOnly(@Nonnull final ClosureOptions options)
+            throws BuildException {
+        final InternalData internalData = new InternalData();
+        buildHtml(options, internalData);
+        return internalData.toResult();
+    }
+
+
+    @Nonnull
     @Override
-    public void buildInternal() throws BuildException {
-        buildGss();
-        buildSoy();
-        buildJs();
-        buildHtml();
+    protected ClosureResult buildInternal(@Nonnull ClosureOptions options)
+            throws Exception {
+        final InternalData internalData = new InternalData();
+        buildGss(options, internalData);
+        buildSoy(options, internalData);
+        buildJs(options, internalData);
+        buildHtml(options, internalData);
+        return internalData.toResult();
     }
-
 
     private static final String UNSPECIFIED_OUTPUT_DIRECTORY =
             "Closure output directory has not been specified.";
 
     @Override
-    public void checkOptions() throws BuildOptionsException {
-        super.checkOptions();
-        final File outputDirectory = buildOptions.getOutputDirectory();
+    public void checkOptions(@Nonnull ClosureOptions options) throws
+            BuildOptionsException {
+        final File outputDirectory = options.getOutputDirectory();
         if (outputDirectory == null) {
-            throw new BuildOptionsException
-                    (UNSPECIFIED_OUTPUT_DIRECTORY);
+            throw new BuildOptionsException(UNSPECIFIED_OUTPUT_DIRECTORY);
         }
     }
 

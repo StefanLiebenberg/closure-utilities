@@ -12,13 +12,13 @@ import java.io.File;
 import java.net.URI;
 
 public class DefaultGssBuilderTest
-        extends AbstractBuildTest<DefaultGssBuilder, GssBuildOptions> {
+        extends AbstractBuildTest<DefaultGssBuilder, GssOptions, GssResult> {
 
     protected File outputFile;
 
     public DefaultGssBuilderTest()
             throws InstantiationException, IllegalAccessException {
-        super(DefaultGssBuilder.class, GssBuildOptions.class);
+        super(DefaultGssBuilder.class, GssOptions.class);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class DefaultGssBuilderTest
         builderOptions.setEntryPoints(getGssEntryPoints(Flavour.BASIC));
         builderOptions.setSourceDirectories(getGssSourceDirectories());
         builderOptions.setShouldCalculateDependencies(true);
-        builder.build();
+        builder.build(builderOptions);
 
         String content = FS.read(outputFile);
         Assert.assertTrue(content.contains(".foo-color{background:red}"));
@@ -54,7 +54,7 @@ public class DefaultGssBuilderTest
         builderOptions.setEntryPoints(getGssEntryPoints(Flavour.BASIC));
         builderOptions.setSourceDirectories(getGssSourceDirectories());
         builderOptions.setShouldCalculateDependencies(true);
-        builder.build();
+        builder.build(builderOptions);
 
         content = FS.read(outputFile);
         Assert.assertTrue(content.contains(".foo-color{background:red}"));
@@ -65,7 +65,7 @@ public class DefaultGssBuilderTest
         builderOptions.setEntryPoints(Lists.newArrayList("shared-reset"));
         builderOptions.setSourceDirectories(getGssSourceDirectories());
         builderOptions.setShouldCalculateDependencies(true);
-        builder.build();
+        builder.build(builderOptions);
 
         content = FS.read(outputFile);
         Assert.assertFalse(content.contains(".foo-color{background:red}"));
@@ -87,7 +87,7 @@ public class DefaultGssBuilderTest
 
         final URI assetsDirectory = new URI("/assets");
         builderOptions.setAssetsUri(assetsDirectory);
-        builder.build();
+        builder.build(builderOptions);
 
         final String content = FS.read(outputFile);
         Assert.assertTrue(content.contains(".foo-color{background:red}"));

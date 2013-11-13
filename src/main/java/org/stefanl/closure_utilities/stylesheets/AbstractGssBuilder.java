@@ -12,6 +12,7 @@ import org.stefanl.closure_utilities.utilities.Immuter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -19,9 +20,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+@Immutable
 public abstract class AbstractGssBuilder
-        extends AbstractBuilder<iGssBuildOption>
-        implements BuilderInterface, GssBuilderInterface {
+        extends AbstractBuilder<GssOptions, GssResult> {
 
     protected static final String GSS_EXT = "gss";
 
@@ -34,34 +35,22 @@ public abstract class AbstractGssBuilder
     protected static final ImageUrlProcessor imageUrlProcessor =
             new ImageUrlProcessor();
 
-    protected ImmutableSet<File> sourceFiles;
-
-    protected File generatedStylesheet;
-
-    protected File generatedRenameMap;
-
-    protected ImmutableList<File> resolvedSourceFiles;
-
     protected AbstractGssBuilder() { }
 
-    protected AbstractGssBuilder(@Nonnull final iGssBuildOption buildOptions) {
-        super(buildOptions);
-    }
+    public abstract void scan(
+            @Nonnull final GssOptions options,
+            @Nonnull final InternalResults internalResults)
+            throws Exception;
 
-    public abstract void scan() throws Exception;
+    public abstract void parse(
+            @Nonnull final GssOptions options,
+            @Nonnull final InternalResults internalResults)
+            throws Exception;
 
-    public abstract void parse() throws Exception;
-
-    public abstract void compile() throws Exception;
-
-    @Override
-    public void reset() {
-        super.reset();
-        sourceFiles = null;
-        generatedStylesheet = null;
-        generatedRenameMap = null;
-        resolvedSourceFiles = null;
-    }
+    public abstract void compile(
+            @Nonnull final GssOptions options,
+            @Nonnull final InternalResults internalResults)
+            throws Exception;
 
     @Nonnull
     protected DependencyLoader<GssSourceFile> getDependencyLoader(
@@ -103,11 +92,7 @@ public abstract class AbstractGssBuilder
     protected ImmutableSet<File> findSourceFiles(
             @Nonnull final ImmutableCollection<File> directories)
             throws IOException {
-        final ImmutableSet.Builder<File> builder = new ImmutableSet.Builder<>();
-        for (File sourceFile : FS.find(directories, GSS_EXT)) {
-            builder.add(sourceFile.getAbsoluteFile());
-        }
-        return builder.build();
+        return findSourceFiles(directories, GSS_EXT);
     }
 
     /**
@@ -116,10 +101,7 @@ public abstract class AbstractGssBuilder
      * @param renameMap
      * @param productionBoolean
      * @param debugBoolean
-     * @throws org.stefanl.closure_utilities.internal.BuildException
-     *          SideEffects:
-     *          If it builds a rename map it will set
-     *          generateRenameMap.
+     * @throws BuildException
      */
     protected void compileSourceFiles(
             @Nullable final List<File> sourceFiles,
@@ -250,12 +232,19 @@ public abstract class AbstractGssBuilder
         return imageUrlProcessor.processString(inputContent, base);
     }
 
+
+    @Nonnull
     @Override
-    public void buildInternal() throws Exception {
-        scan();
-        parse();
-        compile();
+    protected GssResult buildInternal(
+            @Nonnull final GssOptions options)
+            throws Exception {
+        final InternalResults internalResults = new InternalResults();
+        scan(options, internalResults);
+        parse(options, internalResults);
+        compile(options, internalResults);
+        return internalResults.toResults();
     }
+
 
     private final static String UNSPECIFIED_OUTPUT_FILE =
             "Gss Output file is unspecified.";
@@ -268,57 +257,42 @@ public abstract class AbstractGssBuilder
 
 
     @Override
-    public void checkOptions() throws BuildOptionsException {
-        super.checkOptions();
+    public void checkOptions(@Nonnull GssOptions options)
+            throws BuildOptionsException {
 
-        final File outputFile = buildOptions.getOutputFile();
+        final File outputFile = options.getOutputFile();
         if (outputFile == null) {
             throw new BuildOptionsException(UNSPECIFIED_OUTPUT_FILE);
         }
 
         final Collection<File> sourceDirectories =
-                buildOptions.getSourceDirectories();
+                options.getSourceDirectories();
         final Boolean sourceDirectoriesAreSpecified =
                 sourceDirectories != null && !sourceDirectories.isEmpty();
         final Collection<File> sourceFiles =
-                buildOptions.getSourceFiles();
+                options.getSourceFiles();
         final Boolean sourceFilesAreSpecified =
                 sourceFiles != null && !sourceFiles.isEmpty();
         if (!sourceDirectoriesAreSpecified && !sourceFilesAreSpecified) {
             throw new BuildOptionsException(UNSPECIFIED_SOURCES);
         }
 
-        final Collection<String> entryPoints = buildOptions.getEntryPoints();
+        final Collection<String> entryPoints = options.getEntryPoints();
         if (entryPoints == null || entryPoints.isEmpty()) {
             throw new BuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
         }
-
     }
 
-    /**
-     * @return The rename map file generated by this build.
-     */
-    @Nullable
-    public File getGeneratedRenameMap() {
-        return generatedRenameMap;
-    }
+    public static class InternalResults {
+        public ImmutableList<File> resolvedSourceFiles;
+        public ImmutableSet<File> sourceFiles;
+        public File generatedRenameMap;
+        public File generatedStylesheet;
 
-
-    /**
-     * @return The final generated stylesheet file.
-     */
-    @Nullable
-    public File getGeneratedStylesheet() {
-        return generatedStylesheet;
-    }
-
-
-    /**
-     * The calculated source files.
-     */
-    @Nullable
-    public ImmutableList<File> getResolvedSourceFiles() {
-        return resolvedSourceFiles;
+        public GssResult toResults() {
+            return new GssResult(sourceFiles, generatedStylesheet,
+                    generatedRenameMap, resolvedSourceFiles);
+        }
     }
 
 

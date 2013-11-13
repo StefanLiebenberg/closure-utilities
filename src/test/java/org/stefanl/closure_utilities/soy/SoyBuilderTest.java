@@ -6,22 +6,22 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.stefanl.closure_utilities.internal.AbstractBuildTest;
-import org.stefanl.closure_utilities.templates.SoyBuildOptions;
-import org.stefanl.closure_utilities.templates.SoyBuilder;
-import org.stefanl.closure_utilities.templates.SoyBuilder;
+import org.stefanl.closure_utilities.templates.DefaultSoyBuilder;
+import org.stefanl.closure_utilities.templates.SoyOptions;
+import org.stefanl.closure_utilities.templates.SoyResult;
 import org.stefanl.closure_utilities.utilities.FS;
 
 import java.io.File;
 import java.util.Collection;
 
 public class SoyBuilderTest extends
-        AbstractBuildTest<SoyBuilder, SoyBuildOptions> {
+        AbstractBuildTest<DefaultSoyBuilder, SoyOptions, SoyResult> {
 
     protected File outputDirectory;
 
     public SoyBuilderTest() throws InstantiationException,
             IllegalAccessException {
-        super(SoyBuilder.class, SoyBuildOptions.class);
+        super(DefaultSoyBuilder.class, SoyOptions.class);
     }
 
     @Before
@@ -44,6 +44,6 @@ public class SoyBuilderTest extends
         Collection<File> sourceDirectories =
                 Lists.newArrayList(getApplicationDirectory("src/soy"));
         builderOptions.setSourceDirectories(sourceDirectories);
-        builder.build();
+        builder.build(builderOptions);
     }
 }

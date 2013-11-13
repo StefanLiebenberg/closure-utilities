@@ -3,69 +3,61 @@ package org.stefanl.closure_utilities.stylesheets;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
-import org.stefanl.closure_utilities.internal.DependencyException;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 import java.io.File;
-import java.io.IOException;
 import java.net.URI;
 
-public class DefaultGssBuilder
-        extends AbstractGssBuilder
-        implements GssBuilderInterface {
+@Immutable
+public class DefaultGssBuilder extends AbstractGssBuilder {
 
     public DefaultGssBuilder() {}
 
-    public DefaultGssBuilder(@Nonnull iGssBuildOption buildOptions) {
-        super(buildOptions);
-    }
-
     @Override
-    public void reset() {
-        super.reset();
-    }
-
-
-    @Override
-    public void scan() throws Exception {
+    public void scan(@Nonnull GssOptions options,
+                     @Nonnull InternalResults internalResults)
+            throws Exception {
         final ImmutableCollection<File> sourceDirectories =
-                buildOptions.getSourceDirectories();
-        sourceFiles = scanInternal(sourceDirectories);
+                options.getSourceDirectories();
+        internalResults.sourceFiles = scanInternal(sourceDirectories);
     }
 
 
     /**
      * Parses the found gss files and produces a list of resolved files.
-     *
-     * @throws IOException
-     * @throws ReflectiveOperationException
-     * @throws DependencyException
      */
     @Override
-    public void parse() throws Exception {
-        final ImmutableList<String> entryPoints = buildOptions.getEntryPoints();
-        resolvedSourceFiles =
-                parseInternal(sourceFiles, entryPoints, dependencyParser);
+    public void parse(@Nonnull GssOptions options,
+                      @Nonnull InternalResults internalResults)
+            throws Exception {
+        final ImmutableList<String> entryPoints = options.getEntryPoints();
+        internalResults.resolvedSourceFiles =
+                parseInternal(internalResults.sourceFiles, entryPoints,
+                        dependencyParser);
     }
 
 
     @Override
-    public void compile() throws Exception {
-        final File outputFile = buildOptions.getOutputFile();
-        final File renameMap = buildOptions.getRenameMap();
+    public void compile(@Nonnull GssOptions options,
+                        @Nonnull InternalResults internalResults)
+            throws Exception {
+        final File outputFile = options.getOutputFile();
+        final File renameMap = options.getRenameMap();
         final Boolean shouldCompile =
-                buildOptions.getShouldGenerateForProduction();
+                options.getShouldGenerateForProduction();
         final Boolean shouldDebug =
-                buildOptions.getShouldGenerateForDebug();
-        final URI assetUri = buildOptions.getAssetsUri();
-        final File assetDir = buildOptions.getAssetsDirectory();
-        generatedStylesheet =
-                compileInternal(resolvedSourceFiles, outputFile, renameMap,
-                        shouldCompile, shouldDebug, assetUri, assetDir);
-        if (generatedStylesheet != null) {
-            generatedRenameMap = renameMap;
+                options.getShouldGenerateForDebug();
+        final URI assetUri = options.getAssetsUri();
+        final File assetDir = options.getAssetsDirectory();
+        internalResults.generatedStylesheet =
+                compileInternal(internalResults.resolvedSourceFiles,
+                        outputFile, renameMap, shouldCompile, shouldDebug,
+                        assetUri, assetDir);
+        if (internalResults.generatedStylesheet != null) {
+            internalResults.generatedRenameMap = renameMap;
         } else {
-            generatedRenameMap = null;
+            internalResults.generatedRenameMap = null;
         }
     }
 

@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class JsBuildOptions {
+public class JsOptions {
 
     private File outputDependencyFile;
     private Collection<File> sourceDirectories;

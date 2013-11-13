@@ -7,26 +7,40 @@ import com.google.common.collect.Lists;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.Compiler;
 import org.stefanl.closure_utilities.internal.*;
+import org.stefanl.closure_utilities.internal.DependencyOptions;
 import org.stefanl.closure_utilities.render.DependencyFileRenderer;
 import org.stefanl.closure_utilities.render.RenderException;
 import org.stefanl.closure_utilities.soy.SoyDelegateOptimizer;
 import org.stefanl.closure_utilities.utilities.FS;
+import org.stefanl.closure_utilities.utilities.Immuter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-/**
- * The javascript build builds dependencies and compiles the JavaScript aspect
- * of a closure project.
- */
-public class JsBuilder
-        extends AbstractBuilder<JsBuildOptions>
-        implements BuilderInterface {
+public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
+
+    private static class InternalData {
+        private List<File> scriptFiles;
+        private File baseFile;
+        private File outputFile;
+        private File dependencyFile;
+        private ArrayList<File> sourceFiles;
+        private ArrayList<ClosureSourceFile> closureSourceFiles;
+        private ImmutableList<ClosureSourceFile> resolvedSourceFiles;
+        private ImmutableList<File> resolvedFiles;
+        private Result compilerResult;
+
+        @Nonnull
+        public JsResult toResult() {
+            return new JsResult(outputFile, scriptFiles);
+        }
+    }
 
     private final ClosureDependencyParser dependencyParser =
             new ClosureDependencyParser();
@@ -34,67 +48,73 @@ public class JsBuilder
     private final DependencyBuilder<ClosureSourceFile> dependencyBuilder =
             new DependencyBuilder<>();
 
+    private final DependencyFileRenderer dependencyFileRenderer =
+            new DependencyFileRenderer();
+
     private static final String JS_EXT = "js";
 
-    private File baseFile;
-
-    private List<File> sourceFiles;
-
-    private List<ClosureSourceFile> closureSourceFiles;
-
     @Nonnull
-    private ClosureSourceFile parseFile(@Nonnull File inputFile)
+    private ClosureSourceFile parseFile(@Nonnull File inputFile,
+                                        @Nonnull InternalData internalData)
             throws IOException {
         ClosureSourceFile sourceFile = new ClosureSourceFile(inputFile);
         dependencyParser.parse(sourceFile, FS.read(inputFile));
         if (sourceFile.getIsBaseFile()) {
-            baseFile = inputFile;
+            internalData.baseFile = inputFile;
         }
         return sourceFile;
     }
 
-    public void findDependencyFiles() throws IOException {
+    private void findDependencyFiles(@Nonnull final JsOptions options,
+                                     @Nonnull final InternalData internalData)
+            throws IOException {
         final Collection<File> sourceDirectories =
-                buildOptions.getSourceDirectories();
+                options.getSourceDirectories();
         if (sourceDirectories != null) {
             final Collection<File> sourceFiles =
                     FS.find(sourceDirectories, JS_EXT);
-            closureSourceFiles = new ArrayList<>();
+            internalData.closureSourceFiles = new ArrayList<>();
             for (File sourceFile : sourceFiles) {
-                closureSourceFiles.add(parseFile(sourceFile));
+                internalData.closureSourceFiles.add(
+                        parseFile(sourceFile, internalData));
             }
         }
     }
 
-    private final DependencyFileRenderer dependencyFileRenderer =
-            new DependencyFileRenderer();
 
-    File dependencyFile;
-
-    public void buildDependenciesFile() throws RenderException, IOException {
-        dependencyFile = buildOptions.getOutputDependencyFile();
-        if (dependencyFile != null) {
-            FS.write(dependencyFile, dependencyFileRenderer
-                    .setBasePath(baseFile.getAbsolutePath())
-                    .setDependencies(closureSourceFiles)
+    private void buildDependenciesFile(@Nonnull JsOptions options,
+                                       @Nonnull InternalData internalData)
+            throws RenderException, IOException {
+        internalData.dependencyFile = options.getOutputDependencyFile();
+        if (internalData.dependencyFile != null) {
+            FS.write(internalData.dependencyFile, dependencyFileRenderer
+                    .setBasePath(internalData.baseFile.getAbsolutePath())
+                    .setDependencies(internalData.closureSourceFiles)
                     .render());
         }
     }
 
-    public void calculateDependencies()
+    private void calculateDependencies(@Nonnull JsOptions options,
+                                       @Nonnull InternalData internalData)
             throws DependencyException, IOException, BuildException {
-        final List<String> entryPoints = buildOptions.getEntryPoints();
+        final List<String> entryPoints = options.getEntryPoints();
 
         if (entryPoints != null) {
-            final DependencyBuildOptions<ClosureSourceFile>
+            final DependencyOptions<ClosureSourceFile>
                     depBuildOptions =
-                    new DependencyBuildOptions<>();
-            depBuildOptions.setEntryPoints(buildOptions.getEntryPoints());
-            depBuildOptions.setSourceFiles(closureSourceFiles);
-            dependencyBuilder.setBuildOptions(depBuildOptions);
-            dependencyBuilder.build();
+                    new DependencyOptions<>();
+            depBuildOptions.setEntryPoints(options.getEntryPoints());
+            depBuildOptions.setSourceFiles(internalData.closureSourceFiles);
+            internalData.resolvedSourceFiles =
+                    dependencyBuilder.build(depBuildOptions);
+            internalData.resolvedFiles =
+                    Immuter.list(internalData.resolvedSourceFiles, BaseSourceFile.TO_FILE);
         }
-        sourceFiles = dependencyBuilder.getResolvedFiles();
+
+        final List<File> scriptsFilesToCompile =
+                getScriptFilesToCompile(internalData);
+        internalData.scriptFiles = scriptsFilesToCompile;
+
     }
 
     private void setCompilerOptionsForCompile(
@@ -139,7 +159,7 @@ public class JsBuilder
         o.setAggressiveRenaming(true);
     }
 
-    public void setCompilerOptionsForDebug(@Nonnull final CompilerOptions o) {
+    private void setCompilerOptionsForDebug(@Nonnull final CompilerOptions o) {
         final CompilationLevel level = CompilationLevel.SIMPLE_OPTIMIZATIONS;
         level.setOptionsForCompilationLevel(o);
         level.setTypeBasedOptimizationOptions(o);
@@ -148,11 +168,12 @@ public class JsBuilder
 
     @Nonnull
     private CompilerOptions getCompilerOptions(
+            @Nonnull final JsOptions options,
             @Nullable final File sourceMap) {
 
         final CompilerOptions cOpts = new CompilerOptions();
 
-        if (!buildOptions.getShouldDebug()) {
+        if (!options.getShouldDebug()) {
             System.out.println("Setting compiler options for production!");
             setCompilerOptionsForCompile(cOpts);
         } else {
@@ -160,7 +181,7 @@ public class JsBuilder
             setCompilerOptionsForDebug(cOpts);
         }
 
-        final Map<String, Object> globals = buildOptions.getGlobals();
+        final Map<String, Object> globals = options.getGlobals();
         if (globals != null) {
             cOpts.setDefineReplacements(globals);
         }
@@ -173,22 +194,16 @@ public class JsBuilder
         return cOpts;
     }
 
-    private Result compilerResult;
 
-    private File outputFile;
-
-    public File getOutputFile() {
-        return outputFile;
-    }
-
-    public List<SourceFile> getExternFiles() throws IOException {
+    private List<SourceFile> getExternFiles() throws IOException {
         final List<SourceFile> externs = new ArrayList<>();
         externs.addAll(CommandLineRunner.getDefaultExterns());
         return externs;
     }
 
-    public List<SourceFile> getCompilerSourceFiles() {
-        return Lists.transform(getScriptsFilesToCompile(),
+    private List<SourceFile> getCompilerSourceFiles(
+            @Nonnull List<File> scriptFilesToCompile) {
+        return Lists.transform(scriptFilesToCompile,
                 new Function<File, SourceFile>() {
                     @Nullable
                     @Override
@@ -198,111 +213,105 @@ public class JsBuilder
                 });
     }
 
-    public void addCustomBuildPasses(@Nonnull Compiler compiler,
-                                     @Nonnull CompilerOptions compilerOptions) {
-
+    private void addCustomBuildPasses(
+            @Nonnull final Compiler compiler,
+            @Nonnull final CompilerOptions compilerOptions) {
         SoyDelegateOptimizer.addToCompile(compiler, compilerOptions);
-
         // todo, add space here for user to specify custom passes.
-
     }
 
-    public void compileScriptFile() throws BuildException, IOException {
+    private void compileScriptFile(@Nonnull final JsOptions options,
+                                   @Nonnull final InternalData internalData)
+            throws BuildException, IOException {
         final Compiler compiler = new Compiler();
-        final CompilerOptions options = getCompilerOptions(null);
+        final CompilerOptions compilerOptions =
+                getCompilerOptions(options, null);
         final List<SourceFile> externs = getExternFiles();
-        final List<SourceFile> sources = getCompilerSourceFiles();
 
-        addCustomBuildPasses(compiler, options);
+        final List<SourceFile> sources =
+                getCompilerSourceFiles(internalData.scriptFiles);
+        addCustomBuildPasses(compiler, compilerOptions);
 
-        compilerResult = compiler.compile(externs, sources, options);
-        if (compilerResult.success) {
+        internalData.compilerResult = compiler.compile(externs, sources,
+                compilerOptions);
+        if (internalData.compilerResult.success) {
             final String source = compiler.toSource();
-            outputFile = buildOptions.getOutputFile();
-            FS.write(outputFile, source);
+            internalData.outputFile = options.getOutputFile();
+            FS.write(internalData.outputFile, source);
         } else {
             throw new BuildException("Compilation Failure");
         }
     }
 
-    @Override
-    public void buildInternal() throws Exception {
-        findDependencyFiles();
-        buildDependenciesFile();
-        calculateDependencies();
-        if (buildOptions.getShouldCompile()) {
-            compileScriptFile();
-        }
-    }
-
-    @Override
-    public void reset() {
-        super.reset();
-        dependencyBuilder.reset();
-        dependencyFileRenderer.reset();
-        sourceFiles = null;
-        compilerResult = null;
-        outputFile = null;
-        dependencyFile = null;
-    }
-
-    @Nullable
-    public List<File> getSourceFiles() {
-        return sourceFiles;
-    }
-
     @Nonnull
-    public ImmutableList<File> getScriptsFilesToCompile() {
+    private ImmutableList<File> getScriptFilesToCompile(
+            @Nonnull InternalData internalData) {
         final ImmutableList.Builder<File> toCompileFiles =
                 new ImmutableList.Builder<File>();
-        if (baseFile != null) {
-            toCompileFiles.add(baseFile);
+        if (internalData.baseFile != null) {
+            toCompileFiles.add(internalData.baseFile);
         }
 
-        if (dependencyFile != null) {
-            toCompileFiles.add(dependencyFile);
+        if (internalData.dependencyFile != null) {
+            toCompileFiles.add(internalData.dependencyFile);
         }
         // add rename map
         // add defines.js
-        if (sourceFiles != null) {
-            toCompileFiles.addAll(sourceFiles);
+
+        if (internalData.resolvedFiles != null) {
+            toCompileFiles.addAll(internalData.resolvedFiles);
         }
         return toCompileFiles.build();
     }
 
-    @Nullable
-    public List<ClosureSourceFile> getClosureSourceFiles() {
-        return closureSourceFiles;
-    }
 
-    public static final String UNSPECIFIED_OUTPUT_FILE =
+    private static final String UNSPECIFIED_OUTPUT_FILE =
             "Javascript output file not specified";
 
-    public static final String UNSPECIFIED_ENTRY_POINTS =
+    private static final String UNSPECIFIED_ENTRY_POINTS =
             "Javascript entry points have not specified.";
 
-    public static final String UNSPECIFIED_SOURCE_DIRECTORIES =
+    private static final String UNSPECIFIED_SOURCE_DIRECTORIES =
             "Javascript source directories have not specified.";
 
-    @Override
-    public void checkOptions() throws BuildOptionsException {
-        super.checkOptions();
 
-        final File outFile = buildOptions.getOutputFile();
+    @Nonnull
+    @Override
+    protected JsResult buildInternal(@Nonnull JsOptions options)
+            throws Exception {
+        final InternalData internalData = new InternalData();
+        findDependencyFiles(options, internalData);
+        buildDependenciesFile(options, internalData);
+        calculateDependencies(options, internalData);
+        if (options.getShouldCompile()) {
+            compileScriptFile(options, internalData);
+        }
+
+        return internalData.toResult();
+    }
+
+
+    @Override
+    public void checkOptions(@Nonnull JsOptions options)
+            throws BuildOptionsException {
+
+        final File outFile = options.getOutputFile();
         if (outFile == null) {
             throw new NullPointerException(UNSPECIFIED_OUTPUT_FILE);
         }
 
-        final Collection<String> entryPoints = buildOptions.getEntryPoints();
+        final Collection<String> entryPoints = options.getEntryPoints();
         if (entryPoints == null || entryPoints.isEmpty()) {
             throw new BuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
         }
 
         final Collection<File> sourceDirectories =
-                buildOptions.getSourceDirectories();
+                options.getSourceDirectories();
         if (sourceDirectories == null || sourceDirectories.isEmpty()) {
             throw new BuildOptionsException
                     (UNSPECIFIED_SOURCE_DIRECTORIES);
         }
     }
+
+
 }

@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
-public class SoyBuildOptions implements iSoyBuildOptions {
+public class SoyOptions {
 
     private File outputDirectory;
 

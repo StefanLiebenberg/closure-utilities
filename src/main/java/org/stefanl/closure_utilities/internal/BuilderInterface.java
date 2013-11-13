@@ -3,12 +3,11 @@ package org.stefanl.closure_utilities.internal;
 
 import javax.annotation.Nonnull;
 
-public interface BuilderInterface<A> {
+public interface BuilderInterface<A, B> {
 
-    public void checkOptions() throws BuildOptionsException;
+    public void checkOptions(@Nonnull A options) throws BuildOptionsException;
 
-    public void build() throws BuildException;
-
-    public void reset();
+    @Nonnull
+    public B build(@Nonnull A options) throws BuildException;
 }
 

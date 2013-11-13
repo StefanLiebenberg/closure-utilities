@@ -15,13 +15,11 @@ public class DependencyBuilderTest {
     private final DependencyBuilder<BaseSourceFile> dependencyBuilder
             = new DependencyBuilder<BaseSourceFile>();
 
-    private DependencyBuildOptions<BaseSourceFile> dependencyBuildOptions;
+    private DependencyOptions<BaseSourceFile> dependencyBuildOptions;
 
     @Before
     public void setUp() throws Exception {
-        dependencyBuilder.reset();
-        dependencyBuildOptions = new DependencyBuildOptions<BaseSourceFile>();
-        dependencyBuilder.setBuildOptions(dependencyBuildOptions);
+        dependencyBuildOptions = new DependencyOptions<>();
     }
 
     @After
@@ -63,9 +61,8 @@ public class DependencyBuilderTest {
         baseSourceFiles.add(fileB);
         dependencyBuildOptions.setSourceFiles(baseSourceFiles);
         dependencyBuildOptions.setEntryPoints(Lists.newArrayList("B"));
-        dependencyBuilder.build();
         List<BaseSourceFile> resolved =
-                dependencyBuilder.getResolvedSourceFiles();
+                dependencyBuilder.build(dependencyBuildOptions);
         Assert.assertEquals(resolved.get(0), fileA);
         Assert.assertEquals(resolved.get(1), fileB);
     }

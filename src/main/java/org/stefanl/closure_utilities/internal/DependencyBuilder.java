@@ -1,70 +1,54 @@
 package org.stefanl.closure_utilities.internal;
 
 
-import com.google.common.base.Function;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.List;
 
 public class DependencyBuilder<A extends BaseSourceFile>
-        extends AbstractBuilder<DependencyBuildOptions<A>>
-        implements BuilderInterface {
+        extends AbstractBuilder<DependencyOptions<A>, ImmutableList<A>> {
 
-    private DependencyCalculator<A> dependencyCalculator;
+    private static final Boolean STRICT_MODE = true;
 
-    private List<A> resolvedSourceFiles;
+    private static final String UNSPECIFIED_ENTRY_POINTS =
+            "No entry points specified";
 
-    private final Function<A, File> SOURCE_TO_FILE =
-            new Function<A, File>() {
-                @Nullable
-                @Override
-                public File apply(@Nullable A input) {
-                    if (input != null) {
-                        return new File(input.getSourceLocation());
-                    } else {
-                        return null;
-                    }
-                }
-            };
+    private static final String UNSPECIFIED_SOURCE_FILES =
+            "No source files specified";
 
     @Override
-    public void buildInternal() throws Exception {
+    public void checkOptions(@Nonnull DependencyOptions<A> options)
+            throws BuildOptionsException {
+        if (STRICT_MODE) {
+            ImmutableList<String> entryPoints = options.getEntryPoints();
+            if (entryPoints == null || entryPoints.isEmpty()) {
+                throw new BuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
+            }
+            ImmutableCollection<A> sourceFiles = options.getSourceFiles();
+            if (sourceFiles == null || sourceFiles.isEmpty()) {
+                throw new BuildOptionsException(UNSPECIFIED_SOURCE_FILES);
+            }
+        }
+    }
+
+    @Override
+    @Nonnull
+    public ImmutableList<A> buildInternal(
+            @Nonnull final DependencyOptions<A> buildOptions)
+            throws Exception {
+        ImmutableList.Builder<A> listBuilder = new ImmutableList.Builder<>();
         final ImmutableSet<A> sourceFiles = buildOptions.getSourceFiles();
         final ImmutableList<String> entryPoints = buildOptions.getEntryPoints();
         if (sourceFiles != null && entryPoints != null) {
-            dependencyCalculator = new DependencyCalculator<A>(sourceFiles);
-            resolvedSourceFiles =
-                    dependencyCalculator.getDependencyList(entryPoints);
+            DependencyCalculator<A> dependencyCalculator =
+                    new DependencyCalculator<>(sourceFiles);
+            listBuilder.addAll(dependencyCalculator.getDependencyList
+                    (entryPoints));
         }
-    }
-
-    @Override
-    public void reset() {
-        super.reset();
-        dependencyCalculator = null;
-        resolvedSourceFiles = null;
-    }
-
-    @Nullable
-    public DependencyCalculator getDependencyCalculator() {
-        return dependencyCalculator;
-    }
-
-    @Nullable
-    public List<A> getResolvedSourceFiles() {
-        return resolvedSourceFiles;
-    }
-
-    @Nullable
-    public List<File> getResolvedFiles() {
-        if (resolvedSourceFiles != null) {
-            return Lists.transform(resolvedSourceFiles, SOURCE_TO_FILE);
-        } else {
-            return null;
-        }
+        return listBuilder.build();
     }
 }
