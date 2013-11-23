@@ -176,7 +176,12 @@ public class ClosureBuilder
     private JsOptions getJsBuildOptions(@Nonnull final
                                         ClosureOptions options) {
         JsOptions jsOptions = new JsOptions();
-        jsOptions.setOutputFile(getOutputFile(options, "script.js"));
+        File jsScript = options.getJavascriptOutputFile();
+        if(jsScript != null) {
+            jsOptions.setOutputFile(jsScript);
+        } else {
+            jsOptions.setOutputFile(getOutputFile(options, "script.js"));
+        }
         jsOptions.setEntryPoints(options.getJavascriptEntryPoints());
         jsOptions.setSourceDirectories(
                 options.getJavascriptSourceDirectories(false));

@@ -14,6 +14,8 @@ import java.util.List;
 
 public class ClosureOptions {
 
+    private File javascriptOutputFile;
+
     private ImmutableCollection<File> soySourceDirectories;
 
     @Nullable
@@ -291,5 +293,13 @@ public class ClosureOptions {
         } else {
             this.javascriptTestDirectories = null;
         }
+    }
+
+    public File getJavascriptOutputFile() {
+        return javascriptOutputFile;
+    }
+
+    public void setJavascriptOutputFile(File javascriptOutputFile) {
+        this.javascriptOutputFile = javascriptOutputFile;
     }
 }
