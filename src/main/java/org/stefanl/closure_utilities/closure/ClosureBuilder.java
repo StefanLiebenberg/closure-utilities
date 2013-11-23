@@ -1,5 +1,6 @@
 package org.stefanl.closure_utilities.closure;
 
+import com.google.common.collect.Lists;
 import org.stefanl.closure_utilities.html.HtmlBuilder;
 import org.stefanl.closure_utilities.html.HtmlOptions;
 import org.stefanl.closure_utilities.html.HtmlResult;
@@ -20,11 +21,11 @@ import org.stefanl.closure_utilities.templates.SoyResult;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class ClosureBuilder
         extends AbstractBuilder<ClosureOptions, ClosureResult> {
-
 
     private static class InternalData {
         private File generatedStylesheet;
@@ -39,6 +40,21 @@ public class ClosureBuilder
             return new ClosureResult(generatedStylesheet,
                     generatedRenameMap, soyOutputDirectory, htmlOutputFile,
                     jsOutputFile);
+        }
+    }
+
+    public enum BuildCommand {
+
+        ALL, STYLESHEETS, TEMPLATES, JAVASCRIPT, HTML;
+
+        @Override
+        public String toString() {
+            return name().toLowerCase();
+        }
+
+        @Nonnull
+        public static BuildCommand fromText(String text) {
+            return valueOf(text.trim().toUpperCase());
         }
     }
 
@@ -285,12 +301,44 @@ public class ClosureBuilder
     protected ClosureResult buildInternal(@Nonnull ClosureOptions options)
             throws Exception {
         final InternalData internalData = new InternalData();
-        buildGss(options, internalData);
-        buildSoy(options, internalData);
-        buildJs(options, internalData);
-        buildHtml(options, internalData);
+        buildCommands(Lists.newArrayList(BuildCommand.ALL), options,
+                internalData);
         return internalData.toResult();
     }
+
+    protected void buildCommands(
+            @Nonnull final Collection<BuildCommand> commands,
+            @Nonnull final ClosureOptions options,
+            @Nonnull final InternalData data)
+            throws BuildException {
+        boolean doAll = commands.contains(BuildCommand.ALL);
+
+        if (doAll || commands.contains(BuildCommand.STYLESHEETS)) {
+            buildGss(options, data);
+        }
+
+        if (doAll || commands.contains(BuildCommand.TEMPLATES)) {
+            buildSoy(options, data);
+        }
+
+        if (doAll || commands.contains(BuildCommand.JAVASCRIPT)) {
+            buildJs(options, data);
+        }
+
+        if (doAll || commands.contains(BuildCommand.HTML)) {
+            buildHtml(options, data);
+        }
+    }
+
+    @Nonnull
+    public ClosureResult buildCommands(
+            @Nonnull final ClosureOptions options,
+            @Nonnull final BuildCommand... commands) throws BuildException {
+        final InternalData data = new InternalData();
+        buildCommands(Lists.newArrayList(commands), options, data);
+        return data.toResult();
+    }
+
 
     private static final String UNSPECIFIED_OUTPUT_DIRECTORY =
             "Closure output directory has not been specified.";
