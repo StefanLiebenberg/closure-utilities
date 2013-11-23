@@ -285,7 +285,7 @@ public class ClosureOptions {
     }
 
     public void setJavascriptTestDirectories(
-            @Nullable final ImmutableCollection<File> testDirectories) {
+            @Nullable final Collection<File> testDirectories) {
         if (testDirectories != null) {
             this.javascriptTestDirectories = Immuter.set(testDirectories);
         } else {
