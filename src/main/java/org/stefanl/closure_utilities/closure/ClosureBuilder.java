@@ -27,6 +27,50 @@ import java.util.List;
 public class ClosureBuilder
         extends AbstractBuilder<ClosureOptions, ClosureResult> {
 
+    @Nonnull
+    @Override
+    protected ClosureResult buildInternal(@Nonnull final ClosureOptions options)
+            throws Exception {
+        final InternalData data = new InternalData();
+        buildCommands(Lists.newArrayList(BuildCommand.ALL), options, data);
+        return data.toResult();
+    }
+
+    @Nonnull
+    public ClosureResult buildCommands(@Nonnull final ClosureOptions options,
+                                       @Nonnull final BuildCommand... commands)
+            throws BuildException {
+        final InternalData data = new InternalData();
+        buildCommands(Lists.newArrayList(commands), options, data);
+        return data.toResult();
+    }
+
+    protected void buildCommands(
+            @Nonnull final Collection<BuildCommand> commands,
+            @Nonnull final ClosureOptions options,
+            @Nonnull final InternalData data)
+            throws BuildException {
+
+        final boolean doAll = commands.contains(BuildCommand.ALL);
+
+        if (doAll || commands.contains(BuildCommand.STYLESHEETS)) {
+            buildGss(options, data);
+        }
+
+        if (doAll || commands.contains(BuildCommand.TEMPLATES)) {
+            buildSoy(options, data);
+        }
+
+        if (doAll || commands.contains(BuildCommand.JAVASCRIPT)) {
+            buildJs(options, data);
+        }
+
+        if (doAll || commands.contains(BuildCommand.HTML)) {
+            buildHtml(options, data);
+        }
+    }
+
+
     private static class InternalData {
         private File generatedStylesheet;
         private File generatedRenameMap;
@@ -177,7 +221,7 @@ public class ClosureBuilder
                                         ClosureOptions options) {
         JsOptions jsOptions = new JsOptions();
         File jsScript = options.getJavascriptOutputFile();
-        if(jsScript != null) {
+        if (jsScript != null) {
             jsOptions.setOutputFile(jsScript);
         } else {
             jsOptions.setOutputFile(getOutputFile(options, "script.js"));
@@ -298,50 +342,6 @@ public class ClosureBuilder
         final InternalData internalData = new InternalData();
         buildHtml(options, internalData);
         return internalData.toResult();
-    }
-
-
-    @Nonnull
-    @Override
-    protected ClosureResult buildInternal(@Nonnull ClosureOptions options)
-            throws Exception {
-        final InternalData internalData = new InternalData();
-        buildCommands(Lists.newArrayList(BuildCommand.ALL), options,
-                internalData);
-        return internalData.toResult();
-    }
-
-    protected void buildCommands(
-            @Nonnull final Collection<BuildCommand> commands,
-            @Nonnull final ClosureOptions options,
-            @Nonnull final InternalData data)
-            throws BuildException {
-        boolean doAll = commands.contains(BuildCommand.ALL);
-
-        if (doAll || commands.contains(BuildCommand.STYLESHEETS)) {
-            buildGss(options, data);
-        }
-
-        if (doAll || commands.contains(BuildCommand.TEMPLATES)) {
-            buildSoy(options, data);
-        }
-
-        if (doAll || commands.contains(BuildCommand.JAVASCRIPT)) {
-            buildJs(options, data);
-        }
-
-        if (doAll || commands.contains(BuildCommand.HTML)) {
-            buildHtml(options, data);
-        }
-    }
-
-    @Nonnull
-    public ClosureResult buildCommands(
-            @Nonnull final ClosureOptions options,
-            @Nonnull final BuildCommand... commands) throws BuildException {
-        final InternalData data = new InternalData();
-        buildCommands(Lists.newArrayList(commands), options, data);
-        return data.toResult();
     }
 
 
