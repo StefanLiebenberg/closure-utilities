@@ -475,7 +475,7 @@ public class BaseFunction extends IdScriptableObject implements Function
         Context cx = Context.getContext();
         NativeCall activation =
                 ScriptRuntime.findFunctionActivation(cx, this);
-        if (activation != null) {
+        if (activation != null && activation.parentActivationCall != null) {
             return activation.parentActivationCall.function;
         } else {
             return Undefined.instance;
