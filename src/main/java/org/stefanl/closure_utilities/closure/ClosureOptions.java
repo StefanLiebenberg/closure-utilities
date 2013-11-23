@@ -2,6 +2,7 @@ package org.stefanl.closure_utilities.closure;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.stefanl.closure_utilities.utilities.Immuter;
 
 import javax.annotation.Nonnull;
@@ -57,9 +58,18 @@ public class ClosureOptions {
 
     private ImmutableCollection<File> javascriptSourceDirectories;
 
+    private ImmutableCollection<File> javascriptTestDirectories;
+
     @Nullable
-    public ImmutableCollection<File> getJavascriptSourceDirectories() {
-        return javascriptSourceDirectories;
+    public ImmutableCollection<File> getJavascriptSourceDirectories(
+            @Nonnull final Boolean includeTestDirectories) {
+        ImmutableCollection.Builder<File> builder =
+                new ImmutableSet.Builder<>();
+        builder.addAll(javascriptSourceDirectories);
+        if (includeTestDirectories) {
+            builder.addAll(javascriptTestDirectories);
+        }
+        return builder.build();
     }
 
     private ImmutableList<File> externalJavascriptFiles;
@@ -274,4 +284,12 @@ public class ClosureOptions {
         this.outputStylesheetFile = cssFile;
     }
 
+    public void setJavascriptTestDirectories(
+            @Nullable final ImmutableCollection<File> testDirectories) {
+        if (testDirectories != null) {
+            this.javascriptTestDirectories = Immuter.set(testDirectories);
+        } else {
+            this.javascriptTestDirectories = null;
+        }
+    }
 }
