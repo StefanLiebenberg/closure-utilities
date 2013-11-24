@@ -77,6 +77,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
             final Collection<File> sourceFiles =
                     FS.find(sourceDirectories, JS_EXT);
             internalData.closureSourceFiles = new ArrayList<>();
+            internalData.closureEntryFiles = new ArrayList<>();
             for (File sourceFile : sourceFiles) {
                 ClosureSourceFile parsedFile = parseFile(sourceFile,
                         internalData);
@@ -310,7 +311,9 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         }
 
         final Collection<String> entryPoints = options.getEntryPoints();
-        if (entryPoints == null || entryPoints.isEmpty()) {
+        final Collection<File> entryFiles = options.getEntryFiles();
+        if ((entryPoints == null || entryPoints.isEmpty()) && (
+                entryFiles == null || entryFiles.isEmpty())) {
             throw new BuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
         }
 
