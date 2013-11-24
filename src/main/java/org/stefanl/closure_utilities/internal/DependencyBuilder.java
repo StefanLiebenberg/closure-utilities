@@ -6,8 +6,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nonnull;
-import java.io.File;
-import java.util.List;
 
 public class DependencyBuilder<A extends BaseSourceFile>
         extends AbstractBuilder<DependencyOptions<A>, ImmutableList<A>> {
@@ -43,11 +41,12 @@ public class DependencyBuilder<A extends BaseSourceFile>
         ImmutableList.Builder<A> listBuilder = new ImmutableList.Builder<>();
         final ImmutableSet<A> sourceFiles = buildOptions.getSourceFiles();
         final ImmutableList<String> entryPoints = buildOptions.getEntryPoints();
-        if (sourceFiles != null && entryPoints != null) {
+        final ImmutableList<A> entryFiles = buildOptions.getEntryFiles();
+        if (sourceFiles != null) {
             DependencyCalculator<A> dependencyCalculator =
                     new DependencyCalculator<>(sourceFiles);
             listBuilder.addAll(dependencyCalculator.getDependencyList
-                    (entryPoints));
+                    (entryFiles, entryPoints));
         }
         return listBuilder.build();
     }

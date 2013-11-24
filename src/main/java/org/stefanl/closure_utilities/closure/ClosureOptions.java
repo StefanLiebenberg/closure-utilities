@@ -85,10 +85,12 @@ public class ClosureOptions {
 
 
     @Nullable
-
     public ImmutableList<String> getJavascriptEntryPoints() {
         return javascriptEntryPoints;
     }
+
+    private ImmutableList<File> javascriptEntryFiles;
+
 
     private File soyOutputDirectory;
 
@@ -301,5 +303,27 @@ public class ClosureOptions {
 
     public void setJavascriptOutputFile(File javascriptOutputFile) {
         this.javascriptOutputFile = javascriptOutputFile;
+    }
+
+
+    public void setOutputHtmlFile(File outputHtmlFile) {
+        this.outputHtmlFile = outputHtmlFile;
+    }
+
+    public void setAssetsUri(URI assetsUri) {
+        this.assetsUri = assetsUri;
+    }
+
+    public ImmutableList<File> getJavascriptEntryFiles() {
+        return javascriptEntryFiles;
+    }
+
+    public void setJavascriptEntryFiles(
+            @Nullable List<File> javascriptEntryFiles) {
+        if (javascriptEntryFiles != null) {
+            this.javascriptEntryFiles = Immuter.list(javascriptEntryFiles);
+        } else {
+            this.javascriptEntryFiles = null;
+        }
     }
 }

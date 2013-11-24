@@ -227,12 +227,14 @@ public class ClosureBuilder
             jsOptions.setOutputFile(getOutputFile(options, "script.js"));
         }
         jsOptions.setEntryPoints(options.getJavascriptEntryPoints());
+        jsOptions.setEntryFiles(options.getJavascriptEntryFiles());
         jsOptions.setSourceDirectories(
                 options.getJavascriptSourceDirectories(false));
         jsOptions.setShouldCompile(options.getShouldCompile());
         jsOptions.setShouldDebug(options.getShouldDebug());
         jsOptions.setOutputDependencyFile(
                 options.getJavascriptDependencyOutputFile());
+
         return jsOptions;
     }
 

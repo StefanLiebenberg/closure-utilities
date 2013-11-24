@@ -1,9 +1,9 @@
 package org.stefanl.closure_utilities.internal;
 
 import com.google.common.collect.ImmutableCollection;
-import org.stefanl.closure_utilities.utilities.Immuter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import org.stefanl.closure_utilities.utilities.Immuter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,8 +13,9 @@ import java.util.List;
 public class DependencyOptions<A extends BaseSourceFile> {
 
     private ImmutableCollection<A> sourceFiles;
-
+    private ImmutableList<A> entryFiles;
     private ImmutableList<String> entryPoints;
+
 
     public void setSourceFiles(@Nonnull final Collection<A> sourceFiles) {
         if (sourceFiles instanceof ImmutableCollection) {
@@ -24,11 +25,15 @@ public class DependencyOptions<A extends BaseSourceFile> {
         }
     }
 
-    public void setEntryPoints(@Nonnull final List<String> entryPoints) {
+    public void setEntryPoints(@Nullable final List<String> entryPoints) {
         if (entryPoints instanceof ImmutableList) {
             this.entryPoints = (ImmutableList<String>) entryPoints;
         } else {
-            this.entryPoints = Immuter.list(entryPoints);
+            if (entryPoints != null) {
+                this.entryPoints = Immuter.list(entryPoints);
+            } else {
+                this.entryPoints = null;
+            }
         }
     }
 
@@ -42,4 +47,16 @@ public class DependencyOptions<A extends BaseSourceFile> {
         return Immuter.list(entryPoints);
     }
 
+    public ImmutableList<A> getEntryFiles() {
+        return entryFiles;
+    }
+
+    public void setEntryFiles(
+            @Nullable final List<A> entryFiles) {
+        if (entryFiles != null) {
+            this.entryFiles = Immuter.list(entryFiles);
+        } else {
+            this.entryFiles = null;
+        }
+    }
 }

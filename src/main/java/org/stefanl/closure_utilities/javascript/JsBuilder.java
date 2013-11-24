@@ -32,6 +32,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         private File dependencyFile;
         private ArrayList<File> sourceFiles;
         private ArrayList<ClosureSourceFile> closureSourceFiles;
+        private ArrayList<ClosureSourceFile> closureEntryFiles;
         private ImmutableList<ClosureSourceFile> resolvedSourceFiles;
         private ImmutableList<File> resolvedFiles;
         private Result compilerResult;
@@ -70,13 +71,20 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
             throws IOException {
         final Collection<File> sourceDirectories =
                 options.getSourceDirectories();
+        final List<File> entryFiles =
+                options.getEntryFiles();
         if (sourceDirectories != null) {
             final Collection<File> sourceFiles =
                     FS.find(sourceDirectories, JS_EXT);
             internalData.closureSourceFiles = new ArrayList<>();
             for (File sourceFile : sourceFiles) {
-                internalData.closureSourceFiles.add(
-                        parseFile(sourceFile, internalData));
+                ClosureSourceFile parsedFile = parseFile(sourceFile,
+                        internalData);
+                internalData.closureSourceFiles.add(parsedFile);
+                // todo, find a better way.
+                if (entryFiles != null && entryFiles.contains(sourceFile)) {
+                    internalData.closureEntryFiles.add(parsedFile);
+                }
             }
         }
     }
@@ -98,17 +106,18 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
                                        @Nonnull InternalData internalData)
             throws DependencyException, IOException, BuildException {
         final List<String> entryPoints = options.getEntryPoints();
-
-        if (entryPoints != null) {
+        final List<File> entryFiles = options.getEntryFiles();
+        if (entryPoints != null || entryFiles != null) {
             final DependencyOptions<ClosureSourceFile>
-                    depBuildOptions =
-                    new DependencyOptions<>();
-            depBuildOptions.setEntryPoints(options.getEntryPoints());
+                    depBuildOptions = new DependencyOptions<>();
+            depBuildOptions.setEntryPoints(entryPoints);
+            depBuildOptions.setEntryFiles(internalData.closureEntryFiles);
             depBuildOptions.setSourceFiles(internalData.closureSourceFiles);
             internalData.resolvedSourceFiles =
                     dependencyBuilder.build(depBuildOptions);
             internalData.resolvedFiles =
-                    Immuter.list(internalData.resolvedSourceFiles, BaseSourceFile.TO_FILE);
+                    Immuter.list(internalData.resolvedSourceFiles,
+                            BaseSourceFile.TO_FILE);
         }
 
         final List<File> scriptsFilesToCompile =

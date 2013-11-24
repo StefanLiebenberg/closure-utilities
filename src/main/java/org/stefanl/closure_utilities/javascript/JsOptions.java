@@ -12,6 +12,7 @@ public class JsOptions {
     private File outputDependencyFile;
     private Collection<File> sourceDirectories;
     private List<String> entryPoints;
+    private List<File> entryFiles;
     private Map<String, Object> globals;
     private File outputFile;
 
@@ -81,5 +82,13 @@ public class JsOptions {
 
     public void setOutputFile(File outputFile) {
         this.outputFile = outputFile;
+    }
+
+    public List<File> getEntryFiles() {
+        return entryFiles;
+    }
+
+    public void setEntryFiles(List<File> entryFiles) {
+        this.entryFiles = entryFiles;
     }
 }

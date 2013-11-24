@@ -78,19 +78,10 @@ public class DependencyCalculator<S extends BaseSourceFile>
 
     @Nonnull
     private List<S> resolveDependencies(
-            @Nonnull final String namespace,
+            @Nonnull final S provider,
             @Nonnull final List<S> dependencies,
             @Nonnull final Collection<S> parents)
             throws DependencyException {
-        final S provider = getProviderOf(namespace);
-
-        if (provider == null) {
-            throw nothingProvides(namespace);
-        }
-
-        if (parents.contains(provider)) {
-            throw circularError(namespace, parents);
-        }
 
         if (!dependencies.contains(provider)) {
             parents.add(provider);
@@ -104,12 +95,42 @@ public class DependencyCalculator<S extends BaseSourceFile>
         return dependencies;
     }
 
+
+    @Nonnull
+    private List<S> resolveDependencies(@Nonnull final String namespace,
+                                        @Nonnull final List<S> dependencies,
+                                        @Nonnull final Collection<S> parents)
+            throws DependencyException {
+        final S provider = getProviderOf(namespace);
+
+        if (provider == null) {
+            throw nothingProvides(namespace);
+        }
+
+        if (parents.contains(provider)) {
+            throw circularError(namespace, parents);
+        }
+
+        return resolveDependencies(provider, dependencies, parents);
+    }
+
     private void addDependencies(
             @Nonnull final String entryPoint,
             @Nonnull final List<S> nodes)
             throws DependencyException {
         for (S node : resolveDependencies(entryPoint, nodes,
                 new HashSet<S>())) {
+            if (!nodes.contains(node)) {
+                nodes.add(node);
+            }
+        }
+    }
+
+
+    private void addDependencies(@Nonnull final S entryFile,
+                                 @Nonnull final List<S> nodes)
+            throws DependencyException {
+        for (S node : resolveDependencies(entryFile, nodes, new HashSet<S>())) {
             if (!nodes.contains(node)) {
                 nodes.add(node);
             }
@@ -129,6 +150,24 @@ public class DependencyCalculator<S extends BaseSourceFile>
             throws DependencyException {
         final List<S> nodes = new ArrayList<S>();
         addDependencies(entryPoint, nodes);
+        return nodes;
+    }
+
+    public List<S> getDependencyList(
+            @Nullable final List<S> entryFiles,
+            @Nullable final List<String> entryPoints)
+            throws DependencyException {
+        final List<S> nodes = new ArrayList<S>();
+        if (entryFiles != null) {
+            for (S entryFile : entryFiles) {
+                addDependencies(entryFile, nodes);
+            }
+        }
+        if (entryPoints != null) {
+            for (String entryPoint : entryPoints) {
+                addDependencies(entryPoint, nodes);
+            }
+        }
         return nodes;
     }
 }
