@@ -44,7 +44,7 @@ public class DependencyOptions<A extends BaseSourceFile> {
 
     @Nullable
     public ImmutableList<String> getEntryPoints() {
-        return Immuter.list(entryPoints);
+        return entryPoints;
     }
 
     public ImmutableList<A> getEntryFiles() {

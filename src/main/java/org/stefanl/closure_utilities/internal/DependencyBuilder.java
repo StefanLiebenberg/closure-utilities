@@ -23,7 +23,9 @@ public class DependencyBuilder<A extends BaseSourceFile>
             throws BuildOptionsException {
         if (STRICT_MODE) {
             ImmutableList<String> entryPoints = options.getEntryPoints();
-            if (entryPoints == null || entryPoints.isEmpty()) {
+            ImmutableList<A> entryFiles = options.getEntryFiles();
+            if ((entryPoints == null || entryPoints.isEmpty()) && (
+                    entryFiles == null || entryFiles.isEmpty())) {
                 throw new BuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
             }
             ImmutableCollection<A> sourceFiles = options.getSourceFiles();
