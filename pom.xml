@@ -27,6 +27,8 @@
             <version>2012-12-21</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- This dependency is meant to override a bad dependency -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -48,7 +50,6 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>

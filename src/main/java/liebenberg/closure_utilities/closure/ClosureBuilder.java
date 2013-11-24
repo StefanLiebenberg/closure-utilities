@@ -73,17 +73,21 @@ public class ClosureBuilder
 
     private static class InternalData {
         private File generatedStylesheet;
+
         private File generatedRenameMap;
+
         private File soyOutputDirectory;
+
         private File htmlOutputFile;
+
         private File jsOutputFile;
+
         private List<File> calculatedScriptFiles;
 
         @Nonnull
         private ClosureResult toResult() {
-            return new ClosureResult(generatedStylesheet,
-                    generatedRenameMap, soyOutputDirectory, htmlOutputFile,
-                    jsOutputFile);
+            return new ClosureResult(generatedStylesheet, generatedRenameMap,
+                    soyOutputDirectory, htmlOutputFile, jsOutputFile);
         }
     }
 
