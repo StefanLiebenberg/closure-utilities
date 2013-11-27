@@ -5,6 +5,12 @@ package com.google.javascript.rhino.head;
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+/**
+ * This file has been altered from the original version, to allow calls to
+ * arguments.caller to be registered.
+ *
+ * Stefan Liebenberg, siga.fredo@gmail.com 2013
+ */
 import com.google.javascript.rhino.head.ast.*;  // we use basically every class
 
 import java.io.BufferedReader;
