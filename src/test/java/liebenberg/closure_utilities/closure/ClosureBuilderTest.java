@@ -1,5 +1,8 @@
 package liebenberg.closure_utilities.closure;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.SystemConfiguration;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,11 +17,10 @@ import liebenberg.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
 import java.io.File;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class ClosureBuilderTest extends
         AbstractBuildTest<ClosureBuilder, ClosureOptions, ClosureResult> {
@@ -266,27 +268,78 @@ public class ClosureBuilderTest extends
         builderOptions.setShouldCompile(true);
         builderOptions.setShouldDebug(true);
 
-
-        ClosureResult closureResult = builder.build(builderOptions);
-
+        final ClosureResult closureResult = builder.build(builderOptions);
         final File htmlOutput = closureResult.getHtmlOutputFile();
         Assert.assertNotNull(htmlOutput);
         Assert.assertTrue(htmlOutput.exists());
         Assert.assertTrue(htmlOutput.isFile());
         final String htmlContent = FS.read(htmlOutput);
-        Document htmlDocument = Jsoup.parse(htmlContent);
-
-        Element headElement = htmlDocument.select("head").first();
-        Element bodyElement = htmlDocument.select("body").first();
-
-        Elements scripts = headElement.select("script");
+        final Document htmlDocument = Jsoup.parse(htmlContent);
+        final Element headElement = htmlDocument.select("head").first();
+        final Element bodyElement = htmlDocument.select("body").first();
+        final Elements scripts = headElement.select("script");
         Assert.assertEquals(1, scripts.size());
-
-        Elements stylesheets = headElement.select("link");
+        final Elements stylesheets = headElement.select("link");
         Assert.assertEquals(1, stylesheets.size());
-
         Assert.assertEquals("", bodyElement.html());
     }
 
+
+    @Test
+    public void testCustomTemplateBuild() throws Exception {
+        setupGssBuildOptions(Flavour.BASIC);
+        setupSoyBuildOptions(Flavour.BASIC);
+        setupJavascriptBuildOptions(Flavour.BASIC);
+        builderOptions.setShouldCompile(true);
+        builderOptions.setShouldDebug(true);
+        builderOptions.setHtmlTemplate("company.shell.Template");
+        final ClosureResult closureResult = builder.build(builderOptions);
+        final File htmlOutput = closureResult.getHtmlOutputFile();
+        Assert.assertNotNull(htmlOutput);
+        Assert.assertTrue(htmlOutput.exists());
+        Assert.assertTrue(htmlOutput.isFile());
+        final String htmlContent = FS.read(htmlOutput);
+        final Document htmlDocument = Jsoup.parse(htmlContent);
+        final Element headElement = htmlDocument.select("head").first();
+        final Element bodyElement = htmlDocument.select("body").first();
+        final Elements scripts = headElement.select("script");
+        Assert.assertEquals(1, scripts.size());
+        final Elements stylesheets = headElement.select("link");
+        Assert.assertEquals(1, stylesheets.size());
+        Assert.assertEquals("", bodyElement.html());
+    }
+
+    @Test
+    public void testConfigurationToGlobals () throws Exception {
+
+        Map<String, Object> globals = new HashMap<>();
+        List<Configuration> configurations = new ArrayList<>();
+
+        PropertiesConfiguration propertiesConfiguration =
+                new PropertiesConfiguration();
+        InputStream propertiesStream =
+                getClass().getResourceAsStream("/test.properties");
+        propertiesConfiguration.load(propertiesStream);
+        propertiesStream.close();
+
+        configurations.add(propertiesConfiguration);
+
+        PropertiesConfiguration propertiesConfiguration2 =
+                new PropertiesConfiguration();
+        InputStream propertiesStream2 =
+                getClass().getResourceAsStream("/test2.properties");
+        propertiesConfiguration2.load(propertiesStream2);
+        propertiesStream2.close();
+
+        configurations.add(propertiesConfiguration2);
+
+        ClosureBuilder.getJsGlobalsFromConfigurations(globals, configurations);
+
+        Assert.assertEquals(true, globals.get("booleanProperty"));
+        Assert.assertEquals(false, globals.get("falseBooleanProperty"));
+        Assert.assertEquals("yolo!", globals.get("stringProperty"));
+        Assert.assertEquals("override value true", globals.get("overrideProperty"));
+
+    }
 
 }

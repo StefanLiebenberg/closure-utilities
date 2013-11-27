@@ -8,6 +8,7 @@ import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.Compiler;
 import liebenberg.closure_utilities.internal.*;
 import liebenberg.closure_utilities.internal.DependencyOptions;
+import liebenberg.closure_utilities.render.DefinesFileRenderer;
 import liebenberg.closure_utilities.render.DependencyFileRenderer;
 import liebenberg.closure_utilities.render.RenderException;
 import liebenberg.closure_utilities.soy.SoyDelegateOptimizer;
@@ -30,6 +31,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         private File baseFile;
         private File outputFile;
         private File dependencyFile;
+        private File definesFile;
         private ArrayList<File> sourceFiles;
         private ArrayList<ClosureSourceFile> closureSourceFiles;
         private ArrayList<ClosureSourceFile> closureEntryFiles;
@@ -51,6 +53,9 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
 
     private final DependencyFileRenderer dependencyFileRenderer =
             new DependencyFileRenderer();
+
+    private final DefinesFileRenderer definesFileRenderer =
+            new DefinesFileRenderer();
 
     private static final String JS_EXT = "js";
 
@@ -90,6 +95,17 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         }
     }
 
+
+    private void buildDefinesFile(@Nonnull JsOptions options,
+                                  @Nonnull InternalData internalData)
+            throws RenderException, IOException {
+        internalData.definesFile = options.getOutputDefinesFile();
+        if (internalData.definesFile != null) {
+            FS.write(internalData.definesFile, definesFileRenderer
+                    .setMapValues(options.getGlobals())
+                    .render());
+        }
+    }
 
     private void buildDependenciesFile(@Nonnull JsOptions options,
                                        @Nonnull InternalData internalData)
@@ -237,13 +253,11 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         final CompilerOptions compilerOptions =
                 getCompilerOptions(options, null);
         final List<SourceFile> externs = getExternFiles();
-
         final List<SourceFile> sources =
                 getCompilerSourceFiles(internalData.scriptFiles);
         addCustomBuildPasses(compiler, compilerOptions);
-
-        internalData.compilerResult = compiler.compile(externs, sources,
-                compilerOptions);
+        internalData.compilerResult =
+                compiler.compile(externs, sources, compilerOptions);
         if (internalData.compilerResult.success) {
             final String source = compiler.toSource();
             internalData.outputFile = options.getOutputFile();
@@ -265,6 +279,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         if (internalData.dependencyFile != null) {
             toCompileFiles.add(internalData.dependencyFile);
         }
+
         // add rename map
         // add defines.js
 
@@ -292,11 +307,11 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         final InternalData internalData = new InternalData();
         findDependencyFiles(options, internalData);
         buildDependenciesFile(options, internalData);
+        buildDefinesFile(options, internalData);
         calculateDependencies(options, internalData);
         if (options.getShouldCompile()) {
             compileScriptFile(options, internalData);
         }
-
         return internalData.toResult();
     }
 

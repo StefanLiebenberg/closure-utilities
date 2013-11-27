@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import liebenberg.closure_utilities.utilities.Immuter;
+import org.apache.commons.configuration.Configuration;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,6 +14,10 @@ import java.util.Collection;
 import java.util.List;
 
 public class ClosureOptions {
+
+    private List<Configuration> configurations;
+
+    private String htmlTemplate;
 
     private File javascriptOutputFile;
 
@@ -143,6 +148,8 @@ public class ClosureOptions {
     public String getHtmlContent() {
         return htmlContent;
     }
+
+    private File javascriptDefinesOutputFile;
 
     private File javascriptDependencyOutputFile;
 
@@ -325,5 +332,31 @@ public class ClosureOptions {
         } else {
             this.javascriptEntryFiles = null;
         }
+    }
+
+    public String getHtmlTemplate() {
+        return htmlTemplate;
+    }
+
+    public void setHtmlTemplate(String htmlTemplate) {
+        this.htmlTemplate = htmlTemplate;
+    }
+
+    public List<Configuration> getConfigurations() {
+        return configurations;
+    }
+
+    public void setConfigurations(List<Configuration> configurations) {
+        this.configurations = configurations;
+    }
+
+    @Nullable
+    public File getJavascriptDefinesOutputFile() {
+        return javascriptDefinesOutputFile;
+    }
+
+    public void setJavascriptDefinesOutputFile(
+            @Nullable File javascriptDefinesOutputFile) {
+        this.javascriptDefinesOutputFile = javascriptDefinesOutputFile;
     }
 }
