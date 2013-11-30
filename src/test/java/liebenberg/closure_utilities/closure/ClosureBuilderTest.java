@@ -196,26 +196,35 @@ public class ClosureBuilderTest extends
         Assert.assertNotNull(bodyElement);
 
         Elements scripts = headElement.select("script");
-        Assert.assertEquals(3, scripts.size()); // 3 because extra stuff
+        Assert.assertEquals(4, scripts.size()); // 3 because extra stuff
 
         final File jsDirectory = getApplicationDirectory("src/javascript");
 
         Path expectedPath, actualPath;
-        expectedPath =
-                Paths.get(jsDirectory.getAbsolutePath(),
-                        "company/constants.js");
 
+
+        expectedPath =
+                Paths.get(outputDirectory.getAbsolutePath(), "deps.js");
         actualPath =
                 Paths.get(htmlOutput.getParentFile().getAbsolutePath(),
                         scripts.get(1).attr("src")).normalize();
         Assert.assertEquals(expectedPath, actualPath);
+
+        expectedPath =
+                Paths.get(jsDirectory.getAbsolutePath(),
+                        "company/constants.js");
+        actualPath =
+                Paths.get(htmlOutput.getParentFile().getAbsolutePath(),
+                        scripts.get(2).attr("src")).normalize();
+        Assert.assertEquals(expectedPath, actualPath);
+
 
 
         expectedPath =
                 Paths.get(jsDirectory.getAbsolutePath(), "company/package.js");
         actualPath =
                 Paths.get(htmlOutput.getParentFile().getAbsolutePath(),
-                        scripts.get(2).attr("src")).normalize();
+                        scripts.get(3).attr("src")).normalize();
         Assert.assertEquals(expectedPath, actualPath);
 
         Elements stylesheets = headElement.select("link");
