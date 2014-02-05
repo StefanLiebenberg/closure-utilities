@@ -10,11 +10,11 @@ import java.util.Set;
 
 public class GssDependencyParserTest {
 
-    GssDependencyParser parser;
+    GssDependencyParserInterface parser;
 
     @Before
     public void setup() {
-        parser = new GssDependencyParser();
+        parser = new GssDependencyParserInterface();
     }
 
     @After

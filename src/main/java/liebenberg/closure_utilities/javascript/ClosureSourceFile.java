@@ -1,13 +1,19 @@
 package liebenberg.closure_utilities.javascript;
 
-import liebenberg.closure_utilities.internal.BaseSourceFile;
+import liebenberg.closure_utilities.internal.SourceFileBase;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class ClosureSourceFile extends BaseSourceFile {
+/**
+ * Represents a javascript closure source file.
+ */
+public class ClosureSourceFile extends SourceFileBase {
 
+    /**
+     * @param sourceLocation Source file url.
+     */
     public ClosureSourceFile(final URI sourceLocation) {
         super(sourceLocation);
     }

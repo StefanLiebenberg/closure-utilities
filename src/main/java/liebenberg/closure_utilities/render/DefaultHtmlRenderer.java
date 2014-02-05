@@ -9,8 +9,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class DefaultHtmlRenderer
-        extends AbstractHtmlRenderer
-        implements HtmlRenderer {
+        extends AbstractHtmlRenderer {
 
     @Nonnull
     protected String getFilePath(@Nonnull File file) {
@@ -174,7 +173,8 @@ public class DefaultHtmlRenderer
     }
 
     @Override
-    public void render(@Nonnull StringBuffer sb) throws RenderException {
+    public void render(@Nonnull Appendable sb)
+            throws RenderException, IOException {
         try {
             sb.append(renderDoctype());
             sb.append(renderHtmlTag());

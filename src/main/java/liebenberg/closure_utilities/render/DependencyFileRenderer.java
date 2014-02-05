@@ -5,12 +5,12 @@ import liebenberg.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Collection;
 
 public class DependencyFileRenderer
-        extends AbstractRenderer
-        implements IRenderer {
+        extends AbstractRenderer {
 
     private Collection<ClosureSourceFile> dependencies;
 
@@ -36,7 +36,8 @@ public class DependencyFileRenderer
     }
 
     protected void renderDependencyPath(@Nonnull final ClosureSourceFile dep,
-                                        @Nonnull final StringBuffer sb) {
+                                        @Nonnull final Appendable sb)
+            throws IOException {
         final String path = dep.getSourceLocation().getPath();
         if (basePath != null) {
             final String relative = FS.getRelativePath(
@@ -51,7 +52,9 @@ public class DependencyFileRenderer
 
     protected void renderNamespaceArray(
             @Nonnull final Collection<String> namespaces,
-            @Nonnull final StringBuffer sb) {
+            @Nonnull final Appendable sb)
+            throws IOException {
+
         sb.append("[");
         String delim = "";
         for (String provideNs : namespaces) {
@@ -63,7 +66,8 @@ public class DependencyFileRenderer
 
     protected void renderDependency(
             @Nonnull final ClosureSourceFile dep,
-            @Nonnull final StringBuffer sb) {
+            @Nonnull final Appendable sb) throws IOException {
+
         sb.append("goog.addDependency('");
         renderDependencyPath(dep, sb);
         sb.append("', ");
@@ -75,7 +79,9 @@ public class DependencyFileRenderer
 
 
     @Override
-    public void render(@Nonnull StringBuffer sb) throws RenderException {
+    public void render(@Nonnull Appendable sb)
+            throws RenderException, IOException {
+
         String delim = "";
         for (ClosureSourceFile dep : dependencies) {
             sb.append(delim);

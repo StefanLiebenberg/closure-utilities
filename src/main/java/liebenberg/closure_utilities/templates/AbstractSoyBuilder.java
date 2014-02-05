@@ -22,19 +22,14 @@ import java.util.*;
 public abstract class AbstractSoyBuilder
         extends AbstractBuilder<SoyOptions, SoyResult> {
 
-    private static class InternalData {
-        private File outputDirectory;
-        private HashSet<File> generatedFiles;
-        private Hashtable<File, String> compiledSources;
-
-        protected SoyResult toResult() {
-            return new SoyResult(outputDirectory, compiledSources,
-                    generatedFiles);
-        }
-    }
-
+    /**
+     * The file extension for soy files.
+     */
     protected static final String SOY_EXT = "soy";
 
+    /**
+     * A plugin used to translate xliffMessages.
+     */
     protected static final XliffMsgPlugin xliffMsgPlugin =
             new XliffMsgPlugin();
 
@@ -187,6 +182,36 @@ public abstract class AbstractSoyBuilder
 
         if (!srcDirsIsSpecified && !sourcesIsSpecified) {
             throw new BuildOptionsException(UNSPECIFIED_SOURCES);
+        }
+    }
+
+    /**
+     * Internal data class for soy builders.
+     */
+    private static class InternalData {
+
+        /**
+         * The soy output directory
+         */
+        private File outputDirectory;
+
+        /**
+         * A set of files generated from a soy build
+         */
+        private HashSet<File> generatedFiles;
+
+        /**
+         * A map of input file to compiled strings.
+         */
+        private Hashtable<File, String> compiledSources;
+
+
+        /**
+         * @return The SoyResult object.
+         */
+        protected SoyResult toResult() {
+            return new SoyResult(outputDirectory, compiledSources,
+                    generatedFiles);
         }
     }
 }

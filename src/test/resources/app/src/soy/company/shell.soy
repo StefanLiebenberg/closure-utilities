@@ -2,8 +2,20 @@
 {namespace company.shell}
 
 /**
- *
+ * @param Title
+ * @param Scripts
+ * @param Stylesheets
+ * @param Content
  */
-{template .Template}
-   Shell Content
+{template .Template autoescape="false"}
+  <html>
+    <head>
+      {if isNonnull($Title)}<title>{$Title}</title>{/if}
+      {$Stylesheets}
+      {$Scripts}
+    </head>
+    <body>
+      {$Content}
+    </body>
+  </html>
 {/template}

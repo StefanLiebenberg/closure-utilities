@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-public class DependencyCalculator<S extends BaseSourceFile>
+public class DependencyCalculator<S extends SourceFileBase>
         implements IDependencyCalculator<S> {
 
     public DependencyCalculator(

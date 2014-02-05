@@ -12,10 +12,10 @@ import java.util.List;
 
 public class DependencyBuilderTest {
 
-    private final DependencyBuilder<BaseSourceFile> dependencyBuilder
-            = new DependencyBuilder<BaseSourceFile>();
+    private final DependencyBuilder<SourceFileBase> dependencyBuilder
+            = new DependencyBuilder<SourceFileBase>();
 
-    private DependencyOptions<BaseSourceFile> dependencyBuildOptions;
+    private DependencyOptions<SourceFileBase> dependencyBuildOptions;
 
     @Before
     public void setUp() throws Exception {
@@ -27,41 +27,41 @@ public class DependencyBuilderTest {
         dependencyBuildOptions = null;
     }
 
-    private BaseSourceFile createSourceFile(final String path,
+    private SourceFileBase createSourceFile(final String path,
                                             final String[] provides,
                                             final String[] requires)
             throws Exception {
-        BaseSourceFile baseSourceFile = new BaseSourceFile(path);
+        SourceFileBase sourceFileBase = new SourceFileBase(path);
         for (String provide : provides) {
-            baseSourceFile.addProvideNamespace(provide);
+            sourceFileBase.addProvideNamespace(provide);
         }
         for (String require : requires) {
-            baseSourceFile.addRequireNamespace(require);
+            sourceFileBase.addRequireNamespace(require);
         }
-        return baseSourceFile;
+        return sourceFileBase;
     }
 
     @Test
     public void testBuild() throws Exception {
-        Collection<BaseSourceFile> baseSourceFiles = new
-                HashSet<BaseSourceFile>();
-        BaseSourceFile fileA = createSourceFile("/some/pathA.ext",
+        Collection<SourceFileBase> sourceFileBases = new
+                HashSet<SourceFileBase>();
+        SourceFileBase fileA = createSourceFile("/some/pathA.ext",
                 new String[]{
                         "A"
                 },
                 new String[]{});
-        baseSourceFiles.add(fileA);
-        BaseSourceFile fileB = createSourceFile("/some/pathB.ext",
+        sourceFileBases.add(fileA);
+        SourceFileBase fileB = createSourceFile("/some/pathB.ext",
                 new String[]{
                         "B"
                 },
                 new String[]{
                         "A"
                 });
-        baseSourceFiles.add(fileB);
-        dependencyBuildOptions.setSourceFiles(baseSourceFiles);
+        sourceFileBases.add(fileB);
+        dependencyBuildOptions.setSourceFiles(sourceFileBases);
         dependencyBuildOptions.setEntryPoints(Lists.newArrayList("B"));
-        List<BaseSourceFile> resolved =
+        List<SourceFileBase> resolved =
                 dependencyBuilder.build(dependencyBuildOptions);
         Assert.assertEquals(resolved.get(0), fileA);
         Assert.assertEquals(resolved.get(1), fileB);

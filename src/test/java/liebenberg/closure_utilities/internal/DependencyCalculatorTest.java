@@ -13,25 +13,25 @@ public class DependencyCalculatorTest {
     @Test
     public void testBaseDependencyCalculator() throws Exception {
 
-        Collection<BaseSourceFile> dependencies = new HashSet<BaseSourceFile>();
+        Collection<SourceFileBase> dependencies = new HashSet<SourceFileBase>();
 
-        BaseSourceFile dependencyA = new BaseSourceFile("/a.ext");
+        SourceFileBase dependencyA = new SourceFileBase("/a.ext");
         dependencyA.addProvideNamespace("test.A");
 
-        BaseSourceFile dependencyB = new BaseSourceFile("/b.ext");
+        SourceFileBase dependencyB = new SourceFileBase("/b.ext");
         dependencyB.addProvideNamespace("test.B");
         dependencyB.addRequireNamespace("test.A");
 
-        BaseSourceFile dependencyC = new BaseSourceFile("/c.ext");
+        SourceFileBase dependencyC = new SourceFileBase("/c.ext");
         dependencyC.addProvideNamespace("test.C");
         dependencyC.addRequireNamespace("test.B");
 
-        BaseSourceFile dependencyD = new BaseSourceFile("/d.ext");
+        SourceFileBase dependencyD = new SourceFileBase("/d.ext");
         dependencyD.addProvideNamespace("test.D");
         dependencyD.addRequireNamespace("test.A");
         dependencyD.addRequireNamespace("test.B");
 
-        BaseSourceFile dependencyE = new BaseSourceFile("/e.ext");
+        SourceFileBase dependencyE = new SourceFileBase("/e.ext");
         dependencyE.addProvideNamespace("test.E");
         dependencyE.addRequireNamespace("test.D");
         dependencyE.addRequireNamespace("test.C");
@@ -42,10 +42,10 @@ public class DependencyCalculatorTest {
         dependencies.add(dependencyD);
         dependencies.add(dependencyE);
 
-        DependencyCalculator<BaseSourceFile> calculator =
-                new DependencyCalculator<BaseSourceFile>(dependencies);
+        DependencyCalculator<SourceFileBase> calculator =
+                new DependencyCalculator<SourceFileBase>(dependencies);
 
-        List<BaseSourceFile> results = calculator.getDependencyList("test.E");
+        List<SourceFileBase> results = calculator.getDependencyList("test.E");
 
         Assert.assertEquals(5, results.size());
         Assert.assertTrue(results.contains(dependencyA));

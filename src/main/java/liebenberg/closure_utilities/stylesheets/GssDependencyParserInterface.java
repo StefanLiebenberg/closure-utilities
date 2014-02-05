@@ -1,14 +1,14 @@
 package liebenberg.closure_utilities.stylesheets;
 
 
-import liebenberg.closure_utilities.internal.IDependencyParser;
+import liebenberg.closure_utilities.internal.DependencyParserInterface;
 import com.google.common.io.LineReader;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-public class GssDependencyParser implements IDependencyParser<GssSourceFile> {
+public class GssDependencyParserInterface implements DependencyParserInterface<GssSourceFile> {
 
     @Override
     public void parse(final GssSourceFile dependency, final Reader reader)

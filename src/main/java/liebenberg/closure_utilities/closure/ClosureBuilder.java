@@ -1,6 +1,7 @@
 package liebenberg.closure_utilities.closure;
 
 import com.google.common.collect.Lists;
+import liebenberg.closure_utilities.globals.GlobalsConverter;
 import liebenberg.closure_utilities.html.HtmlBuilder;
 import liebenberg.closure_utilities.html.HtmlOptions;
 import liebenberg.closure_utilities.html.HtmlResult;
@@ -11,26 +12,28 @@ import liebenberg.closure_utilities.javascript.JsBuilder;
 import liebenberg.closure_utilities.javascript.JsOptions;
 import liebenberg.closure_utilities.javascript.JsResult;
 import liebenberg.closure_utilities.render.DefaultHtmlRenderer;
+import liebenberg.closure_utilities.render.SoyHtmlRenderer;
 import liebenberg.closure_utilities.stylesheets.DefaultGssBuilder;
 import liebenberg.closure_utilities.stylesheets.GssOptions;
 import liebenberg.closure_utilities.stylesheets.GssResult;
 import liebenberg.closure_utilities.templates.DefaultSoyBuilder;
 import liebenberg.closure_utilities.templates.SoyOptions;
 import liebenberg.closure_utilities.templates.SoyResult;
+import org.apache.commons.configuration.CompositeConfiguration;
+import org.apache.commons.configuration.Configuration;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class ClosureBuilder
         extends AbstractBuilder<ClosureOptions, ClosureResult> {
 
     @Nonnull
     @Override
-    protected ClosureResult buildInternal(@Nonnull final ClosureOptions options)
-            throws Exception {
+    protected ClosureResult buildInternal(
+            @Nonnull final ClosureOptions options) throws Exception {
         final InternalData data = new InternalData();
         buildCommands(Lists.newArrayList(BuildCommand.ALL), options, data);
         return data.toResult();
@@ -80,6 +83,9 @@ public class ClosureBuilder
 
         private File htmlOutputFile;
 
+        private File jsBaseFile;
+        private File jsOutputDepsFile;
+        private File jsOutputDefinesFile;
         private File jsOutputFile;
 
         private List<File> calculatedScriptFiles;
@@ -87,7 +93,8 @@ public class ClosureBuilder
         @Nonnull
         private ClosureResult toResult() {
             return new ClosureResult(generatedStylesheet, generatedRenameMap,
-                    soyOutputDirectory, htmlOutputFile, jsOutputFile);
+                    soyOutputDirectory, htmlOutputFile, jsBaseFile,
+                    jsOutputDepsFile, jsOutputDefinesFile, jsOutputFile);
         }
     }
 
@@ -197,6 +204,18 @@ public class ClosureBuilder
     }
 
     @Nonnull
+    private File getJsOutputFile(
+            @Nonnull final ClosureOptions options,
+            @Nullable final File value,
+            @Nonnull final String defaultFileName) {
+        if (value != null) {
+            return value;
+        } else {
+            return getOutputFile(options, defaultFileName);
+        }
+    }
+
+    @Nonnull
     private SoyOptions getSoyBuildOptions(@Nonnull final ClosureOptions
                                                   options) {
         final SoyOptions soyOptions = new SoyOptions();
@@ -220,25 +239,62 @@ public class ClosureBuilder
         return internalData.toResult();
     }
 
-    @Nonnull
-    private JsOptions getJsBuildOptions(@Nonnull final
-                                        ClosureOptions options) {
-        JsOptions jsOptions = new JsOptions();
-        File jsScript = options.getJavascriptOutputFile();
-        if (jsScript != null) {
-            jsOptions.setOutputFile(jsScript);
-        } else {
-            jsOptions.setOutputFile(getOutputFile(options, "script.js"));
+    private static final GlobalsConverter globalsConverter =
+            new GlobalsConverter();
+
+    public static void getJsGlobalsFromConfigurations(
+            @Nonnull final Map<String, Object> globals,
+            @Nonnull final List<Configuration> configurations) {
+        CompositeConfiguration compositeConfiguration =
+                new CompositeConfiguration();
+        for (Configuration configuration : configurations) {
+            compositeConfiguration.copy(configuration);
         }
+        Configuration config =
+                compositeConfiguration.interpolatedConfiguration();
+        Iterator<String> keysInterator = config.getKeys();
+        while (keysInterator.hasNext()) {
+            String key = keysInterator.next();
+            String stringValue = config.getString(key);
+            Object value = globalsConverter.convertValue(stringValue);
+            globals.put(key, value);
+        }
+    }
+
+    public Map<String, Object> getJsGlobals(
+            @Nonnull final ClosureOptions options) {
+        final HashMap<String, Object> globals = new HashMap<>();
+        final List<Configuration> configurations = options.getConfigurations();
+        if (configurations != null) {
+            getJsGlobalsFromConfigurations(globals, configurations);
+        }
+        return globals;
+    }
+
+    @Nonnull
+    private JsOptions getJsBuildOptions(
+            @Nonnull final ClosureOptions options) {
+        final JsOptions jsOptions = new JsOptions();
+        jsOptions.setOutputFile(
+                getJsOutputFile(options,
+                        options.getJavascriptOutputFile(),
+                        "script.min.js"));
+        jsOptions.setOutputDefinesFile(
+                getJsOutputFile(options,
+                        options.getJavascriptDefinesOutputFile(),
+                        "defines.js"));
+        jsOptions.setOutputDependencyFile(
+                getJsOutputFile(options,
+                        options.getJavascriptDependencyOutputFile(),
+                        "deps.js"));
         jsOptions.setEntryPoints(options.getJavascriptEntryPoints());
         jsOptions.setEntryFiles(options.getJavascriptEntryFiles());
         jsOptions.setSourceDirectories(
                 options.getJavascriptSourceDirectories(false));
+        jsOptions.setMessageBundle(options.getMessageBundle());
         jsOptions.setShouldCompile(options.getShouldCompile());
         jsOptions.setShouldDebug(options.getShouldDebug());
-        jsOptions.setOutputDependencyFile(
-                options.getJavascriptDependencyOutputFile());
-
+        jsOptions.setGlobals(getJsGlobals(options));
         return jsOptions;
     }
 
@@ -247,8 +303,11 @@ public class ClosureBuilder
             throws BuildException {
         final JsOptions jsOptions = getJsBuildOptions(options);
         JsResult jsResult = jsBuilder.build(jsOptions);
-        internalData.jsOutputFile = jsResult.getOutputFile();
         internalData.calculatedScriptFiles = jsResult.getScriptFiles();
+        internalData.jsBaseFile = jsResult.getBaseFile();
+        internalData.jsOutputDepsFile = jsResult.getOutputDepsFile();
+        internalData.jsOutputDefinesFile = jsResult.getOutputDefinesFile();
+        internalData.jsOutputFile = jsResult.getOutputFile();
     }
 
     public ClosureResult buildJsOnly(@Nonnull final ClosureOptions options)
@@ -320,12 +379,24 @@ public class ClosureBuilder
             @Nonnull final ClosureOptions options,
             @Nonnull final InternalData internalData) {
         final HtmlOptions htmlOptions = new HtmlOptions();
+
         htmlOptions.setOutputFile(getHtmlOutputFile(options));
         htmlOptions.setStylesheetFiles(getStylesheetsForHtmlBuild(options,
                 internalData));
         htmlOptions.setJavascriptFiles(getJavascriptFilesForHtmlBuild
                 (options, internalData));
-        htmlOptions.setHtmlRenderer(new DefaultHtmlRenderer());
+        String templateName = options.getHtmlTemplate();
+        Collection<File> sourceDirectories = options.getSoySourceDirectories();
+        if (templateName != null &&
+                sourceDirectories != null &&
+                !sourceDirectories.isEmpty()) {
+            SoyHtmlRenderer soyHtmlRenderer =
+                    new SoyHtmlRenderer(sourceDirectories, templateName);
+            htmlOptions.setHtmlRenderer(soyHtmlRenderer);
+        } else {
+            htmlOptions.setHtmlRenderer(new DefaultHtmlRenderer());
+        }
+
         htmlOptions.setContent(options.getHtmlContent());
         htmlOptions.setLocationMap(null);
         htmlOptions.setShouldBuildInline(false);

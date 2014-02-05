@@ -11,11 +11,11 @@ import java.util.Set;
 
 public class ClosureDependencyParserTest {
 
-    ClosureDependencyParser parser;
+    ClosureDependencyParserInterface parser;
 
     @Before
     public void setup() {
-        parser = new ClosureDependencyParser();
+        parser = new ClosureDependencyParserInterface();
     }
 
     @After

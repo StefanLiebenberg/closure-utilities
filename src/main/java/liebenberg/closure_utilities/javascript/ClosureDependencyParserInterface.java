@@ -3,7 +3,7 @@ package liebenberg.closure_utilities.javascript;
 import com.google.javascript.rhino.head.Node;
 import com.google.javascript.rhino.head.Parser;
 import com.google.javascript.rhino.head.ast.*;
-import liebenberg.closure_utilities.internal.IDependencyParser;
+import liebenberg.closure_utilities.internal.DependencyParserInterface;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
 
-public class ClosureDependencyParser implements
-        IDependencyParser<ClosureSourceFile> {
+public class ClosureDependencyParserInterface implements
+        DependencyParserInterface<ClosureSourceFile> {
 
     private boolean isName(
             @Nonnull final AstNode node) {

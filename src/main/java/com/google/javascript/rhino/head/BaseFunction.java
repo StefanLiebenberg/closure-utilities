@@ -1,5 +1,12 @@
 package com.google.javascript.rhino.head;
 
+/**
+ * This file has been altered from the original version, to allow calls to
+ * arguments.caller to be registered.
+ *
+ * Stefan Liebenberg, siga.fredo@gmail.com 2013
+ */
+
 /* -*- Mode: java; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
