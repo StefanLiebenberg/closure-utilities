@@ -33,9 +33,9 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         private File dependencyFile;
         private File definesFile;
         private ArrayList<File> sourceFiles;
-        private ArrayList<ClosureSourceFileBase> closureSourceFiles;
-        private ArrayList<ClosureSourceFileBase> closureEntryFiles;
-        private ImmutableList<ClosureSourceFileBase> resolvedSourceFiles;
+        private ArrayList<ClosureSourceFile> closureSourceFiles;
+        private ArrayList<ClosureSourceFile> closureEntryFiles;
+        private ImmutableList<ClosureSourceFile> resolvedSourceFiles;
         private ImmutableList<File> resolvedFiles;
         private Result compilerResult;
 
@@ -50,7 +50,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
     private final ClosureDependencyParserInterface dependencyParser =
             new ClosureDependencyParserInterface();
 
-    private final DependencyBuilder<ClosureSourceFileBase> dependencyBuilder =
+    private final DependencyBuilder<ClosureSourceFile> dependencyBuilder =
             new DependencyBuilder<>();
 
     private final DependencyFileRenderer dependencyFileRenderer =
@@ -62,10 +62,10 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
     private static final String JS_EXT = "js";
 
     @Nonnull
-    private ClosureSourceFileBase parseFile(@Nonnull File inputFile,
+    private ClosureSourceFile parseFile(@Nonnull File inputFile,
                                             @Nonnull InternalData internalData)
             throws IOException {
-        ClosureSourceFileBase sourceFile = new ClosureSourceFileBase(inputFile);
+        ClosureSourceFile sourceFile = new ClosureSourceFile(inputFile);
         dependencyParser.parse(sourceFile, FS.read(inputFile));
         if (sourceFile.getIsBaseFile()) {
             internalData.baseFile = inputFile;
@@ -86,7 +86,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
             internalData.closureSourceFiles = new ArrayList<>();
             internalData.closureEntryFiles = new ArrayList<>();
             for (File sourceFile : sourceFiles) {
-                ClosureSourceFileBase parsedFile = parseFile(sourceFile,
+                ClosureSourceFile parsedFile = parseFile(sourceFile,
                         internalData);
                 internalData.closureSourceFiles.add(parsedFile);
                 // todo, find a better way.
@@ -127,7 +127,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         final List<String> entryPoints = options.getEntryPoints();
         final List<File> entryFiles = options.getEntryFiles();
         if (entryPoints != null || entryFiles != null) {
-            final DependencyOptions<ClosureSourceFileBase>
+            final DependencyOptions<ClosureSourceFile>
                     depBuildOptions = new DependencyOptions<>();
             depBuildOptions.setEntryPoints(entryPoints);
             depBuildOptions.setEntryFiles(internalData.closureEntryFiles);

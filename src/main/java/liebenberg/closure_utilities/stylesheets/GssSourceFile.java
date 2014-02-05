@@ -6,17 +6,17 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class GssSourceFileBase extends SourceFileBase {
+public class GssSourceFile extends SourceFileBase {
 
-    public GssSourceFileBase(URI sourceLocation) {
+    public GssSourceFile(URI sourceLocation) {
         super(sourceLocation);
     }
 
-    public GssSourceFileBase(File sourceFile) {
+    public GssSourceFile(File sourceFile) {
         super(sourceFile);
     }
 
-    public GssSourceFileBase(String sourcePath) throws URISyntaxException {
+    public GssSourceFile(String sourcePath) throws URISyntaxException {
         super(sourcePath);
     }
 }

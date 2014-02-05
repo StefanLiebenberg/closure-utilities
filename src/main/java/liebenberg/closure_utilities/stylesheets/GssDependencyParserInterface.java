@@ -8,16 +8,16 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-public class GssDependencyParserInterface implements DependencyParserInterface<GssSourceFileBase> {
+public class GssDependencyParserInterface implements DependencyParserInterface<GssSourceFile> {
 
     @Override
-    public void parse(final GssSourceFileBase dependency, final Reader reader)
+    public void parse(final GssSourceFile dependency, final Reader reader)
             throws IOException {
         scan(dependency, new LineReader(reader));
     }
 
     @Override
-    public void parse(final GssSourceFileBase dependency, final String content)
+    public void parse(final GssSourceFile dependency, final String content)
             throws IOException {
         parse(dependency, new StringReader(content));
     }
@@ -43,7 +43,7 @@ public class GssDependencyParserInterface implements DependencyParserInterface<G
         return extractStatement("@require", line);
     }
 
-    private void scan(final GssSourceFileBase dependency,
+    private void scan(final GssSourceFile dependency,
                       final LineReader lineReader)
             throws IOException {
         String line = lineReader.readLine(), statement;

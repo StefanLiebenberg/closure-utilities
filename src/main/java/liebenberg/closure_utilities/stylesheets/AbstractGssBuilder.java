@@ -26,8 +26,8 @@ public abstract class AbstractGssBuilder
 
     protected static final String GSS_EXT = "gss";
 
-    protected static final Function<File, GssSourceFileBase> FILE_TO_GSS =
-            SourceFileBase.getTransformFunction(GssSourceFileBase.class);
+    protected static final Function<File, GssSourceFile> FILE_TO_GSS =
+            SourceFileBase.getTransformFunction(GssSourceFile.class);
 
     protected static final GssDependencyParserInterface dependencyParser =
             new GssDependencyParserInterface();
@@ -53,13 +53,13 @@ public abstract class AbstractGssBuilder
             throws Exception;
 
     @Nonnull
-    protected DependencyLoader<GssSourceFileBase> getDependencyLoader(
+    protected DependencyLoader<GssSourceFile> getDependencyLoader(
             @Nonnull GssDependencyParserInterface parser,
             @Nonnull Collection<File> sourceFiles)
             throws IOException, ReflectiveOperationException {
-        return new DependencyLoader<GssSourceFileBase>(parser, sourceFiles) {
+        return new DependencyLoader<GssSourceFile>(parser, sourceFiles) {
             @Override
-            protected GssSourceFileBase createDependency(
+            protected GssSourceFile createDependency(
                     @Nonnull final File input) {
                 return FILE_TO_GSS.apply(input);
             }
@@ -217,7 +217,7 @@ public abstract class AbstractGssBuilder
             throws DependencyException, IOException,
             ReflectiveOperationException {
         if (entryPoints != null && files != null) {
-            final DependencyLoader<GssSourceFileBase> dependencyLoader =
+            final DependencyLoader<GssSourceFile> dependencyLoader =
                     getDependencyLoader(parser, files);
             return dependencyLoader.getDependenciesFor(entryPoints);
         } else {

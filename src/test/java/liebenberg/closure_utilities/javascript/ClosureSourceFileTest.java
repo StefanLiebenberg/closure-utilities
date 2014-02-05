@@ -7,11 +7,11 @@ import org.junit.Test;
 
 public class ClosureSourceFileTest {
 
-    public ClosureSourceFileBase closureSourceFile;
+    public ClosureSourceFile closureSourceFile;
 
     @Before
     public void setup () throws Exception {
-        closureSourceFile = new ClosureSourceFileBase("/path");
+        closureSourceFile = new ClosureSourceFile("/path");
     }
 
     @Test

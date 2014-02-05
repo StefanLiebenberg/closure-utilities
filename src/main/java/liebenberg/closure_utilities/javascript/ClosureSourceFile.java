@@ -6,17 +6,23 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class ClosureSourceFileBase extends SourceFileBase {
+/**
+ * Represents a javascript closure source file.
+ */
+public class ClosureSourceFile extends SourceFileBase {
 
-    public ClosureSourceFileBase(final URI sourceLocation) {
+    /**
+     * @param sourceLocation Source file url.
+     */
+    public ClosureSourceFile(final URI sourceLocation) {
         super(sourceLocation);
     }
 
-    public ClosureSourceFileBase(final File sourceFile) {
+    public ClosureSourceFile(final File sourceFile) {
         super(sourceFile);
     }
 
-    public ClosureSourceFileBase(final String sourcePath)
+    public ClosureSourceFile(final String sourcePath)
             throws URISyntaxException {
         super(sourcePath);
     }

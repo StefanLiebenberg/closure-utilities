@@ -12,7 +12,7 @@ import java.io.Reader;
 import java.net.URI;
 
 public class ClosureDependencyParserInterface implements
-        DependencyParserInterface<ClosureSourceFileBase> {
+        DependencyParserInterface<ClosureSourceFile> {
 
     private boolean isName(
             @Nonnull final AstNode node) {
@@ -39,7 +39,7 @@ public class ClosureDependencyParserInterface implements
 
 
     private void visit_assignment(
-            @Nonnull final ClosureSourceFileBase closureSourceFile,
+            @Nonnull final ClosureSourceFile closureSourceFile,
             @Nonnull final Assignment assignment) {
         final AstNode left = assignment.getLeft();
         if (isPropertyGet(left) &&
@@ -79,7 +79,7 @@ public class ClosureDependencyParserInterface implements
 
 
     private void visit_PropertyGet_googScan(
-            @Nonnull final ClosureSourceFileBase closureSourceFile,
+            @Nonnull final ClosureSourceFile closureSourceFile,
             @Nonnull final FunctionCall funcCall,
             @Nonnull final PropertyGet propertyGet) {
         if (isName(propertyGet.getLeft(), "goog")) {
@@ -95,7 +95,7 @@ public class ClosureDependencyParserInterface implements
     }
 
     private void visit_FunctionCall(
-            @Nonnull final ClosureSourceFileBase closureSourceFile,
+            @Nonnull final ClosureSourceFile closureSourceFile,
             @Nonnull final FunctionCall functionCall) {
         final AstNode target = functionCall.getTarget();
         if (isPropertyGet(target)) {
@@ -105,7 +105,7 @@ public class ClosureDependencyParserInterface implements
     }
 
     private void visit(
-            @Nonnull final ClosureSourceFileBase dependency,
+            @Nonnull final ClosureSourceFile dependency,
             @Nullable final Node node) {
         if (node == null) {
             return;
@@ -135,7 +135,7 @@ public class ClosureDependencyParserInterface implements
     }
 
     @Override
-    public void parse(@Nonnull final ClosureSourceFileBase dependency,
+    public void parse(@Nonnull final ClosureSourceFile dependency,
                       @Nonnull final Reader content)
             throws IOException {
         final URI sourceLocation = dependency.getSourceLocation();
@@ -146,7 +146,7 @@ public class ClosureDependencyParserInterface implements
     }
 
     @Override
-    public void parse(@Nonnull final ClosureSourceFileBase dependency,
+    public void parse(@Nonnull final ClosureSourceFile dependency,
                       @Nonnull final String content)
             throws IOException {
         final URI sourceLocation = dependency.getSourceLocation();

@@ -24,7 +24,7 @@ public class GssDependencyParserTest {
 
     @Test
     public void testProvideParse() throws Exception {
-        GssSourceFileBase closureSourceFile = new GssSourceFileBase("/path.js");
+        GssSourceFile closureSourceFile = new GssSourceFile("/path.js");
         String content = "@provide a.b.c;";
         parser.parse(closureSourceFile, content);
         Set<String> provides = closureSourceFile.getProvidedNamespaces();
@@ -37,7 +37,7 @@ public class GssDependencyParserTest {
 
     @Test
     public void testRequireParse() throws Exception {
-        GssSourceFileBase closureSourceFile = new GssSourceFileBase("/path.js");
+        GssSourceFile closureSourceFile = new GssSourceFile("/path.js");
         String content = "@provide someProvide;\n@require someFacet;";
         parser.parse(closureSourceFile, content);
 

@@ -1,6 +1,6 @@
 package liebenberg.closure_utilities.render;
 
-import liebenberg.closure_utilities.javascript.ClosureSourceFileBase;
+import liebenberg.closure_utilities.javascript.ClosureSourceFile;
 import liebenberg.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
@@ -12,7 +12,7 @@ import java.util.Collection;
 public class DependencyFileRenderer
         extends AbstractRenderer {
 
-    private Collection<ClosureSourceFileBase> dependencies;
+    private Collection<ClosureSourceFile> dependencies;
 
     private String basePath;
 
@@ -24,7 +24,7 @@ public class DependencyFileRenderer
 
     @Nonnull
     public DependencyFileRenderer setDependencies(
-            @Nullable final Collection<ClosureSourceFileBase> dependencies) {
+            @Nullable final Collection<ClosureSourceFile> dependencies) {
         this.dependencies = dependencies;
         return this;
     }
@@ -35,7 +35,7 @@ public class DependencyFileRenderer
         return this;
     }
 
-    protected void renderDependencyPath(@Nonnull final ClosureSourceFileBase dep,
+    protected void renderDependencyPath(@Nonnull final ClosureSourceFile dep,
                                         @Nonnull final Appendable sb)
             throws IOException {
         final String path = dep.getSourceLocation().getPath();
@@ -65,7 +65,7 @@ public class DependencyFileRenderer
     }
 
     protected void renderDependency(
-            @Nonnull final ClosureSourceFileBase dep,
+            @Nonnull final ClosureSourceFile dep,
             @Nonnull final Appendable sb) throws IOException {
 
         sb.append("goog.addDependency('");
@@ -83,7 +83,7 @@ public class DependencyFileRenderer
             throws RenderException, IOException {
 
         String delim = "";
-        for (ClosureSourceFileBase dep : dependencies) {
+        for (ClosureSourceFile dep : dependencies) {
             sb.append(delim);
             renderDependency(dep, sb);
             delim = "\n";

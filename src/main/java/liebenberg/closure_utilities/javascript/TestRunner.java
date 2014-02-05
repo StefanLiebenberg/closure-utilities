@@ -26,9 +26,9 @@ public class TestRunner {
 
     private final Collection<File> sources;
 
-    private final ImmutableList<ClosureSourceFileBase> dependencies;
+    private final ImmutableList<ClosureSourceFile> dependencies;
 
-    private final DependencyCalculator<ClosureSourceFileBase> calculator;
+    private final DependencyCalculator<ClosureSourceFile> calculator;
 
     private final File testFile;
 
@@ -46,12 +46,12 @@ public class TestRunner {
         parser = new ClosureDependencyParserInterface();
         sources = FS.find(sourceDirectories, "js");
 
-        ImmutableList.Builder<ClosureSourceFileBase> builder =
+        ImmutableList.Builder<ClosureSourceFile> builder =
                 new ImmutableList.Builder<>();
-        ClosureSourceFileBase dep;
+        ClosureSourceFile dep;
         FileReader reader;
         for (File sourceFile : sources) {
-            dep = new ClosureSourceFileBase(sourceFile);
+            dep = new ClosureSourceFile(sourceFile);
             reader = new FileReader(sourceFile);
             parser.parse(dep, reader);
             reader.close();
@@ -71,14 +71,14 @@ public class TestRunner {
 
         Reader fileReader;
         fileReader = new FileReader(testFile);
-        ClosureSourceFileBase testDep = new ClosureSourceFileBase(testFile);
+        ClosureSourceFile testDep = new ClosureSourceFile(testFile);
         parser.parse(testDep, fileReader);
         fileReader.close();
 
         envJsRunner.evaluateFile(baseFile);
 
         List<String> list = Lists.newArrayList(testDep.getRequiredNamespaces());
-        for (ClosureSourceFileBase dep : calculator.getDependencyList(list)) {
+        for (ClosureSourceFile dep : calculator.getDependencyList(list)) {
             envJsRunner.evaluateFile(new File(dep.getSourceLocation()));
         }
 
