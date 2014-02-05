@@ -16,8 +16,12 @@
     </licenses>
     <scm>
         <url>https://github.com/StefanLiebenberg/closure-utilities</url>
-        <connection>scm:git:git://github.com/StefanLiebenberg/closure-utilities.git</connection>
-        <developerConnection>scm:git:git@github.com:StefanLiebenberg/StefanLiebenberg.git</developerConnection>
+        <connection>
+            scm:git:git://github.com/StefanLiebenberg/closure-utilities.git
+        </connection>
+        <developerConnection>
+            scm:git:git@github.com:StefanLiebenberg/StefanLiebenberg.git
+        </developerConnection>
     </scm>
     <developers>
         <developer>
@@ -83,6 +87,12 @@
             <version>1.7.2</version>
             <scope>test</scope>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.mockito</groupId>-->
+            <!--<artifactId>mockito-all</artifactId>-->
+            <!--<version>1.9.0-rc1</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
     </dependencies>
 
 
