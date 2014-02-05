@@ -32,8 +32,8 @@ public class ClosureBuilder
 
     @Nonnull
     @Override
-    protected ClosureResult buildInternal(@Nonnull final ClosureOptions options)
-            throws Exception {
+    protected ClosureResult buildInternal(
+            @Nonnull final ClosureOptions options) throws Exception {
         final InternalData data = new InternalData();
         buildCommands(Lists.newArrayList(BuildCommand.ALL), options, data);
         return data.toResult();
@@ -83,6 +83,9 @@ public class ClosureBuilder
 
         private File htmlOutputFile;
 
+        private File jsBaseFile;
+        private File jsOutputDepsFile;
+        private File jsOutputDefinesFile;
         private File jsOutputFile;
 
         private List<File> calculatedScriptFiles;
@@ -90,7 +93,8 @@ public class ClosureBuilder
         @Nonnull
         private ClosureResult toResult() {
             return new ClosureResult(generatedStylesheet, generatedRenameMap,
-                    soyOutputDirectory, htmlOutputFile, jsOutputFile);
+                    soyOutputDirectory, htmlOutputFile, jsBaseFile,
+                    jsOutputDepsFile, jsOutputDefinesFile, jsOutputFile);
         }
     }
 
@@ -287,6 +291,7 @@ public class ClosureBuilder
         jsOptions.setEntryFiles(options.getJavascriptEntryFiles());
         jsOptions.setSourceDirectories(
                 options.getJavascriptSourceDirectories(false));
+        jsOptions.setMessageBundle(options.getMessageBundle());
         jsOptions.setShouldCompile(options.getShouldCompile());
         jsOptions.setShouldDebug(options.getShouldDebug());
         jsOptions.setGlobals(getJsGlobals(options));
@@ -298,8 +303,11 @@ public class ClosureBuilder
             throws BuildException {
         final JsOptions jsOptions = getJsBuildOptions(options);
         JsResult jsResult = jsBuilder.build(jsOptions);
-        internalData.jsOutputFile = jsResult.getOutputFile();
         internalData.calculatedScriptFiles = jsResult.getScriptFiles();
+        internalData.jsBaseFile = jsResult.getBaseFile();
+        internalData.jsOutputDepsFile = jsResult.getOutputDepsFile();
+        internalData.jsOutputDefinesFile = jsResult.getOutputDefinesFile();
+        internalData.jsOutputFile = jsResult.getOutputFile();
     }
 
     public ClosureResult buildJsOnly(@Nonnull final ClosureOptions options)

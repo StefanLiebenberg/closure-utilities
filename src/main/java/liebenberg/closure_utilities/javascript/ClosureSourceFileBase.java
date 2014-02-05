@@ -1,22 +1,22 @@
 package liebenberg.closure_utilities.javascript;
 
-import liebenberg.closure_utilities.internal.BaseSourceFile;
+import liebenberg.closure_utilities.internal.SourceFileBase;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class ClosureSourceFile extends BaseSourceFile {
+public class ClosureSourceFileBase extends SourceFileBase {
 
-    public ClosureSourceFile(final URI sourceLocation) {
+    public ClosureSourceFileBase(final URI sourceLocation) {
         super(sourceLocation);
     }
 
-    public ClosureSourceFile(final File sourceFile) {
+    public ClosureSourceFileBase(final File sourceFile) {
         super(sourceFile);
     }
 
-    public ClosureSourceFile(final String sourcePath)
+    public ClosureSourceFileBase(final String sourcePath)
             throws URISyntaxException {
         super(sourcePath);
     }

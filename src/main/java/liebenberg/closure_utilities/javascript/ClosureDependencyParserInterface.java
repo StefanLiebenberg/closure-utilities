@@ -3,7 +3,7 @@ package liebenberg.closure_utilities.javascript;
 import com.google.javascript.rhino.head.Node;
 import com.google.javascript.rhino.head.Parser;
 import com.google.javascript.rhino.head.ast.*;
-import liebenberg.closure_utilities.internal.IDependencyParser;
+import liebenberg.closure_utilities.internal.DependencyParserInterface;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
 
-public class ClosureDependencyParser implements
-        IDependencyParser<ClosureSourceFile> {
+public class ClosureDependencyParserInterface implements
+        DependencyParserInterface<ClosureSourceFileBase> {
 
     private boolean isName(
             @Nonnull final AstNode node) {
@@ -39,7 +39,7 @@ public class ClosureDependencyParser implements
 
 
     private void visit_assignment(
-            @Nonnull final ClosureSourceFile closureSourceFile,
+            @Nonnull final ClosureSourceFileBase closureSourceFile,
             @Nonnull final Assignment assignment) {
         final AstNode left = assignment.getLeft();
         if (isPropertyGet(left) &&
@@ -79,7 +79,7 @@ public class ClosureDependencyParser implements
 
 
     private void visit_PropertyGet_googScan(
-            @Nonnull final ClosureSourceFile closureSourceFile,
+            @Nonnull final ClosureSourceFileBase closureSourceFile,
             @Nonnull final FunctionCall funcCall,
             @Nonnull final PropertyGet propertyGet) {
         if (isName(propertyGet.getLeft(), "goog")) {
@@ -95,7 +95,7 @@ public class ClosureDependencyParser implements
     }
 
     private void visit_FunctionCall(
-            @Nonnull final ClosureSourceFile closureSourceFile,
+            @Nonnull final ClosureSourceFileBase closureSourceFile,
             @Nonnull final FunctionCall functionCall) {
         final AstNode target = functionCall.getTarget();
         if (isPropertyGet(target)) {
@@ -105,7 +105,7 @@ public class ClosureDependencyParser implements
     }
 
     private void visit(
-            @Nonnull final ClosureSourceFile dependency,
+            @Nonnull final ClosureSourceFileBase dependency,
             @Nullable final Node node) {
         if (node == null) {
             return;
@@ -135,7 +135,7 @@ public class ClosureDependencyParser implements
     }
 
     @Override
-    public void parse(@Nonnull final ClosureSourceFile dependency,
+    public void parse(@Nonnull final ClosureSourceFileBase dependency,
                       @Nonnull final Reader content)
             throws IOException {
         final URI sourceLocation = dependency.getSourceLocation();
@@ -146,7 +146,7 @@ public class ClosureDependencyParser implements
     }
 
     @Override
-    public void parse(@Nonnull final ClosureSourceFile dependency,
+    public void parse(@Nonnull final ClosureSourceFileBase dependency,
                       @Nonnull final String content)
             throws IOException {
         final URI sourceLocation = dependency.getSourceLocation();

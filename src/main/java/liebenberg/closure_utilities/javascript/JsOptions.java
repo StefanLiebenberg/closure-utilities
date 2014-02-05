@@ -1,5 +1,7 @@
 package liebenberg.closure_utilities.javascript;
 
+import com.google.javascript.jscomp.MessageBundle;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
@@ -18,6 +20,7 @@ public class JsOptions {
     private File outputFile;
     private Boolean shouldDebug = true;
     private Boolean shouldCompile = false;
+    private MessageBundle messageBundle = null;
 
     @Nullable
     public Collection<File> getSourceDirectories() {
@@ -97,5 +100,15 @@ public class JsOptions {
 
     public void setOutputDefinesFile(File outputDefinesFile) {
         this.outputDefinesFile = outputDefinesFile;
+    }
+
+    @Nullable
+    public MessageBundle getMessageBundle() {
+        return messageBundle;
+    }
+
+
+    public void setMessageBundle(@Nullable MessageBundle messageBundle) {
+        this.messageBundle = messageBundle;
     }
 }

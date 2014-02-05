@@ -3,6 +3,7 @@ package liebenberg.closure_utilities.closure;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.javascript.jscomp.MessageBundle;
 import liebenberg.closure_utilities.utilities.Immuter;
 import org.apache.commons.configuration.Configuration;
 
@@ -22,6 +23,8 @@ public class ClosureOptions {
     private File javascriptOutputFile;
 
     private ImmutableCollection<File> soySourceDirectories;
+
+    private MessageBundle messageBundle;
 
     @Nullable
     public ImmutableCollection<File> getSoySourceDirectories() {
@@ -358,5 +361,13 @@ public class ClosureOptions {
     public void setJavascriptDefinesOutputFile(
             @Nullable File javascriptDefinesOutputFile) {
         this.javascriptDefinesOutputFile = javascriptDefinesOutputFile;
+    }
+
+    public MessageBundle getMessageBundle() {
+        return messageBundle;
+    }
+
+    public void setMessageBundle(MessageBundle messageBundle) {
+        this.messageBundle = messageBundle;
     }
 }

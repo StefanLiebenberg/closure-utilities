@@ -26,11 +26,11 @@ public abstract class AbstractGssBuilder
 
     protected static final String GSS_EXT = "gss";
 
-    protected static final Function<File, GssSourceFile> FILE_TO_GSS =
-            BaseSourceFile.getTransformFunction(GssSourceFile.class);
+    protected static final Function<File, GssSourceFileBase> FILE_TO_GSS =
+            SourceFileBase.getTransformFunction(GssSourceFileBase.class);
 
-    protected static final GssDependencyParser dependencyParser =
-            new GssDependencyParser();
+    protected static final GssDependencyParserInterface dependencyParser =
+            new GssDependencyParserInterface();
 
     protected static final ImageUrlProcessor imageUrlProcessor =
             new ImageUrlProcessor();
@@ -53,13 +53,13 @@ public abstract class AbstractGssBuilder
             throws Exception;
 
     @Nonnull
-    protected DependencyLoader<GssSourceFile> getDependencyLoader(
-            @Nonnull GssDependencyParser parser,
+    protected DependencyLoader<GssSourceFileBase> getDependencyLoader(
+            @Nonnull GssDependencyParserInterface parser,
             @Nonnull Collection<File> sourceFiles)
             throws IOException, ReflectiveOperationException {
-        return new DependencyLoader<GssSourceFile>(parser, sourceFiles) {
+        return new DependencyLoader<GssSourceFileBase>(parser, sourceFiles) {
             @Override
-            protected GssSourceFile createDependency(
+            protected GssSourceFileBase createDependency(
                     @Nonnull final File input) {
                 return FILE_TO_GSS.apply(input);
             }
@@ -213,11 +213,11 @@ public abstract class AbstractGssBuilder
     protected ImmutableList<File> parseInternal(
             @Nullable final Set<File> files,
             @Nullable final List<String> entryPoints,
-            @Nonnull final GssDependencyParser parser)
+            @Nonnull final GssDependencyParserInterface parser)
             throws DependencyException, IOException,
             ReflectiveOperationException {
         if (entryPoints != null && files != null) {
-            final DependencyLoader<GssSourceFile> dependencyLoader =
+            final DependencyLoader<GssSourceFileBase> dependencyLoader =
                     getDependencyLoader(parser, files);
             return dependencyLoader.getDependenciesFor(entryPoints);
         } else {

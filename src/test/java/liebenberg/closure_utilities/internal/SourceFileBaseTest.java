@@ -9,28 +9,28 @@ import java.net.URI;
 import java.util.Set;
 
 
-public class BaseSourceFileTest {
+public class SourceFileBaseTest {
 
-    private BaseSourceFile baseSourceFile;
+    private SourceFileBase sourceFileBase;
 
     @Before
     public void setUp() throws Exception {
-        baseSourceFile = new BaseSourceFile("/path");
+        sourceFileBase = new SourceFileBase("/path");
     }
 
     @After
     public void tearDown() throws Exception {
-        baseSourceFile = null;
+        sourceFileBase = null;
     }
 
     @Test
     public void testAddRequireNamespace() throws Exception {
-        baseSourceFile.addProvideNamespace("a");
-        baseSourceFile.addProvideNamespace("b");
-        baseSourceFile.addProvideNamespace("a");
+        sourceFileBase.addProvideNamespace("a");
+        sourceFileBase.addProvideNamespace("b");
+        sourceFileBase.addProvideNamespace("a");
 
-        Set<String> provides = baseSourceFile.getProvidedNamespaces();
-        Set<String> requires = baseSourceFile.getRequiredNamespaces();
+        Set<String> provides = sourceFileBase.getProvidedNamespaces();
+        Set<String> requires = sourceFileBase.getRequiredNamespaces();
         Assert.assertEquals(0, requires.size());
         Assert.assertEquals(2, provides.size());
         Assert.assertTrue(provides.contains("a"));
@@ -40,12 +40,12 @@ public class BaseSourceFileTest {
 
     @Test
     public void testAddProvideNamespace() throws Exception {
-        baseSourceFile.addRequireNamespace("a");
-        baseSourceFile.addRequireNamespace("b");
-        baseSourceFile.addRequireNamespace("c");
+        sourceFileBase.addRequireNamespace("a");
+        sourceFileBase.addRequireNamespace("b");
+        sourceFileBase.addRequireNamespace("c");
 
-        Set<String> provides = baseSourceFile.getProvidedNamespaces();
-        Set<String> requires = baseSourceFile.getRequiredNamespaces();
+        Set<String> provides = sourceFileBase.getProvidedNamespaces();
+        Set<String> requires = sourceFileBase.getRequiredNamespaces();
         Assert.assertEquals(0, provides.size());
         Assert.assertEquals(3, requires.size());
         Assert.assertTrue(requires.contains("a"));
@@ -59,6 +59,6 @@ public class BaseSourceFileTest {
     @Test
     public void testGetSourceLocation() throws Exception {
         Assert.assertEquals(new URI("/path"),
-                baseSourceFile.getSourceLocation());
+                sourceFileBase.getSourceLocation());
     }
 }

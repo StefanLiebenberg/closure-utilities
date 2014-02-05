@@ -13,16 +13,16 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class DependencyLoader<A extends BaseSourceFile> {
+public abstract class DependencyLoader<A extends SourceFileBase> {
 
-    private final IDependencyParser<A> dependencyParser;
+    private final DependencyParserInterface<A> dependencyParser;
 
     private final IDependencyCalculator<A> dependencyCalculator;
 
     private final ImmutableCollection<A> dependencies;
 
     public DependencyLoader(
-            @Nonnull final IDependencyParser<A> depParser,
+            @Nonnull final DependencyParserInterface<A> depParser,
             @Nonnull final Collection<File> fileDependencies)
             throws IllegalAccessException, InstantiationException, IOException {
         dependencyParser = depParser;
@@ -43,7 +43,7 @@ public abstract class DependencyLoader<A extends BaseSourceFile> {
             @Nonnull final List<String> entryPoints)
             throws DependencyException {
         return Immuter.list(dependencyCalculator.getDependencyList
-                (entryPoints), BaseSourceFile.TO_FILE);
+                (entryPoints), SourceFileBase.TO_FILE);
     }
 
     @Nonnull
@@ -51,7 +51,7 @@ public abstract class DependencyLoader<A extends BaseSourceFile> {
             @Nonnull final String entryPoint)
             throws DependencyException {
         return Immuter.list(dependencyCalculator.getDependencyList
-                (entryPoint), BaseSourceFile.TO_FILE);
+                (entryPoint), SourceFileBase.TO_FILE);
     }
 
 }

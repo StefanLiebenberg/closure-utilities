@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
-public class DependencyOptions<A extends BaseSourceFile> {
+public class DependencyOptions<A extends SourceFileBase> {
 
     private ImmutableCollection<A> sourceFiles;
     private ImmutableList<A> entryFiles;

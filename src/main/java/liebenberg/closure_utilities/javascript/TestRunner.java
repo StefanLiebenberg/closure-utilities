@@ -24,13 +24,13 @@ public class TestRunner {
 
     private static final Console console = new Console();
 
-    private final ClosureDependencyParser parser;
+    private final ClosureDependencyParserInterface parser;
 
     private final Collection<File> sources;
 
-    private final ImmutableList<ClosureSourceFile> dependencies;
+    private final ImmutableList<ClosureSourceFileBase> dependencies;
 
-    private final DependencyCalculator<ClosureSourceFile> calculator;
+    private final DependencyCalculator<ClosureSourceFileBase> calculator;
 
     private final File testFile;
 
@@ -39,15 +39,15 @@ public class TestRunner {
     public TestRunner(@Nonnull final File t,
                       @Nonnull final Collection<File> sourceDirectories)
             throws IOException {
-        parser = new ClosureDependencyParser();
+        parser = new ClosureDependencyParserInterface();
         sources = FS.find(sourceDirectories, "js");
 
-        ImmutableList.Builder<ClosureSourceFile> builder =
+        ImmutableList.Builder<ClosureSourceFileBase> builder =
                 new ImmutableList.Builder<>();
-        ClosureSourceFile dep;
+        ClosureSourceFileBase dep;
         FileReader reader;
         for (File sourceFile : sources) {
-            dep = new ClosureSourceFile(sourceFile);
+            dep = new ClosureSourceFileBase(sourceFile);
             reader = new FileReader(sourceFile);
             parser.parse(dep, reader);
             reader.close();
@@ -80,7 +80,7 @@ public class TestRunner {
 
         Reader fileReader;
         fileReader = new FileReader(testFile);
-        ClosureSourceFile testDep = new ClosureSourceFile(testFile);
+        ClosureSourceFileBase testDep = new ClosureSourceFileBase(testFile);
         parser.parse(testDep, fileReader);
         fileReader.close();
 
@@ -90,7 +90,7 @@ public class TestRunner {
         fileReader.close();
 
         List<String> list = Lists.newArrayList(testDep.getRequiredNamespaces());
-        for (ClosureSourceFile dep : calculator.getDependencyList(list)) {
+        for (ClosureSourceFileBase dep : calculator.getDependencyList(list)) {
             depFile = new File(dep.getSourceLocation());
             fileReader = new FileReader(depFile);
             context.evaluateReader(scope, fileReader, depFile.getPath(),

@@ -3,7 +3,7 @@ package liebenberg.closure_utilities.internal;
 
 import java.util.List;
 
-public interface IDependencyCalculator<T extends BaseSourceFile> {
+public interface IDependencyCalculator<T extends SourceFileBase> {
 
     public List<T> getDependencyList(final String entryPoint)
             throws DependencyException;

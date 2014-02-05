@@ -16,6 +16,9 @@ public class ClosureResult {
 
     private final File htmlOutputFile;
 
+    private final File jsBaseFile;
+    private final File jsDepsOutputFile;
+    private final File jsDefinesOutputFile;
     private final File jsOutputFile;
 
     public ClosureResult(
@@ -23,11 +26,17 @@ public class ClosureResult {
             @Nullable final File generatedRenameMap,
             @Nullable final File soyOutputDirectory,
             @Nullable final File htmlOutputFile,
+            @Nullable final File jsBaseFile,
+            @Nullable final File jsDepsOutputFile,
+            @Nullable final File jsDefinesOutputFile,
             @Nullable final File jsOutputFile) {
         this.generatedStylesheet = generatedStylesheet;
         this.generatedRenameMap = generatedRenameMap;
         this.soyOutputDirectory = soyOutputDirectory;
         this.htmlOutputFile = htmlOutputFile;
+        this.jsBaseFile = jsBaseFile;
+        this.jsDepsOutputFile = jsDepsOutputFile;
+        this.jsDefinesOutputFile = jsDefinesOutputFile;
         this.jsOutputFile = jsOutputFile;
     }
 
@@ -55,5 +64,20 @@ public class ClosureResult {
     @Nullable
     public File getJsOutputFile() {
         return jsOutputFile;
+    }
+
+    @Nullable
+    public File getJsBaseFile() {
+        return jsBaseFile;
+    }
+
+    @Nullable
+    public File getJsDepsOutputFile() {
+        return jsDepsOutputFile;
+    }
+
+    @Nullable
+    public File getJsDefinesOutputFile() {
+        return jsDefinesOutputFile;
     }
 }

@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.Nonnull;
 
-public class DependencyBuilder<A extends BaseSourceFile>
+public class DependencyBuilder<A extends SourceFileBase>
         extends AbstractBuilder<DependencyOptions<A>, ImmutableList<A>> {
 
     private static final Boolean STRICT_MODE = true;

@@ -4,7 +4,7 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import liebenberg.closure_utilities.javascript.ClosureSourceFile;
+import liebenberg.closure_utilities.javascript.ClosureSourceFileBase;
 
 import java.io.File;
 
@@ -26,7 +26,7 @@ public class DependencyFileRendererTest {
     @Test
     public void testRenderDependencyPath() throws Exception {
         File file = new File("/path.js");
-        ClosureSourceFile dependency = new ClosureSourceFile(file);
+        ClosureSourceFileBase dependency = new ClosureSourceFileBase(file);
         StringBuffer sb = new StringBuffer();
         renderer.renderDependencyPath(dependency, sb);
         String expected = "/path.js";
@@ -37,7 +37,7 @@ public class DependencyFileRendererTest {
     @Test
     public void testRenderDependencyPathWithBasePath() throws Exception {
         File file = new File("/a/b/c/path.js");
-        ClosureSourceFile dependency = new ClosureSourceFile(file);
+        ClosureSourceFileBase dependency = new ClosureSourceFileBase(file);
         StringBuffer sb = new StringBuffer();
         // The parent file for /a/b/e/base.js
         renderer.setBasePath("/a/b/e/");
@@ -54,7 +54,7 @@ public class DependencyFileRendererTest {
     @Test
     public void testRenderDependency() throws Exception {
         File file = new File("/path.js");
-        ClosureSourceFile dependency = new ClosureSourceFile(file);
+        ClosureSourceFileBase dependency = new ClosureSourceFileBase(file);
         StringBuffer sb = new StringBuffer();
         renderer.renderDependency(dependency, sb);
         String expected = "goog.addDependency('/path.js', [], []);";
@@ -64,7 +64,7 @@ public class DependencyFileRendererTest {
     @Test
     public void testRenderDependencyWithProvide() throws Exception {
         File file = new File("/path.js");
-        ClosureSourceFile dependency = new ClosureSourceFile(file);
+        ClosureSourceFileBase dependency = new ClosureSourceFileBase(file);
         dependency.addProvideNamespace("package.one");
         StringBuffer sb = new StringBuffer();
         renderer.renderDependency(dependency, sb);
@@ -76,7 +76,7 @@ public class DependencyFileRendererTest {
     @Test
     public void testRenderDependencyWithRequiresAndProvide() throws Exception {
         File file = new File("/path.js");
-        ClosureSourceFile dependency = new ClosureSourceFile(file);
+        ClosureSourceFileBase dependency = new ClosureSourceFileBase(file);
         dependency.addProvideNamespace("package.one");
         dependency.addRequireNamespace("package.two");
         StringBuffer sb = new StringBuffer();

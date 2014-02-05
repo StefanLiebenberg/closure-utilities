@@ -33,22 +33,24 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         private File dependencyFile;
         private File definesFile;
         private ArrayList<File> sourceFiles;
-        private ArrayList<ClosureSourceFile> closureSourceFiles;
-        private ArrayList<ClosureSourceFile> closureEntryFiles;
-        private ImmutableList<ClosureSourceFile> resolvedSourceFiles;
+        private ArrayList<ClosureSourceFileBase> closureSourceFiles;
+        private ArrayList<ClosureSourceFileBase> closureEntryFiles;
+        private ImmutableList<ClosureSourceFileBase> resolvedSourceFiles;
         private ImmutableList<File> resolvedFiles;
         private Result compilerResult;
 
+
         @Nonnull
         public JsResult toResult() {
-            return new JsResult(outputFile, scriptFiles);
+            return new JsResult(baseFile, dependencyFile, definesFile,
+                    outputFile, scriptFiles);
         }
     }
 
-    private final ClosureDependencyParser dependencyParser =
-            new ClosureDependencyParser();
+    private final ClosureDependencyParserInterface dependencyParser =
+            new ClosureDependencyParserInterface();
 
-    private final DependencyBuilder<ClosureSourceFile> dependencyBuilder =
+    private final DependencyBuilder<ClosureSourceFileBase> dependencyBuilder =
             new DependencyBuilder<>();
 
     private final DependencyFileRenderer dependencyFileRenderer =
@@ -60,10 +62,10 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
     private static final String JS_EXT = "js";
 
     @Nonnull
-    private ClosureSourceFile parseFile(@Nonnull File inputFile,
-                                        @Nonnull InternalData internalData)
+    private ClosureSourceFileBase parseFile(@Nonnull File inputFile,
+                                            @Nonnull InternalData internalData)
             throws IOException {
-        ClosureSourceFile sourceFile = new ClosureSourceFile(inputFile);
+        ClosureSourceFileBase sourceFile = new ClosureSourceFileBase(inputFile);
         dependencyParser.parse(sourceFile, FS.read(inputFile));
         if (sourceFile.getIsBaseFile()) {
             internalData.baseFile = inputFile;
@@ -84,7 +86,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
             internalData.closureSourceFiles = new ArrayList<>();
             internalData.closureEntryFiles = new ArrayList<>();
             for (File sourceFile : sourceFiles) {
-                ClosureSourceFile parsedFile = parseFile(sourceFile,
+                ClosureSourceFileBase parsedFile = parseFile(sourceFile,
                         internalData);
                 internalData.closureSourceFiles.add(parsedFile);
                 // todo, find a better way.
@@ -125,7 +127,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         final List<String> entryPoints = options.getEntryPoints();
         final List<File> entryFiles = options.getEntryFiles();
         if (entryPoints != null || entryFiles != null) {
-            final DependencyOptions<ClosureSourceFile>
+            final DependencyOptions<ClosureSourceFileBase>
                     depBuildOptions = new DependencyOptions<>();
             depBuildOptions.setEntryPoints(entryPoints);
             depBuildOptions.setEntryFiles(internalData.closureEntryFiles);
@@ -134,7 +136,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
                     dependencyBuilder.build(depBuildOptions);
             internalData.resolvedFiles =
                     Immuter.list(internalData.resolvedSourceFiles,
-                            BaseSourceFile.TO_FILE);
+                            SourceFileBase.TO_FILE);
         }
 
         final List<File> scriptsFilesToCompile =
@@ -183,6 +185,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         o.setOptimizeReturns(true);
         o.setCheckSymbols(true);
         o.setAggressiveRenaming(true);
+
     }
 
     private void setCompilerOptionsForDebug(@Nonnull final CompilerOptions o) {
@@ -205,6 +208,10 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         } else {
             System.out.println("Setting compiler options for debug!");
             setCompilerOptionsForDebug(cOpts);
+        }
+        MessageBundle msgBundle = options.getMessageBundle();
+        if(msgBundle != null) {
+            cOpts.setMessageBundle(msgBundle);
         }
 
         final Map<String, Object> globals = options.getGlobals();

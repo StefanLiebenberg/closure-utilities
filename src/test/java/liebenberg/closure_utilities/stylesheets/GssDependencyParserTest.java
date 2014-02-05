@@ -10,11 +10,11 @@ import java.util.Set;
 
 public class GssDependencyParserTest {
 
-    GssDependencyParser parser;
+    GssDependencyParserInterface parser;
 
     @Before
     public void setup() {
-        parser = new GssDependencyParser();
+        parser = new GssDependencyParserInterface();
     }
 
     @After
@@ -24,7 +24,7 @@ public class GssDependencyParserTest {
 
     @Test
     public void testProvideParse() throws Exception {
-        GssSourceFile closureSourceFile = new GssSourceFile("/path.js");
+        GssSourceFileBase closureSourceFile = new GssSourceFileBase("/path.js");
         String content = "@provide a.b.c;";
         parser.parse(closureSourceFile, content);
         Set<String> provides = closureSourceFile.getProvidedNamespaces();
@@ -37,7 +37,7 @@ public class GssDependencyParserTest {
 
     @Test
     public void testRequireParse() throws Exception {
-        GssSourceFile closureSourceFile = new GssSourceFile("/path.js");
+        GssSourceFileBase closureSourceFile = new GssSourceFileBase("/path.js");
         String content = "@provide someProvide;\n@require someFacet;";
         parser.parse(closureSourceFile, content);
 

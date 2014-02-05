@@ -11,11 +11,11 @@ import java.util.Set;
 
 public class ClosureDependencyParserTest {
 
-    ClosureDependencyParser parser;
+    ClosureDependencyParserInterface parser;
 
     @Before
     public void setup() {
-        parser = new ClosureDependencyParser();
+        parser = new ClosureDependencyParserInterface();
     }
 
     @After
@@ -25,7 +25,7 @@ public class ClosureDependencyParserTest {
 
     @Test
     public void testProvideParse() throws Exception {
-        ClosureSourceFile closureSourceFile = new ClosureSourceFile("/path.js");
+        ClosureSourceFileBase closureSourceFile = new ClosureSourceFileBase("/path.js");
         String content = "goog.provide('a.b.c')";
         parser.parse(closureSourceFile, content);
         ImmutableSet<String> provides =
@@ -40,7 +40,7 @@ public class ClosureDependencyParserTest {
 
     @Test
     public void testIsBaseFile() throws Exception {
-        ClosureSourceFile closureSourceFile = new ClosureSourceFile("/path.js");
+        ClosureSourceFileBase closureSourceFile = new ClosureSourceFileBase("/path.js");
         String content = "goog.provide('someProvide');\ngoog.base = function " +
                 "() {};";
         parser.parse(closureSourceFile, content);
@@ -49,7 +49,7 @@ public class ClosureDependencyParserTest {
 
     @Test
     public void testRequireParse() throws Exception {
-        ClosureSourceFile closureSourceFile = new ClosureSourceFile("/path.js");
+        ClosureSourceFileBase closureSourceFile = new ClosureSourceFileBase("/path.js");
         String content = "goog.provide('someProvide');goog.require" +
                 "('someFacet')";
         parser.parse(closureSourceFile, content);
