@@ -1,22 +1,17 @@
 package liebenberg.closure_utilities.closure;
 
-import com.google.javascript.jscomp.MessageBundle;
-import com.google.javascript.jscomp.XtbMessageBundle;
-import com.google.javascript.rhino.head.Context;
-import com.google.javascript.rhino.head.ContextFactory;
-import com.google.javascript.rhino.head.ScriptableObject;
-import com.google.javascript.rhino.head.tools.shell.Global;
+import com.google.javascript.jscomp.*;
 import liebenberg.closure_utilities.internal.AbstractBuildTest;
+import liebenberg.closure_utilities.rhino.EnvJsRunner;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -61,109 +56,96 @@ public class ClosureBuildMessagesTest
         builderOptions.setShouldDebug(false);
         ClosureResult result = builder.buildJsOnly(builderOptions);
 
-        final Context context = new ContextFactory().enterContext();
-        context.setOptimizationLevel(-1);
-        context.setLanguageVersion(Context.VERSION_1_3);
+        File scriptFile = result.getJsOutputFile();
+        Assert.assertNotNull(scriptFile);
 
-        //scope = context.initStandardObjects();
-        final Global scope = new Global(context);
-        ScriptableObject.putProperty(scope, "console",
-                Context.javaToJS(console, scope));
-        final InputStream inputStream = getClass().getResourceAsStream("/env" +
-                ".rhino.js");
-        final InputStreamReader inputStreamReader = new InputStreamReader
-                (inputStream);
-        context.evaluateReader(scope, inputStreamReader, "/env/rhino.js", 0,
-                null);
+        EnvJsRunner runner = new EnvJsRunner();
+        runner.initialize();
+        runner.evaluateFile(scriptFile);
+        runner.doLoad();
+        runner.doWait();
 
-        FileReader fileReader;
-        File baseFile = result.getJsBaseFile();
-        Assert.assertNotNull(baseFile);
-        fileReader = new FileReader(baseFile);
-        context.evaluateReader(scope, fileReader, baseFile.getPath(), 0, null);
-        fileReader.close();
+        String greetingResult, greetingExpected;
+
+        greetingResult = runner.getString("company.greeting.hello('Peter')");
+        greetingExpected = "Hello Peter";
+        Assert.assertEquals(greetingExpected, greetingResult);
+
+        greetingResult = runner.getString("company.greeting.goodbye('Peter')");
+        greetingExpected = "Good Bye Peter";
+        Assert.assertEquals(greetingExpected, greetingResult);
+
+        greetingResult = runner.getString("company.greeting.welcome('Peter')");
+        greetingExpected = "Welcome Peter";
+        Assert.assertEquals(greetingExpected, greetingResult);
+
+        runner.doClose();
+    }
+
+    @Test
+    public void testBundledTranslations() throws Exception {
+
+
+        JsMessageExtractor extractor = new JsMessageExtractor(
+                new GoogleJsMessageIdGenerator("company"),
+                JsMessage.Style.CLOSURE);
+        Collection<JsMessage> messages = extractor.extractMessages(
+                SourceFile.fromFile(new File
+                        ("src/test/resources/app/src/javascript/company" +
+                                "/welcome.js")));
+        for (JsMessage message : messages) {
+            System.out.println("desc: " + message.getDesc());
+            System.out.println("id: " + message.getId());
+            System.out.println("key: " + message.getKey());
+            System.out.println("source name: " + message.getSourceName());
+            System.out.println("Parts:");
+            for (CharSequence cs : message.parts()) {
+                System.out.println("...." + cs.toString());
+            }
+        }
+
+        List<String> entryPoints = new ArrayList<>();
+        entryPoints.add("company.greeting");
+        builderOptions.setJavascriptEntryPoints(entryPoints);
+        builderOptions.setJavascriptSourceDirectories
+                (getJavascriptSourceDirectories());
+        builderOptions.setShouldCompile(true);
+        builderOptions.setShouldDebug(false);
+
+        InputStream messageStream = getClass().getResourceAsStream("/app/src/messages/company-af.xtb");
+        MessageBundle messageBundle = new XtbMessageBundle(messageStream, "company");
+        builderOptions.setMessageBundle(messageBundle);
+
+        ClosureResult result = builder.buildJsOnly(builderOptions);
+
+
+
 
         File scriptFile = result.getJsOutputFile();
         Assert.assertNotNull(scriptFile);
-        fileReader = new FileReader(scriptFile);
-        context.evaluateReader(scope, fileReader, scriptFile.getPath(), 0,
-                null);
-        fileReader.close();
-        context.evaluateString(scope, "window.onload()", "inline", 0, null);
-        context.evaluateString(scope, "Envjs.wait()", "inline", 0, null);
-        String hiResult = (String) context.evaluateString(scope,
-                "company.greeting.hello('Peter')", "inline", 0, null);
-        Assert.assertEquals("Hello Peter", hiResult);
 
-        String byeRresult = (String) context.evaluateString(scope,
-                "company.greeting.goodbye('Peter')", "inline", 0, null);
-        Assert.assertEquals("Good Bye Peter", byeRresult);
+        EnvJsRunner runner = new EnvJsRunner();
+        runner.initialize();
+        runner.evaluateFile(scriptFile);
+        runner.doLoad();
+        runner.doWait();
 
-        String welcomeResult = (String) context.evaluateString(scope,
-                "company.greeting.goodbye('Peter')", "inline", 0, null);
-        Assert.assertEquals("Welcome Peter", welcomeResult);
-        Context.exit();
+        String greetingResult, greetingExpected;
+
+        greetingResult = runner.getString("company.greeting.hello('Peter')");
+        greetingExpected = "Goeie dag Peter";
+        Assert.assertEquals(greetingExpected, greetingResult);
+
+        greetingResult = runner.getString("company.greeting.goodbye('Peter')");
+        greetingExpected = "Totsiens Peter";
+        Assert.assertEquals(greetingExpected, greetingResult);
+
+        greetingResult = runner.getString("company.greeting.welcome('Peter')");
+        greetingExpected = "Welkom Peter";
+        Assert.assertEquals(greetingExpected, greetingResult);
+
+        runner.doClose();
     }
-
-
-//    @Test
-//    public void testBundledTranslations() throws Exception {
-//        List<String> entryPoints = new ArrayList<>();
-//        entryPoints.add("company.greeting");
-//        builderOptions.setJavascriptEntryPoints(entryPoints);
-//        builderOptions.setJavascriptSourceDirectories
-//                (getJavascriptSourceDirectories());
-//        builderOptions.setShouldCompile(true);
-//        builderOptions.setShouldDebug(false);
-//
-//        InputStream messageStream = getClass().getResourceAsStream("/app/src/messages/company.xlf");
-//        MessageBundle messageBundle = new XtbMessageBundle(messageStream, "unk");
-//        builderOptions.setMessageBundle(messageBundle);
-//
-//        ClosureResult result = builder.buildJsOnly(builderOptions);
-//
-//        final Context context = new ContextFactory().enterContext();
-//        context.setOptimizationLevel(-1);
-//        context.setLanguageVersion(Context.VERSION_1_3);
-//
-//        //scope = context.initStandardObjects();
-//        final Global scope = new Global(context);
-//        ScriptableObject.putProperty(scope, "console", Context.javaToJS(console, scope));
-//        final InputStream inputStream = getClass().getResourceAsStream("/env" +
-//                ".rhino.js");
-//        final InputStreamReader inputStreamReader = new InputStreamReader
-//                (inputStream);
-//        context.evaluateReader(scope, inputStreamReader, "/env/rhino.js", 0,
-//                null);
-//
-//        FileReader fileReader;
-//        File baseFile = result.getJsBaseFile();
-//        Assert.assertNotNull(baseFile);
-//        fileReader = new FileReader(baseFile);
-//        context.evaluateReader(scope, fileReader, baseFile.getPath(), 0, null);
-//        fileReader.close();
-//
-//        File scriptFile = result.getJsOutputFile();
-//        Assert.assertNotNull(scriptFile);
-//        fileReader = new FileReader(scriptFile);
-//        context.evaluateReader(scope, fileReader, scriptFile.getPath(), 0,
-//                null);
-//        fileReader.close();
-//        context.evaluateString(scope, "window.onload()", "inline", 0, null);
-//        context.evaluateString(scope, "Envjs.wait()", "inline", 0, null);
-//        String hiResult = (String) context.evaluateString(scope,
-//                "company.greeting.hello('Peter')", "inline", 0, null);
-//        Assert.assertEquals("Goeie dag Peter", hiResult);
-//
-//        String byeRresult = (String) context.evaluateString(scope,
-//                "company.greeting.goodbye('Peter')", "inline", 0, null);
-//        Assert.assertEquals("Totsiens Peter", byeRresult);
-//
-//        String welcomeResult = (String) context.evaluateString(scope,
-//                "company.greeting.goodbye('Peter')", "inline", 0, null);
-//        Assert.assertEquals("Welkom Peter", welcomeResult);
-//        Context.exit();
-//    }
 
 
 }
