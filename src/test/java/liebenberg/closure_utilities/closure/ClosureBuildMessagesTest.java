@@ -1,6 +1,7 @@
 package liebenberg.closure_utilities.closure;
 
-import com.google.javascript.jscomp.*;
+import com.google.javascript.jscomp.MessageBundle;
+import com.google.javascript.jscomp.XtbMessageBundle;
 import liebenberg.closure_utilities.internal.AbstractBuildTest;
 import liebenberg.closure_utilities.rhino.EnvJsRunner;
 import org.junit.After;
@@ -11,7 +12,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -84,25 +84,23 @@ public class ClosureBuildMessagesTest
 
     @Test
     public void testBundledTranslations() throws Exception {
-
-
-        JsMessageExtractor extractor = new JsMessageExtractor(
-                new GoogleJsMessageIdGenerator("company"),
-                JsMessage.Style.CLOSURE);
-        Collection<JsMessage> messages = extractor.extractMessages(
-                SourceFile.fromFile(new File
-                        ("src/test/resources/app/src/javascript/company" +
-                                "/welcome.js")));
-        for (JsMessage message : messages) {
-            System.out.println("desc: " + message.getDesc());
-            System.out.println("id: " + message.getId());
-            System.out.println("key: " + message.getKey());
-            System.out.println("source name: " + message.getSourceName());
-            System.out.println("Parts:");
-            for (CharSequence cs : message.parts()) {
-                System.out.println("...." + cs.toString());
-            }
-        }
+//        JsMessageExtractor extractor = new JsMessageExtractor(
+//                new GoogleJsMessageIdGenerator("company"),
+//                JsMessage.Style.CLOSURE);
+//        Collection<JsMessage> messages = extractor.extractMessages(
+//                SourceFile.fromFile(new File
+//                        ("src/test/resources/app/src/javascript/company" +
+//                                "/welcome.js")));
+//        for (JsMessage message : messages) {
+//            System.out.println("desc: " + message.getDesc());
+//            System.out.println("id: " + message.getId());
+//            System.out.println("key: " + message.getKey());
+//            System.out.println("source name: " + message.getSourceName());
+//            System.out.println("Parts:");
+//            for (CharSequence cs : message.parts()) {
+//                System.out.println("...." + cs.toString());
+//            }
+//        }
 
         List<String> entryPoints = new ArrayList<>();
         entryPoints.add("company.greeting");
@@ -112,19 +110,18 @@ public class ClosureBuildMessagesTest
         builderOptions.setShouldCompile(true);
         builderOptions.setShouldDebug(false);
 
-        InputStream messageStream = getClass().getResourceAsStream("/app/src/messages/company-af.xtb");
-        MessageBundle messageBundle = new XtbMessageBundle(messageStream, "company");
+        final InputStream messageStream = getClass().
+                getResourceAsStream("/app/src/messages/company-af.xtb");
+        final MessageBundle messageBundle =
+                new XtbMessageBundle(messageStream, "company");
         builderOptions.setMessageBundle(messageBundle);
 
-        ClosureResult result = builder.buildJsOnly(builderOptions);
+        final ClosureResult result = builder.buildJsOnly(builderOptions);
 
-
-
-
-        File scriptFile = result.getJsOutputFile();
+        final File scriptFile = result.getJsOutputFile();
         Assert.assertNotNull(scriptFile);
 
-        EnvJsRunner runner = new EnvJsRunner();
+        final EnvJsRunner runner = new EnvJsRunner();
         runner.initialize();
         runner.evaluateFile(scriptFile);
         runner.doLoad();
@@ -133,7 +130,7 @@ public class ClosureBuildMessagesTest
         String greetingResult, greetingExpected;
 
         greetingResult = runner.getString("company.greeting.hello('Peter')");
-        greetingExpected = "Goeie dag Peter";
+        greetingExpected = "Goeie Dag Peter";
         Assert.assertEquals(greetingExpected, greetingResult);
 
         greetingResult = runner.getString("company.greeting.goodbye('Peter')");
