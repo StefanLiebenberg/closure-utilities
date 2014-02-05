@@ -84,23 +84,6 @@ public class ClosureBuildMessagesTest
 
     @Test
     public void testBundledTranslations() throws Exception {
-//        JsMessageExtractor extractor = new JsMessageExtractor(
-//                new GoogleJsMessageIdGenerator("company"),
-//                JsMessage.Style.CLOSURE);
-//        Collection<JsMessage> messages = extractor.extractMessages(
-//                SourceFile.fromFile(new File
-//                        ("src/test/resources/app/src/javascript/company" +
-//                                "/welcome.js")));
-//        for (JsMessage message : messages) {
-//            System.out.println("desc: " + message.getDesc());
-//            System.out.println("id: " + message.getId());
-//            System.out.println("key: " + message.getKey());
-//            System.out.println("source name: " + message.getSourceName());
-//            System.out.println("Parts:");
-//            for (CharSequence cs : message.parts()) {
-//                System.out.println("...." + cs.toString());
-//            }
-//        }
 
         List<String> entryPoints = new ArrayList<>();
         entryPoints.add("company.greeting");

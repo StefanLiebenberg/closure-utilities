@@ -1,8 +1,8 @@
 package liebenberg.closure_utilities.javascript;
 
 import com.google.common.collect.Sets;
-import org.junit.Test;
 import liebenberg.closure_utilities.internal.AbstractApplicationTest;
+import org.junit.Test;
 
 import java.io.File;
 import java.util.Collection;
@@ -18,5 +18,4 @@ public class TestRunnerTest extends AbstractApplicationTest {
                 sourceDirectories);
         testRunner.run();
     }
-
 }

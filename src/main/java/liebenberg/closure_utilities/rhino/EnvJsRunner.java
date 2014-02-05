@@ -44,18 +44,24 @@ public class EnvJsRunner {
                                  @Nonnull final String path)
             throws IOException {
         final InputStreamReader reader = new InputStreamReader(stream);
-        return evaluateReader(reader, path);
+        final Object result = evaluateReader(reader, path);
+        reader.close();
+        return result;
     }
 
     public Object evaluateResource(@Nonnull final String path)
             throws IOException {
         final InputStream stream = getClass().getResourceAsStream(path);
-        return evaluateStream(stream, path);
+        final Object result = evaluateStream(stream, path);
+        stream.close();
+        return result;
     }
 
     public Object evaluateFile(@Nonnull final File file) throws IOException {
-        FileReader fileReader = new FileReader(file);
-        return evaluateReader(fileReader, file.getPath());
+        final FileReader fileReader = new FileReader(file);
+        final Object result = evaluateReader(fileReader, file.getPath());
+        fileReader.close();
+        return result;
     }
 
     public void doLoad() {
@@ -74,5 +80,9 @@ public class EnvJsRunner {
 
     public String getString(String command) {
         return (String) evaluateString(command);
+    }
+
+    public Boolean getBoolean(String command) {
+        return (Boolean) evaluateString(command);
     }
 }

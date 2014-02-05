@@ -2,16 +2,15 @@ package liebenberg.closure_utilities.javascript;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.javascript.rhino.head.Context;
-import com.google.javascript.rhino.head.ContextFactory;
-import com.google.javascript.rhino.head.ScriptableObject;
-import com.google.javascript.rhino.head.tools.shell.Global;
 import liebenberg.closure_utilities.internal.DependencyCalculator;
-import liebenberg.closure_utilities.rhino.Console;
+import liebenberg.closure_utilities.rhino.EnvJsRunner;
 import liebenberg.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,7 +21,6 @@ public class TestRunner {
         public TestException() {}
     }
 
-    private static final Console console = new Console();
 
     private final ClosureDependencyParserInterface parser;
 
@@ -36,9 +34,15 @@ public class TestRunner {
 
     private File baseFile;
 
+    private final EnvJsRunner envJsRunner;
+
     public TestRunner(@Nonnull final File t,
                       @Nonnull final Collection<File> sourceDirectories)
             throws IOException {
+
+        envJsRunner = new EnvJsRunner();
+        envJsRunner.initialize();
+
         parser = new ClosureDependencyParserInterface();
         sources = FS.find(sourceDirectories, "js");
 
@@ -63,19 +67,6 @@ public class TestRunner {
 
 
     public void run() throws Exception {
-        final Context context = new ContextFactory().enterContext();
-        context.setOptimizationLevel(-1);
-        context.setLanguageVersion(Context.VERSION_1_3);
-
-        //scope = context.initStandardObjects();
-        final Global scope = new Global(context);
-        ScriptableObject.putProperty(scope, "console",
-                Context.javaToJS(console, scope));
-        final InputStream inputStream =
-                getClass().getResourceAsStream("/env.rhino.js");
-        final InputStreamReader inputStreamReader =
-                new InputStreamReader(inputStream);
-        context.evaluateReader(scope, inputStreamReader, "/env/rhino.js", 0, null);
 
 
         Reader fileReader;
@@ -84,29 +75,18 @@ public class TestRunner {
         parser.parse(testDep, fileReader);
         fileReader.close();
 
-        File depFile;
-        fileReader = new FileReader(baseFile);
-        context.evaluateReader(scope, fileReader, baseFile.getPath(), 0, null);
-        fileReader.close();
+        envJsRunner.evaluateFile(baseFile);
 
         List<String> list = Lists.newArrayList(testDep.getRequiredNamespaces());
         for (ClosureSourceFileBase dep : calculator.getDependencyList(list)) {
-            depFile = new File(dep.getSourceLocation());
-            fileReader = new FileReader(depFile);
-            context.evaluateReader(scope, fileReader, depFile.getPath(),
-                    0, null);
-            fileReader.close();
+            envJsRunner.evaluateFile(new File(dep.getSourceLocation()));
         }
 
-        fileReader = new FileReader(testFile);
-        context.evaluateReader(scope, fileReader, testFile.getPath(), 0,
-                null);
-        fileReader.close();
-        context.evaluateString(scope, "window.onload()", "inline", 0, null);
-        context.evaluateString(scope, "Envjs.wait()", "inline", 0, null);
-        Boolean isSuccess = (Boolean) context.evaluateString(scope,
-                "G_testRunner.isSuccess()", "inline", 0, null);
-        Context.exit();
+        envJsRunner.evaluateFile(testFile);
+        envJsRunner.doLoad();
+        Boolean isSuccess =
+                envJsRunner.getBoolean("G_testRunner.isSuccess()");
+        envJsRunner.doClose();
 
         if (!isSuccess) {
             throw new TestException();
