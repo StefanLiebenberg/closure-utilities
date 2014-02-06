@@ -38,5 +38,12 @@ public class EnvJsRunnerTest {
         Assert.assertTrue(runner.getBoolean("window.__HAS_BEEN_LOADED__"));
     }
 
-
+    @Test
+    public void testDoWait() throws Exception {
+        runner.doLoad();
+        runner.evaluateString("window.setTimeout(function(){window" +
+                ".__TIMEOUT_FIRED__ = true;}, 1000);");
+        runner.doWait();
+        Assert.assertTrue(runner.getBoolean("window.__TIMEOUT_FIRED__"));
+    }
 }
