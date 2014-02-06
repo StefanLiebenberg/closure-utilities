@@ -96,6 +96,9 @@ public abstract class AbstractSoyBuilder
         if (messageFile != null && messageFile.exists()) {
             bundle = xliffMsgPlugin.parseTranslatedMsgsFile(FS.read
                     (messageFile));
+            jsSrcOptions.setGoogMsgsAreExternal(false);
+        } else {
+            jsSrcOptions.setGoogMsgsAreExternal(true);
         }
         return soyFileSet.compileToJsSrc(jsSrcOptions, bundle);
     }

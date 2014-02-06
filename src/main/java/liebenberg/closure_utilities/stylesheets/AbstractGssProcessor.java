@@ -12,13 +12,14 @@ import java.nio.file.Paths;
 
 public abstract class AbstractGssProcessor implements GssProcessor {
 
-    public static Boolean IGNORE_EXCEPTIONS = false;
+    private static final boolean IGNORE_EXCEPTIONS = false;
 
     private static final String SINGLE_QUOTE = "'";
 
     private static final String DOUBLE_QUOTE = "\"";
 
-    protected static String stripQuotes(String quotedString) {
+    @Nonnull
+    protected static String stripQuotes(@Nonnull final String quotedString) {
         return quotedString
                 .replaceAll(SINGLE_QUOTE, "")
                 .replaceAll(DOUBLE_QUOTE, "");
@@ -32,8 +33,10 @@ public abstract class AbstractGssProcessor implements GssProcessor {
         final StringWriter writer = new StringWriter();
         IOUtils.copy(inputStream, writer);
         final String result = processString(writer.toString(), imageRoot);
+        writer.close();
         final StringReader reader = new StringReader(result);
         IOUtils.copy(reader, outputStream);
+        reader.close();
     }
 
     @Nonnull
