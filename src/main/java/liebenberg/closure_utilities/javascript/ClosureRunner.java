@@ -1,11 +1,8 @@
 package liebenberg.closure_utilities.javascript;
 
 
-import com.google.common.base.Function;
 import com.google.javascript.rhino.head.ScriptableObject;
-import liebenberg.closure_utilities.internal.DependencyCalculator;
 import liebenberg.closure_utilities.internal.DependencyException;
-import liebenberg.closure_utilities.internal.SourceFileBase;
 import liebenberg.closure_utilities.render.DependencyFileRenderer;
 import liebenberg.closure_utilities.render.RenderException;
 import liebenberg.closure_utilities.rhino.EnvJsRunner;
@@ -21,9 +18,6 @@ import java.util.Set;
 
 public class ClosureRunner extends EnvJsRunner {
 
-    private static final Function<File, ClosureSourceFile> TRANSFORM_FUNC =
-            SourceFileBase.getTransformFunction(ClosureSourceFile.class);
-
     private static final ClosureImporter CLOSURE_IMPORTER =
             new ClosureImporter();
 
@@ -36,8 +30,6 @@ public class ClosureRunner extends EnvJsRunner {
 
     private static final ClosureDependencyParser parser =
             new ClosureDependencyParser();
-
-    private DependencyCalculator<ClosureSourceFile> calculator;
 
     private static final DependencyFileRenderer dependencyFileRenderer =
             new DependencyFileRenderer();
@@ -68,7 +60,6 @@ public class ClosureRunner extends EnvJsRunner {
         dependencyFileRenderer.setBasePath(baseFile.getParentFile()
                 .getAbsolutePath());
         dependencyFileRenderer.setDependencies(closureSourceFileSet);
-        calculator = new DependencyCalculator<>(closureSourceFileSet);
     }
 
 
@@ -90,6 +81,6 @@ public class ClosureRunner extends EnvJsRunner {
 
     public void require(String require)
             throws DependencyException, IOException {
-        evaluateString("goog.require('" + require + "')");
+        evaluateString("goog.require('" + require + "');");
     }
 }
