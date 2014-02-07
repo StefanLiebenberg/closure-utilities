@@ -18,7 +18,7 @@ public class EnvJsRunnerTest {
 
     @After
     public void tearDown() throws Exception {
-        runner.doClose();
+        runner.close();
         runner = null;
     }
 

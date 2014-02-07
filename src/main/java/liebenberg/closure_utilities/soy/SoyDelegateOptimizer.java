@@ -61,7 +61,6 @@ public class SoyDelegateOptimizer implements CompilerPass {
         reset();
         NodeTraversal.traverse(compiler, root, delegateFinder);
 
-
         freeze();
         NodeTraversal.traverse(compiler, root, delegateOptimizer);
     }

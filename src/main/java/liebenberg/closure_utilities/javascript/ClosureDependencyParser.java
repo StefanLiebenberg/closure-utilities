@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.net.URI;
 
-public class ClosureDependencyParserInterface implements
+public class ClosureDependencyParser implements
         DependencyParserInterface<ClosureSourceFile> {
 
     private boolean isName(

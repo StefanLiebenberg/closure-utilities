@@ -47,8 +47,8 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         }
     }
 
-    private final ClosureDependencyParserInterface dependencyParser =
-            new ClosureDependencyParserInterface();
+    private final ClosureDependencyParser dependencyParser =
+            new ClosureDependencyParser();
 
     private final DependencyBuilder<ClosureSourceFile> dependencyBuilder =
             new DependencyBuilder<>();

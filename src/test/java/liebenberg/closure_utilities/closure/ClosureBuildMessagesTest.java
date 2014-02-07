@@ -43,8 +43,6 @@ public class ClosureBuildMessagesTest
         super.tearDown();
     }
 
-    private static final liebenberg.closure_utilities.rhino.Console console =
-            new liebenberg.closure_utilities.rhino.Console();
 
     @Test
     public void testVanillaTranslations() throws Exception {
@@ -80,7 +78,7 @@ public class ClosureBuildMessagesTest
         greetingExpected = "Welcome Peter";
         Assert.assertEquals(greetingExpected, greetingResult);
 
-        runner.doClose();
+        runner.close();
     }
 
     @Test
@@ -125,7 +123,7 @@ public class ClosureBuildMessagesTest
         greetingExpected = "Welkom Peter";
         Assert.assertEquals(greetingExpected, greetingResult);
 
-        runner.doClose();
+        runner.close();
     }
 
     @Test
@@ -171,7 +169,7 @@ public class ClosureBuildMessagesTest
         greetingExpected = "Welkom Peter";
         Assert.assertEquals(greetingExpected, greetingResult);
 
-        runner.doClose();
+        runner.close();
     }
 
 
