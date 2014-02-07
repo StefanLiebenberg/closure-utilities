@@ -1,7 +1,6 @@
 package liebenberg.closure_utilities.javascript;
 
 
-import com.google.javascript.rhino.head.ScriptableObject;
 import liebenberg.closure_utilities.internal.DependencyException;
 import liebenberg.closure_utilities.render.DependencyFileRenderer;
 import liebenberg.closure_utilities.render.RenderException;
@@ -68,10 +67,8 @@ public class ClosureRunner extends EnvJsRunner {
         try {
             scanDependencies();
             File baseDirectory = baseFile.getParentFile();
-            ScriptableObject.putProperty(scope, "CLOSURE_BASE_PATH",
-                    baseDirectory.getPath() + "/");
-            ScriptableObject.putProperty(scope, "CLOSURE_IMPORT_SCRIPT",
-                    CLOSURE_IMPORTER);
+            putObject("CLOSURE_BASE_PATH", baseDirectory.getPath() + "/");
+            putObject("CLOSURE_IMPORT_SCRIPT", CLOSURE_IMPORTER);
             evaluateFile(baseFile);
             evaluateString(dependencyFileRenderer.render());
         } catch (IOException | RenderException exception) {

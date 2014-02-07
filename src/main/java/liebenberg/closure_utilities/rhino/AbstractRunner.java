@@ -3,6 +3,7 @@ package liebenberg.closure_utilities.rhino;
 
 import com.google.javascript.rhino.head.Context;
 import com.google.javascript.rhino.head.ContextFactory;
+import com.google.javascript.rhino.head.ScriptableObject;
 import com.google.javascript.rhino.head.tools.shell.Global;
 
 import javax.annotation.Nonnull;
@@ -89,6 +90,12 @@ public abstract class AbstractRunner implements RunnerInterface {
         fileReader.close();
         return result;
     }
+
+    public void putObject(@Nonnull String name,
+                          @Nonnull Object object) {
+        ScriptableObject.putProperty(scope, name, object);
+    }
+
 
     @Override
     @Nullable

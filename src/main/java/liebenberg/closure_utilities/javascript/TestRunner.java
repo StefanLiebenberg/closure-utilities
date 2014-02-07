@@ -1,5 +1,7 @@
 package liebenberg.closure_utilities.javascript;
 
+import liebenberg.closure_utilities.internal.DependencyException;
+
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +14,24 @@ public class TestRunner extends ClosureRunner {
         super(sourceDirectories);
     }
 
-    public Boolean run(File testFile) throws Exception {
+    @Override
+    public void initialize() {
+        super.initialize();
+        try {
+            require("goog.testing.jsunit");
+        } catch (IOException | DependencyException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public void run(File testFile) throws Exception {
         evaluateFile(testFile);
         doLoad();
+    }
+
+    public Boolean isSuccess() {
         return getBoolean("G_testRunner.isSuccess()");
     }
+
+
 }

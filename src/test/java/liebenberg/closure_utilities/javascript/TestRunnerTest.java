@@ -31,6 +31,7 @@ public class TestRunnerTest extends AbstractApplicationTest {
     public void testRun() throws Exception {
         final File testFile =
                 getApplicationDirectory("test/javascript/Basic.test.js");
-        Assert.assertTrue(testRunner.run(testFile));
+        testRunner.run(testFile);
+        Assert.assertTrue(testRunner.isSuccess());
     }
 }
