@@ -225,23 +225,37 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         final CompilerOptions cOpts = new CompilerOptions();
 
         if (!options.getShouldDebug()) {
-            System.out.println("Setting compiler options for production!");
+            if (options.getVerbose()) {
+                log("Setting compiler options for production!");
+            }
             setCompilerOptionsForCompile(cOpts);
         } else {
-            System.out.println("Setting compiler options for debug!");
+            if (options.getVerbose()) {
+                log("Setting compiler options for debug!");
+            }
             setCompilerOptionsForDebug(cOpts);
         }
+
         MessageBundle msgBundle = options.getMessageBundle();
         if (msgBundle != null) {
+            if (options.getVerbose()) {
+                log("Setting message bundle.");
+            }
             cOpts.setMessageBundle(msgBundle);
         }
 
         final Map<String, Object> globals = options.getGlobals();
         if (globals != null) {
+            if (options.getVerbose()) {
+                log("Setting globals");
+            }
             cOpts.setDefineReplacements(globals);
         }
 
         if (sourceMap != null) {
+            if (options.getVerbose()) {
+                log("Setting sourceMap output path:", sourceMap.getPath());
+            }
             cOpts.setSourceMapFormat(SourceMap.Format.V3);
             cOpts.setSourceMapDetailLevel(SourceMap.DetailLevel.ALL);
             cOpts.setSourceMapOutputPath(sourceMap.getPath());
