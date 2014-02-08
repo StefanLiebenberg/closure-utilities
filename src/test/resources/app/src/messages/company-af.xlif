@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2"
+       xmlns:trolltech="urn:trolltech:names:ts:document:1.0">
+    <file original="" datatype="plaintext" source-language="en"
+          target-language="af">
+        <body>
+            <trans-unit id="1358941337827109422" approved="yes">
+                <source>Welcome {$name}</source>
+                <target>Goeie Dag {$name}</target>
+            </trans-unit>
+            <trans-unit id="600336468472270269">
+                <source>Good Bye {$name}</source>
+                <target>Totsiens {$name}</target>
+            </trans-unit>
+            <trans-unit id="3773505203913249228" approved="yes">
+                <source>Welcome {$name}</source>
+                <target>Welkom {$name}</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

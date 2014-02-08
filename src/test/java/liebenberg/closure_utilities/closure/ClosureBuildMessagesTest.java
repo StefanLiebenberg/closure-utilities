@@ -4,6 +4,7 @@ import com.google.javascript.jscomp.MessageBundle;
 import com.google.javascript.jscomp.XtbMessageBundle;
 import liebenberg.closure_utilities.internal.AbstractBuildTest;
 import liebenberg.closure_utilities.rhino.EnvJsRunner;
+import liebenberg.closure_utilities.translation.XliffMessageBundle;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,8 +43,6 @@ public class ClosureBuildMessagesTest
         super.tearDown();
     }
 
-    private static final liebenberg.closure_utilities.rhino.Console console =
-            new liebenberg.closure_utilities.rhino.Console();
 
     @Test
     public void testVanillaTranslations() throws Exception {
@@ -79,7 +78,7 @@ public class ClosureBuildMessagesTest
         greetingExpected = "Welcome Peter";
         Assert.assertEquals(greetingExpected, greetingResult);
 
-        runner.doClose();
+        runner.close();
     }
 
     @Test
@@ -124,7 +123,53 @@ public class ClosureBuildMessagesTest
         greetingExpected = "Welkom Peter";
         Assert.assertEquals(greetingExpected, greetingResult);
 
-        runner.doClose();
+        runner.close();
+    }
+
+    @Test
+    public void testBundledXLFTranslations() throws Exception {
+
+        List<String> entryPoints = new ArrayList<>();
+        entryPoints.add("company.greeting");
+        builderOptions.setJavascriptEntryPoints(entryPoints);
+        builderOptions.setJavascriptSourceDirectories
+                (getJavascriptSourceDirectories());
+        builderOptions.setShouldCompile(true);
+        builderOptions.setShouldDebug(false);
+
+        final InputStream messageStream = getClass().
+                getResourceAsStream("/app/src/messages/company-af.xlif");
+        final MessageBundle messageBundle =
+                new XliffMessageBundle(messageStream, "company");
+        builderOptions.setMessageBundle(messageBundle);
+
+        final ClosureResult result = builder.buildJsOnly(builderOptions);
+
+        final File scriptFile = result.getJsOutputFile();
+        Assert.assertNotNull(scriptFile);
+
+        final EnvJsRunner runner = new EnvJsRunner();
+        runner.initialize();
+
+        runner.evaluateFile(scriptFile);
+        runner.doLoad();
+        runner.doWait();
+
+        String greetingResult, greetingExpected;
+
+        greetingResult = runner.getString("company.greeting.hello('Peter')");
+        greetingExpected = "Goeie Dag Peter";
+        Assert.assertEquals(greetingExpected, greetingResult);
+
+        greetingResult = runner.getString("company.greeting.goodbye('Peter')");
+        greetingExpected = "Totsiens Peter";
+        Assert.assertEquals(greetingExpected, greetingResult);
+
+        greetingResult = runner.getString("company.greeting.welcome('Peter')");
+        greetingExpected = "Welkom Peter";
+        Assert.assertEquals(greetingExpected, greetingResult);
+
+        runner.close();
     }
 
 

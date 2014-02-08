@@ -61,7 +61,6 @@ public class SoyDelegateOptimizer implements CompilerPass {
         reset();
         NodeTraversal.traverse(compiler, root, delegateFinder);
 
-
         freeze();
         NodeTraversal.traverse(compiler, root, delegateOptimizer);
     }
@@ -102,6 +101,7 @@ public class SoyDelegateOptimizer implements CompilerPass {
         public void visit(final NodeTraversal t,
                           final Node n,
                           final Node parent) {
+
             switch (n.getType()) {
                 case Token.CALL:
                     if (isDelegateCallNode(n)) {

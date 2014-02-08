@@ -67,7 +67,6 @@ public class DependencyFileRenderer
     protected void renderDependency(
             @Nonnull final ClosureSourceFile dep,
             @Nonnull final Appendable sb) throws IOException {
-
         sb.append("goog.addDependency('");
         renderDependencyPath(dep, sb);
         sb.append("', ");
@@ -77,11 +76,8 @@ public class DependencyFileRenderer
         sb.append(");");
     }
 
-
     @Override
-    public void render(@Nonnull Appendable sb)
-            throws RenderException, IOException {
-
+    public void render(@Nonnull Appendable sb) throws IOException {
         String delim = "";
         for (ClosureSourceFile dep : dependencies) {
             sb.append(delim);
@@ -89,6 +85,4 @@ public class DependencyFileRenderer
             delim = "\n";
         }
     }
-
-
 }

@@ -2,20 +2,39 @@ package liebenberg.closure_utilities.javascript;
 
 import com.google.common.collect.Sets;
 import liebenberg.closure_utilities.internal.AbstractApplicationTest;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runners.JUnit4;
 
 import java.io.File;
 import java.util.Collection;
 
 public class TestRunnerTest extends AbstractApplicationTest {
-    @Test
-    public void testRun() throws Exception {
-        final File testFile = getApplicationDirectory("test/javascript/Basic" +
-                ".test.js");
+
+
+
+    TestRunner testRunner;
+
+    @Before
+    public void setup() {
         final Collection<File> sourceDirectories = Sets.newHashSet
                 (getApplicationDirectory("src/javascript"));
-        final TestRunner testRunner = new TestRunner(testFile,
-                sourceDirectories);
-        testRunner.run();
+        testRunner = new TestRunner(sourceDirectories);
+        testRunner.initialize();
+    }
+
+    @After
+    public void tearDown() {
+        testRunner.close();
+    }
+
+    @Test
+    public void testRun() throws Exception {
+        final File testFile =
+                getApplicationDirectory("test/javascript/Basic.test.js");
+        testRunner.run(testFile);
+        Assert.assertTrue(testRunner.isSuccess());
     }
 }

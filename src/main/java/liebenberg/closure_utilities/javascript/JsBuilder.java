@@ -2,8 +2,10 @@ package liebenberg.closure_utilities.javascript;
 
 
 import com.google.common.base.Function;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.Compiler;
 import liebenberg.closure_utilities.internal.*;
@@ -39,7 +41,6 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         private ImmutableList<File> resolvedFiles;
         private Result compilerResult;
 
-
         @Nonnull
         public JsResult toResult() {
             return new JsResult(baseFile, dependencyFile, definesFile,
@@ -47,13 +48,13 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         }
     }
 
-    private final ClosureDependencyParserInterface dependencyParser =
-            new ClosureDependencyParserInterface();
+    private final ClosureDependencyParser depParser =
+            new ClosureDependencyParser();
 
-    private final DependencyBuilder<ClosureSourceFile> dependencyBuilder =
+    private final DependencyBuilder<ClosureSourceFile> depBuilder =
             new DependencyBuilder<>();
 
-    private final DependencyFileRenderer dependencyFileRenderer =
+    private final DependencyFileRenderer depFileRenderer =
             new DependencyFileRenderer();
 
     private final DefinesFileRenderer definesFileRenderer =
@@ -63,10 +64,10 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
 
     @Nonnull
     private ClosureSourceFile parseFile(@Nonnull File inputFile,
-                                            @Nonnull InternalData internalData)
+                                        @Nonnull InternalData internalData)
             throws IOException {
         ClosureSourceFile sourceFile = new ClosureSourceFile(inputFile);
-        dependencyParser.parse(sourceFile, FS.read(inputFile));
+        depParser.parse(sourceFile, FS.read(inputFile));
         if (sourceFile.getIsBaseFile()) {
             internalData.baseFile = inputFile;
         }
@@ -114,7 +115,9 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
             throws RenderException, IOException {
         internalData.dependencyFile = options.getOutputDependencyFile();
         if (internalData.dependencyFile != null) {
-            FS.write(internalData.dependencyFile, dependencyFileRenderer
+            Preconditions.checkState(internalData.baseFile != null);
+            Preconditions.checkState(internalData.closureSourceFiles != null);
+            FS.write(internalData.dependencyFile, depFileRenderer
                     .setBasePath(internalData.baseFile.getAbsolutePath())
                     .setDependencies(internalData.closureSourceFiles)
                     .render());
@@ -133,7 +136,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
             depBuildOptions.setEntryFiles(internalData.closureEntryFiles);
             depBuildOptions.setSourceFiles(internalData.closureSourceFiles);
             internalData.resolvedSourceFiles =
-                    dependencyBuilder.build(depBuildOptions);
+                    depBuilder.build(depBuildOptions);
             internalData.resolvedFiles =
                     Immuter.list(internalData.resolvedSourceFiles,
                             SourceFileBase.TO_FILE);
@@ -210,7 +213,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
             setCompilerOptionsForDebug(cOpts);
         }
         MessageBundle msgBundle = options.getMessageBundle();
-        if(msgBundle != null) {
+        if (msgBundle != null) {
             cOpts.setMessageBundle(msgBundle);
         }
 
