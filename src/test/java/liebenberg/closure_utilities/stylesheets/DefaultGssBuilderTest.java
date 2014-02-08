@@ -2,6 +2,9 @@ package liebenberg.closure_utilities.stylesheets;
 
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
+import liebenberg.closure_utilities.build.DefaultGssBuilder;
+import liebenberg.closure_utilities.build.GssOptions;
+import liebenberg.closure_utilities.build.GssResult;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

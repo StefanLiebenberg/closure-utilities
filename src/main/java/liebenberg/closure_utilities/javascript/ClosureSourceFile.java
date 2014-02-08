@@ -1,6 +1,6 @@
 package liebenberg.closure_utilities.javascript;
 
-import liebenberg.closure_utilities.internal.SourceFileBase;
+import liebenberg.closure_utilities.build.SourceFileBase;
 
 import java.io.File;
 import java.net.URI;

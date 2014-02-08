@@ -4,11 +4,20 @@ package liebenberg.closure_utilities.internal;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import liebenberg.closure_utilities.build.AbstractBuilder;
+import liebenberg.closure_utilities.build.BuildOptionsException;
+import liebenberg.closure_utilities.build.SourceFileBase;
 
 import javax.annotation.Nonnull;
 
 public class DependencyBuilder<A extends SourceFileBase>
         extends AbstractBuilder<DependencyOptions<A>, ImmutableList<A>> {
+
+    private static final String BUILDER_NAME = "[DEPENDENCY]";
+
+    public DependencyBuilder() {
+        super(BUILDER_NAME);
+    }
 
     private static final Boolean STRICT_MODE = true;
 

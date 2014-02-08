@@ -1,6 +1,7 @@
 package liebenberg.closure_utilities.internal;
 
 import junit.framework.Assert;
+import liebenberg.closure_utilities.build.SourceFileBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

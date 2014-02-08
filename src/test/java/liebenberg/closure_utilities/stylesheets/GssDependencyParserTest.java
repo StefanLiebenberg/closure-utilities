@@ -1,6 +1,7 @@
 package liebenberg.closure_utilities.stylesheets;
 
 import junit.framework.Assert;
+import liebenberg.closure_utilities.build.GssSourceFile;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

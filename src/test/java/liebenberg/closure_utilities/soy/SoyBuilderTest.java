@@ -6,9 +6,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import liebenberg.closure_utilities.internal.AbstractBuildTest;
-import liebenberg.closure_utilities.templates.DefaultSoyBuilder;
-import liebenberg.closure_utilities.templates.SoyOptions;
-import liebenberg.closure_utilities.templates.SoyResult;
+import liebenberg.closure_utilities.build.DefaultSoyBuilder;
+import liebenberg.closure_utilities.build.SoyOptions;
+import liebenberg.closure_utilities.build.SoyResult;
 import liebenberg.closure_utilities.utilities.FS;
 
 import java.io.File;

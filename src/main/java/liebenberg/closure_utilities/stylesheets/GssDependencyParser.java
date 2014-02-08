@@ -2,6 +2,7 @@ package liebenberg.closure_utilities.stylesheets;
 
 
 import com.google.common.io.LineReader;
+import liebenberg.closure_utilities.build.GssSourceFile;
 import liebenberg.closure_utilities.internal.DependencyParserInterface;
 
 import javax.annotation.Nonnull;

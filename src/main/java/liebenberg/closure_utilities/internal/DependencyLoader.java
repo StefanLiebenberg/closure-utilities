@@ -4,6 +4,7 @@ package liebenberg.closure_utilities.internal;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import liebenberg.closure_utilities.build.SourceFileBase;
 import liebenberg.closure_utilities.utilities.FS;
 import liebenberg.closure_utilities.utilities.Immuter;
 
