@@ -106,9 +106,6 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
                     internalData.closureEntryFiles.add(parsedFile);
                 }
             }
-            if (options.getVerbose()) {
-                log("found base file at", internalData.baseFile.getPath());
-            }
         }
     }
 
@@ -349,6 +346,13 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
             throws Exception {
         final InternalData internalData = new InternalData();
         findDependencyFiles(options, internalData);
+
+        if (internalData.baseFile == null) {
+            throw new BuildException("Closure Library's base.js cannot be " +
+                    "found. Check that the closure library directory has been" +
+                    " added as a source directory.");
+        }
+
         buildDependenciesFile(options, internalData);
         buildDefinesFile(options, internalData);
         calculateDependencies(options, internalData);
