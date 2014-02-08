@@ -1,9 +1,7 @@
 package liebenberg.closure_utilities.rhino;
 
 
-import com.google.javascript.rhino.head.Context;
-import com.google.javascript.rhino.head.ContextFactory;
-import com.google.javascript.rhino.head.ScriptableObject;
+import com.google.javascript.rhino.head.*;
 import com.google.javascript.rhino.head.tools.shell.Global;
 
 import javax.annotation.Nonnull;
@@ -27,6 +25,15 @@ public abstract class AbstractRunner implements RunnerInterface {
     public void initialize() {
         context.setOptimizationLevel(-1);
         context.setLanguageVersion(Context.VERSION_1_3);
+    }
+
+
+    public Context getContext() {
+        return context;
+    }
+
+    public Global getScope() {
+        return scope;
     }
 
     @Override
@@ -96,6 +103,28 @@ public abstract class AbstractRunner implements RunnerInterface {
         ScriptableObject.putProperty(scope, name, object);
     }
 
+    public void putJavaObject(@Nonnull String name,
+                              @Nonnull Object object) {
+        putObject(name, Context.javaToJS(object, scope));
+    }
+
+    public Function getFunction(@Nonnull String name) {
+        return (Function) scope.get(name, scope);
+    }
+
+    public Object callFunction(@Nonnull String name, Scriptable thisObject,
+                               Object... args) {
+        Function func = getFunction(name);
+        return func.call(context, scope, thisObject, args);
+    }
+
+    public Object javaToJS(Object object) {
+        return Context.javaToJS(object, scope);
+    }
+
+    public Object jsToJava(Object object, Class<?> classType) {
+        return Context.jsToJava(object, classType);
+    }
 
     @Override
     @Nullable

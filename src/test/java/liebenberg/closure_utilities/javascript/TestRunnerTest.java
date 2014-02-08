@@ -6,11 +6,14 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runners.JUnit4;
 
 import java.io.File;
 import java.util.Collection;
 
 public class TestRunnerTest extends AbstractApplicationTest {
+
+
 
     TestRunner testRunner;
 

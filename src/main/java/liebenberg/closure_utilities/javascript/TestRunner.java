@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 
-
 public class TestRunner extends ClosureRunner {
 
     public TestRunner(@Nonnull final Collection<File> sourceDirectories) {
@@ -24,7 +23,7 @@ public class TestRunner extends ClosureRunner {
         }
     }
 
-    public void run(File testFile) throws Exception {
+    public void run(File testFile) throws IOException {
         evaluateFile(testFile);
         doLoad();
     }
@@ -32,6 +31,4 @@ public class TestRunner extends ClosureRunner {
     public Boolean isSuccess() {
         return getBoolean("G_testRunner.isSuccess()");
     }
-
-
 }
