@@ -80,39 +80,39 @@ public class SoyDelegateOptimizerTest {
                 CommandLineRunner.getDefaultExterns();
         final List<SourceFile> inputs =
                 new ArrayList<SourceFile>();
-        inputs.add(getSourceFile("/app/src/javascript/goog/base.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/debug/error.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/dom/nodetype.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/string/string.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/asserts/asserts" +
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/base.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/debug/error.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/dom/nodetype.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/string/string.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/asserts/asserts" +
                 ".js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/structs" +
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/structs" +
                 "/inversionmap.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/i18n/graphemebreak" +
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/i18n/graphemebreak" +
                 ".js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/format/format.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/array/array.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/format/format.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/array/array.js"));
         inputs.add(getSourceFile
-                ("/app/src/javascript/goog/useragent/useragent.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/dom/browserfeature" +
+                ("/app/src/javascript/closure-library/closure/goog/useragent/useragent.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/dom/browserfeature" +
                 ".js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/dom/tagname.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/dom/classes.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/dom/tagname.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/dom/classes.js"));
         inputs.add(getSourceFile
-                ("/app/src/javascript/goog/functions/functions.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/math/math.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/math/coordinate" +
+                ("/app/src/javascript/closure-library/closure/goog/functions/functions.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/math/math.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/math/coordinate" +
                 ".js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/math/size.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/object/object.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/dom/dom.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/i18n/bidiformatter" +
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/math/size.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/object/object.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/dom/dom.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/i18n/bidiformatter" +
                 ".js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/i18n/bidi.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/soy/data.js"));
-        inputs.add(getSourceFile("/app/src/javascript/goog/soy/soy.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/i18n/bidi.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/soy/data.js"));
+        inputs.add(getSourceFile("/app/src/javascript/closure-library/closure/goog/soy/soy.js"));
         inputs.add(getSourceFile
-                ("/app/src/javascript/goog/string/stringbuffer.js"));
+                ("/app/src/javascript/closure-library/closure/goog/string/stringbuffer.js"));
         inputs.add(getSourceFile("/app/src/javascript/soyutils_usegoog.js"));
         inputs.addAll(Immuter.list(soySources.entrySet(),
                 ENTRY_SOURCE_FILE_FUNCTION));
