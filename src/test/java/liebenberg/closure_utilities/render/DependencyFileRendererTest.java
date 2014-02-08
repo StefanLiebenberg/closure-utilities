@@ -1,7 +1,7 @@
 package liebenberg.closure_utilities.render;
 
 import junit.framework.Assert;
-import liebenberg.closure_utilities.javascript.ClosureSourceFile;
+import liebenberg.closure_utilities.build.ClosureSourceFile;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

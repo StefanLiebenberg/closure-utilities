@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
+import liebenberg.closure_utilities.build.SourceFileBase;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

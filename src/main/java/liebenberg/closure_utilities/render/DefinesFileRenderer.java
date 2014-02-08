@@ -1,6 +1,5 @@
 package liebenberg.closure_utilities.render;
 
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;

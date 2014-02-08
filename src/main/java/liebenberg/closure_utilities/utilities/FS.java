@@ -14,7 +14,6 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 
 public class FS {
 
@@ -52,11 +51,12 @@ public class FS {
                                     @Nonnull final Collection<File> files,
                                     @Nonnull final String... extensions) {
         if (directory.exists()) {
-            final Iterator<File> iterator =
-                    FileUtils.iterateFiles(directory, extensions, true);
-            while (iterator.hasNext()) {
-                files.add(iterator.next());
-            }
+            IteratorCollector.collect(
+                    FileUtils.iterateFiles(directory, extensions, true),
+                    files);
+        } else {
+            System.err.println("[warning] The directory " + directory
+                    .getAbsolutePath() + " does not exist.");
         }
     }
 

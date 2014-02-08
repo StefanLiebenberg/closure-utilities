@@ -1,5 +1,7 @@
 package liebenberg.closure_utilities.internal;
 
+import liebenberg.closure_utilities.build.SourceFileBase;
+
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Reader;
