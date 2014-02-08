@@ -1,4 +1,4 @@
-package liebenberg.closure_utilities.stylesheets;
+package liebenberg.closure_utilities.internal;
 
 
 import org.apache.commons.io.IOUtils;

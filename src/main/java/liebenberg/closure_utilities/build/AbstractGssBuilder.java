@@ -8,8 +8,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.css.compiler.commandline.ClosureCommandLineCompiler;
 import liebenberg.closure_utilities.internal.DependencyException;
 import liebenberg.closure_utilities.internal.DependencyLoader;
-import liebenberg.closure_utilities.stylesheets.GssDependencyParser;
-import liebenberg.closure_utilities.stylesheets.ImageUrlProcessor;
+import liebenberg.closure_utilities.internal.GssDependencyParser;
+import liebenberg.closure_utilities.internal.ImageUrlProcessor;
 import liebenberg.closure_utilities.utilities.FS;
 import liebenberg.closure_utilities.utilities.Immuter;
 

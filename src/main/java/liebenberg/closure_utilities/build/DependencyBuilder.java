@@ -1,4 +1,4 @@
-package liebenberg.closure_utilities.internal;
+package liebenberg.closure_utilities.build;
 
 
 import com.google.common.collect.ImmutableCollection;
@@ -7,6 +7,8 @@ import com.google.common.collect.ImmutableSet;
 import liebenberg.closure_utilities.build.AbstractBuilder;
 import liebenberg.closure_utilities.build.BuildOptionsException;
 import liebenberg.closure_utilities.build.SourceFileBase;
+import liebenberg.closure_utilities.internal.DependencyCalculator;
+import liebenberg.closure_utilities.internal.DependencyOptions;
 
 import javax.annotation.Nonnull;
 

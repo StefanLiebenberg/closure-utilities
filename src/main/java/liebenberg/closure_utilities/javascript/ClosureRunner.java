@@ -1,6 +1,7 @@
 package liebenberg.closure_utilities.javascript;
 
 
+import liebenberg.closure_utilities.build.ClosureSourceFile;
 import liebenberg.closure_utilities.internal.DependencyException;
 import liebenberg.closure_utilities.render.DependencyFileRenderer;
 import liebenberg.closure_utilities.render.RenderException;

@@ -1,8 +1,9 @@
-package liebenberg.closure_utilities.translation;
+package liebenberg.closure_utilities.internal;
 
 import com.google.javascript.jscomp.JsMessage;
 import com.google.javascript.jscomp.MessageBundle;
 import com.google.javascript.jscomp.XtbMessageBundle;
+import liebenberg.closure_utilities.internal.XliffMessageBundle;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

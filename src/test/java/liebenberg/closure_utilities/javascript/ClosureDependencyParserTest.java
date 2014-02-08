@@ -2,6 +2,7 @@ package liebenberg.closure_utilities.javascript;
 
 import com.google.common.collect.ImmutableSet;
 import junit.framework.Assert;
+import liebenberg.closure_utilities.build.ClosureSourceFile;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

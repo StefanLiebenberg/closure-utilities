@@ -3,6 +3,7 @@ package liebenberg.closure_utilities.javascript;
 import com.google.javascript.rhino.head.Node;
 import com.google.javascript.rhino.head.Parser;
 import com.google.javascript.rhino.head.ast.*;
+import liebenberg.closure_utilities.build.ClosureSourceFile;
 import liebenberg.closure_utilities.internal.DependencyParserInterface;
 
 import javax.annotation.Nonnull;

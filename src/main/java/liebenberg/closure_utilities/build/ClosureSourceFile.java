@@ -1,4 +1,4 @@
-package liebenberg.closure_utilities.javascript;
+package liebenberg.closure_utilities.build;
 
 import liebenberg.closure_utilities.build.SourceFileBase;
 

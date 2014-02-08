@@ -1,4 +1,4 @@
-package liebenberg.closure_utilities.translation;
+package liebenberg.closure_utilities.internal;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;

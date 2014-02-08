@@ -1,6 +1,7 @@
-package liebenberg.closure_utilities.stylesheets;
+package liebenberg.closure_utilities.internal;
 
 import junit.framework.Assert;
+import liebenberg.closure_utilities.internal.ImageUrlProcessor;
 import org.junit.Test;
 
 

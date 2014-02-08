@@ -3,7 +3,7 @@ package liebenberg.closure_utilities.build;
 import com.google.javascript.jscomp.MessageBundle;
 import com.google.javascript.jscomp.XtbMessageBundle;
 import liebenberg.closure_utilities.rhino.EnvJsRunner;
-import liebenberg.closure_utilities.translation.XliffMessageBundle;
+import liebenberg.closure_utilities.internal.XliffMessageBundle;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

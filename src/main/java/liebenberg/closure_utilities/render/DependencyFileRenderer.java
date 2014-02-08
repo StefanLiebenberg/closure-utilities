@@ -1,6 +1,6 @@
 package liebenberg.closure_utilities.render;
 
-import liebenberg.closure_utilities.javascript.ClosureSourceFile;
+import liebenberg.closure_utilities.build.ClosureSourceFile;
 import liebenberg.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;

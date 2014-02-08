@@ -35,7 +35,8 @@ public class ClosureRunnerTest {
     public void testRequire() throws Exception {
         closureRunner.require("goog.array");
         Assert.assertTrue(closureRunner.getBoolean("goog.isDef(goog.array);"));
-        Assert.assertTrue(closureRunner.getBoolean("goog.isFunction(goog.array.forEach);"));
+        Assert.assertTrue(closureRunner.getBoolean("goog.isFunction(goog" +
+                ".array.forEach);"));
     }
 
 

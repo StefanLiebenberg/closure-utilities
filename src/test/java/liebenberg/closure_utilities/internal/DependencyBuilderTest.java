@@ -1,6 +1,7 @@
 package liebenberg.closure_utilities.internal;
 
 import com.google.common.collect.Lists;
+import liebenberg.closure_utilities.build.DependencyBuilder;
 import liebenberg.closure_utilities.build.SourceFileBase;
 import org.junit.After;
 import org.junit.Assert;
