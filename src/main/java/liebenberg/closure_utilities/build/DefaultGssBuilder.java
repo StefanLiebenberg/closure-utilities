@@ -16,11 +16,11 @@ public class DefaultGssBuilder extends AbstractGssBuilder {
 
     @Override
     public void scan(@Nonnull GssOptions options,
-                     @Nonnull InternalResults internalResults)
+                     @Nonnull InternalData internalData)
             throws Exception {
         final ImmutableCollection<File> sourceDirectories =
                 options.getSourceDirectories();
-        internalResults.sourceFiles = scanInternal(sourceDirectories);
+        internalData.sourceFiles = scanInternal(sourceDirectories);
     }
 
 
@@ -29,18 +29,18 @@ public class DefaultGssBuilder extends AbstractGssBuilder {
      */
     @Override
     public void parse(@Nonnull GssOptions options,
-                      @Nonnull InternalResults internalResults)
+                      @Nonnull InternalData internalData)
             throws Exception {
         final ImmutableList<String> entryPoints = options.getEntryPoints();
-        internalResults.resolvedSourceFiles =
-                parseInternal(internalResults.sourceFiles, entryPoints,
+        internalData.resolvedSourceFiles =
+                parseInternal(internalData.sourceFiles, entryPoints,
                         dependencyParser);
     }
 
 
     @Override
     public void compile(@Nonnull GssOptions options,
-                        @Nonnull InternalResults internalResults)
+                        @Nonnull InternalData internalData)
             throws Exception {
         final File outputFile = options.getOutputFile();
         final File renameMap = options.getRenameMap();
@@ -50,14 +50,14 @@ public class DefaultGssBuilder extends AbstractGssBuilder {
                 options.getShouldGenerateForDebug();
         final URI assetUri = options.getAssetsUri();
         final File assetDir = options.getAssetsDirectory();
-        internalResults.generatedStylesheet =
-                compileInternal(internalResults.resolvedSourceFiles,
+        internalData.generatedStylesheet =
+                compileInternal(internalData.resolvedSourceFiles,
                         outputFile, renameMap, shouldCompile, shouldDebug,
                         assetUri, assetDir);
-        if (internalResults.generatedStylesheet != null) {
-            internalResults.generatedRenameMap = renameMap;
+        if (internalData.generatedStylesheet != null) {
+            internalData.generatedRenameMap = renameMap;
         } else {
-            internalResults.generatedRenameMap = null;
+            internalData.generatedRenameMap = null;
         }
     }
 

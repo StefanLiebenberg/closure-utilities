@@ -46,17 +46,17 @@ public abstract class AbstractGssBuilder
 
     public abstract void scan(
             @Nonnull final GssOptions options,
-            @Nonnull final InternalResults internalResults)
+            @Nonnull final InternalData internalData)
             throws Exception;
 
     public abstract void parse(
             @Nonnull final GssOptions options,
-            @Nonnull final InternalResults internalResults)
+            @Nonnull final InternalData internalData)
             throws Exception;
 
     public abstract void compile(
             @Nonnull final GssOptions options,
-            @Nonnull final InternalResults internalResults)
+            @Nonnull final InternalData internalData)
             throws Exception;
 
     @Nonnull
@@ -246,11 +246,11 @@ public abstract class AbstractGssBuilder
     protected GssResult buildInternal(
             @Nonnull final GssOptions options)
             throws Exception {
-        final InternalResults internalResults = new InternalResults();
-        scan(options, internalResults);
-        parse(options, internalResults);
-        compile(options, internalResults);
-        return internalResults.toResults();
+        final InternalData internalData = new InternalData();
+        scan(options, internalData);
+        parse(options, internalData);
+        compile(options, internalData);
+        return internalData.toResults();
     }
 
 
@@ -291,7 +291,7 @@ public abstract class AbstractGssBuilder
         }
     }
 
-    public static class InternalResults {
+    public static class InternalData {
         public ImmutableList<File> resolvedSourceFiles;
         public ImmutableSet<File> sourceFiles;
         public File generatedRenameMap;

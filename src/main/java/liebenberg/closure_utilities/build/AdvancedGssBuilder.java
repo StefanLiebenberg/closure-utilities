@@ -1,6 +1,5 @@
 package liebenberg.closure_utilities.build;
 
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -18,24 +17,23 @@ import java.util.*;
  */
 public class AdvancedGssBuilder extends AbstractGssBuilder {
 
+    public AdvancedGssBuilder() {}
+
     private final Map<File, String> cachedChecksums = new Hashtable<>();
 
-    private final Map<File, String> cachedResolvedChecksums = new
-            Hashtable<>();
+    private final Map<File, String> cachedResolvedChecksums =
+            new Hashtable<>();
 
     private final List<String> cachedEntryPoints = new ArrayList<>();
 
     private final List<File> cachedResolvedFiles = new ArrayList<>();
 
-    public AdvancedGssBuilder() {}
-
     @Override
     public void scan(@Nonnull final GssOptions options,
-                     @Nonnull final InternalResults internalResults)
+                     @Nonnull final InternalData internalData)
             throws Exception {
-        final ImmutableCollection<File> sourceDirectories =
-                options.getSourceDirectories();
-        internalResults.sourceFiles = scanInternal(sourceDirectories);
+        internalData.sourceFiles =
+                scanInternal(options.getSourceDirectories());
     }
 
     @Nonnull
@@ -63,7 +61,7 @@ public class AdvancedGssBuilder extends AbstractGssBuilder {
 
     @Override
     public void parse(@Nonnull GssOptions options,
-                      @Nonnull InternalResults internalResults)
+                      @Nonnull InternalData internalData)
             throws Exception {
         final ImmutableList<String> entryPoints = options.getEntryPoints();
         Boolean entryPointsChanged = false, sourceFilesChanged = false;
@@ -77,7 +75,7 @@ public class AdvancedGssBuilder extends AbstractGssBuilder {
         }
 
         final Map<File, String> checksums =
-                getChecksums(internalResults.sourceFiles);
+                getChecksums(internalData.sourceFiles);
         if (!cachedChecksums.equals(checksums)) {
             sourceFilesChanged = true;
             cachedChecksums.clear();
@@ -87,26 +85,26 @@ public class AdvancedGssBuilder extends AbstractGssBuilder {
         }
 
         if (entryPointsChanged || sourceFilesChanged) {
-            internalResults.resolvedSourceFiles =
-                    parseInternal(internalResults.sourceFiles,
+            internalData.resolvedSourceFiles =
+                    parseInternal(internalData.sourceFiles,
                             entryPoints, dependencyParser);
         }
     }
 
     @Override
     public void compile(@Nonnull final GssOptions options,
-                        @Nonnull final InternalResults internalResults)
+                        @Nonnull final InternalData internalData)
             throws Exception {
 
         Boolean configHasChanged = false, resolvedFilesHaveChanged = false;
-        if (!cachedResolvedFiles.equals(internalResults.resolvedSourceFiles)) {
+        if (!cachedResolvedFiles.equals(internalData.resolvedSourceFiles)) {
             resolvedFilesHaveChanged = true;
             cachedResolvedFiles.clear();
-            cachedResolvedFiles.addAll(internalResults.resolvedSourceFiles);
+            cachedResolvedFiles.addAll(internalData.resolvedSourceFiles);
         }
 
         final Map<File, String> resolvedChecksums = new Hashtable<>();
-        for (File resolvedFile : internalResults.resolvedSourceFiles) {
+        for (File resolvedFile : internalData.resolvedSourceFiles) {
             resolvedChecksums.put(resolvedFile,
                     cachedChecksums.get(resolvedFile));
         }
@@ -126,14 +124,14 @@ public class AdvancedGssBuilder extends AbstractGssBuilder {
                     options.getShouldGenerateForDebug();
             final URI assetUri = options.getAssetsUri();
             final File assetDir = options.getAssetsDirectory();
-            internalResults.generatedStylesheet =
-                    compileInternal(internalResults.resolvedSourceFiles,
+            internalData.generatedStylesheet =
+                    compileInternal(internalData.resolvedSourceFiles,
                             outputFile, renameMap, shouldCompile, shouldDebug,
                             assetUri, assetDir);
-            if (internalResults.generatedStylesheet != null) {
-                internalResults.generatedRenameMap = renameMap;
+            if (internalData.generatedStylesheet != null) {
+                internalData.generatedRenameMap = renameMap;
             } else {
-                internalResults.generatedRenameMap = null;
+                internalData.generatedRenameMap = null;
             }
         }
     }
