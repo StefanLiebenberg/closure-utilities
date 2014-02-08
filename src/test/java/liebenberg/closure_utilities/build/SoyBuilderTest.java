@@ -1,15 +1,11 @@
-package liebenberg.closure_utilities.soy;
+package liebenberg.closure_utilities.build;
 
 
 import com.google.common.collect.Lists;
+import liebenberg.closure_utilities.utilities.FS;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import liebenberg.closure_utilities.build.AbstractBuildTest;
-import liebenberg.closure_utilities.build.DefaultSoyBuilder;
-import liebenberg.closure_utilities.build.SoyOptions;
-import liebenberg.closure_utilities.build.SoyResult;
-import liebenberg.closure_utilities.utilities.FS;
 
 import java.io.File;
 import java.util.Collection;
