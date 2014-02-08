@@ -1,9 +1,8 @@
-package liebenberg.closure_utilities.internal;
+package liebenberg.closure_utilities.build;
 
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import liebenberg.closure_utilities.build.AbstractBuilder;
 
 import javax.annotation.Nonnull;
 import java.io.File;

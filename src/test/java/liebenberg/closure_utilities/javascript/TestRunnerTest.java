@@ -1,12 +1,11 @@
 package liebenberg.closure_utilities.javascript;
 
 import com.google.common.collect.Sets;
-import liebenberg.closure_utilities.internal.AbstractApplicationTest;
+import liebenberg.closure_utilities.build.AbstractApplicationTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runners.JUnit4;
 
 import java.io.File;
 import java.util.Collection;

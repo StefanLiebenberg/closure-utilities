@@ -2,10 +2,6 @@ package liebenberg.closure_utilities.build;
 
 import com.google.javascript.jscomp.MessageBundle;
 import com.google.javascript.jscomp.XtbMessageBundle;
-import liebenberg.closure_utilities.build.ClosureBuilder;
-import liebenberg.closure_utilities.build.ClosureOptions;
-import liebenberg.closure_utilities.build.ClosureResult;
-import liebenberg.closure_utilities.internal.AbstractBuildTest;
 import liebenberg.closure_utilities.rhino.EnvJsRunner;
 import liebenberg.closure_utilities.translation.XliffMessageBundle;
 import org.junit.After;

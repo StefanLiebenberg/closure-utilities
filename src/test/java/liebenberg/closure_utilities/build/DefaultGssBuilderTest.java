@@ -1,15 +1,11 @@
-package liebenberg.closure_utilities.stylesheets;
+package liebenberg.closure_utilities.build;
 
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
-import liebenberg.closure_utilities.build.DefaultGssBuilder;
-import liebenberg.closure_utilities.build.GssOptions;
-import liebenberg.closure_utilities.build.GssResult;
+import liebenberg.closure_utilities.utilities.FS;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import liebenberg.closure_utilities.internal.AbstractBuildTest;
-import liebenberg.closure_utilities.utilities.FS;
 
 import java.io.File;
 import java.net.URI;

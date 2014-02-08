@@ -1,8 +1,6 @@
 package liebenberg.closure_utilities.build;
 
-import liebenberg.closure_utilities.build.ClosureBuilder;
-import liebenberg.closure_utilities.build.ClosureOptions;
-import liebenberg.closure_utilities.build.ClosureResult;
+import liebenberg.closure_utilities.utilities.FS;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.jsoup.Jsoup;
@@ -13,9 +11,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import liebenberg.closure_utilities.internal.AbstractBuildTest;
-import liebenberg.closure_utilities.build.BuildException;
-import liebenberg.closure_utilities.utilities.FS;
 
 import javax.annotation.Nonnull;
 import java.io.File;
@@ -82,7 +77,8 @@ public class ClosureBuilderTest extends
     @Test
     public void testBuildGssBuild() throws Exception {
         setupGssBuildOptions(Flavour.BASIC);
-        final ClosureResult closureResult = builder.buildGssOnly(builderOptions);
+        final ClosureResult closureResult = builder.buildGssOnly
+                (builderOptions);
         final File gssOutputFile = closureResult.getGeneratedStylesheet();
         Assert.assertNotNull(gssOutputFile);
         Assert.assertTrue(gssOutputFile.exists());
@@ -221,7 +217,6 @@ public class ClosureBuilderTest extends
         Assert.assertEquals(expectedPath, actualPath);
 
 
-
         expectedPath =
                 Paths.get(jsDirectory.getAbsolutePath(), "company/package.js");
         actualPath =
@@ -321,7 +316,7 @@ public class ClosureBuilderTest extends
     }
 
     @Test
-    public void testConfigurationToGlobals () throws Exception {
+    public void testConfigurationToGlobals() throws Exception {
 
         Map<String, Object> globals = new HashMap<>();
         List<Configuration> configurations = new ArrayList<>();
@@ -349,7 +344,8 @@ public class ClosureBuilderTest extends
         Assert.assertEquals(true, globals.get("booleanProperty"));
         Assert.assertEquals(false, globals.get("falseBooleanProperty"));
         Assert.assertEquals("yolo!", globals.get("stringProperty"));
-        Assert.assertEquals("override value true", globals.get("overrideProperty"));
+        Assert.assertEquals("override value true",
+                globals.get("overrideProperty"));
 
     }
 

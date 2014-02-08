@@ -1,8 +1,8 @@
-package liebenberg.closure_utilities.internal;
+package liebenberg.closure_utilities.build;
 
 
-import org.apache.commons.io.FileUtils;
 import liebenberg.closure_utilities.utilities.FS;
+import org.apache.commons.io.FileUtils;
 
 import javax.annotation.Nonnull;
 import java.io.File;

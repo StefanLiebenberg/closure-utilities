@@ -1,7 +1,6 @@
-package liebenberg.closure_utilities.internal;
+package liebenberg.closure_utilities.build;
 
 import junit.framework.Assert;
-import liebenberg.closure_utilities.build.SourceFileBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +53,6 @@ public class SourceFileBaseTest {
         Assert.assertTrue(requires.contains("c"));
         Assert.assertFalse(requires.contains("d"));
     }
-
 
 
     @Test
