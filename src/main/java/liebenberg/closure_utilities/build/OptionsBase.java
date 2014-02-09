@@ -12,8 +12,10 @@ public class OptionsBase {
         this.shouldDebug = parentOptions.getShouldDebug();
     }
 
-    private Boolean verbose = true;
+    private Boolean verbose = false;
+
     private Boolean shouldDebug = true;
+
     private Boolean shouldCompile = false;
 
     @Nonnull
