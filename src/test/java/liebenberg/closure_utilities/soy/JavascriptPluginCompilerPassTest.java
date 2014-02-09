@@ -40,7 +40,8 @@ public class JavascriptPluginCompilerPassTest {
         inputStreamReader.close();
     }
 
-    public final static String BASE_PATH = "/app/src/javascript/goog/base.js";
+    public final static String BASE_PATH =
+            "/app/src/javascript/closure-library/closure/goog/base.js";
 
     @Test
     public void testProcess() throws Exception {
