@@ -1,12 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
-    <groupId>liebenberg</groupId>
+    <groupId>com.github.stefanliebenberg</groupId>
     <artifactId>closure-utilities</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <packaging>jar</packaging>
     <name>closure-utilities</name>
+
     <licenses>
         <license>
             <name>MIT License</name>
@@ -23,12 +25,13 @@
             scm:git:git@github.com:StefanLiebenberg/StefanLiebenberg.git
         </developerConnection>
     </scm>
+
     <developers>
         <developer>
             <email>siga.fredo@gmail.com</email>
             <name>Stefan Liebenberg</name>
             <url>https://github.com/StefanLiebenberg</url>
-            <id>stefanliebenberg</id>
+            <id>s.liebenberg</id>
         </developer>
     </developers>
 
@@ -87,12 +90,6 @@
             <version>1.7.3</version>
             <scope>test</scope>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>org.mockito</groupId>-->
-        <!--<artifactId>mockito-all</artifactId>-->
-        <!--<version>1.9.0-rc1</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
     </dependencies>
 
 
