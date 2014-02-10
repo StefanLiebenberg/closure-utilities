@@ -16,9 +16,9 @@ This project is automatically built by [travis](https://travis-ci.org/StefanLieb
 <dependencies>
   ...
   <dependency>
-   <groupId>liebenberg</groupId>
+   <groupId>com.github.stefanliebenberg</groupId>
    <artifactId>closure-utilities</artifactId>
-   <version>1.0</version>
+   <version>1.0.6-SNAPSHOT</version>
   </dependency>
   ...
 </dependencies>
