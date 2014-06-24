@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>closure-utilities</artifactId>
+        <groupId>com.github.stefanliebenberg</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>jar</packaging>
+
+    <artifactId>closure-utilities-builders</artifactId>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.javascript</groupId>
+            <artifactId>closure-compiler</artifactId>
+            <version>v20131014</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.closure-stylesheets</groupId>
+            <artifactId>closure-stylesheets</artifactId>
+            <version>20140426</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefanliebenberg</groupId>
+            <artifactId>blender-css</artifactId>
+            <version>1.1</version>
+        </dependency>
+    </dependencies>
+
+</project>
