@@ -1,84 +1,61 @@
 package slieb.closure.javascript;
 
 
-import slieb.closure.build.ClosureSourceFile;
 import slieb.closure.internal.DependencyException;
 import slieb.closure.render.DependencyFileRenderer;
 import slieb.closure.render.RenderException;
-import slieb.closure.rhino.EnvJsRunner;
-import slieb.closure.tools.FS;
+import slieb.closure.runtimes.EnvRunner;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
-public class ClosureRunner extends EnvJsRunner {
+public class ClosureRunner extends EnvRunner {
 
     private static final ClosureImporter CLOSURE_IMPORTER =
             new ClosureImporter();
 
-    private final Collection<File> sourceDirectories;
-
-    private File baseFile;
-
-    private Set<ClosureSourceFile> closureSourceFileSet = new HashSet<>();
-
-
-    private static final ClosureDependencyParser parser =
-            new ClosureDependencyParser();
-
     private static final DependencyFileRenderer dependencyFileRenderer =
             new DependencyFileRenderer();
 
-    public ClosureRunner(@Nonnull Collection<File> sourceDirectories) {
-        this.sourceDirectories = sourceDirectories;
-    }
+    private ClosureDependencyScanner scanner;
 
-    private ClosureSourceFile parseSourceFile(File file) throws IOException {
-        ClosureSourceFile closureSourceFile = new ClosureSourceFile(file);
-        FileReader fileReader = new FileReader(file);
-        parser.parse(closureSourceFile, fileReader);
-        fileReader.close();
-        return closureSourceFile;
+    public ClosureRunner(@Nonnull Collection<File> sourceDirectories) {
+        this.scanner = new ClosureDependencyScanner(sourceDirectories);
     }
 
     private void scanDependencies() throws IOException {
-        baseFile = null;
-        closureSourceFileSet.clear();
-        dependencyFileRenderer.reset();
-        for (File sourceFile : FS.find(sourceDirectories, "js")) {
-            ClosureSourceFile closureSourceFile = parseSourceFile(sourceFile);
-            closureSourceFileSet.add(closureSourceFile);
-            if (closureSourceFile.getIsBaseFile()) {
-                baseFile = sourceFile;
-            }
-        }
-        dependencyFileRenderer.setBasePath(baseFile.getParentFile()
-                .getAbsolutePath());
-        dependencyFileRenderer.setDependencies(closureSourceFileSet);
+        scanner.scan();
+    }
+
+    private String renderDependencyFile(File baseFile)
+            throws DependencyException, RenderException, IOException {
+        final File baseParentFile = baseFile.getParentFile();
+        return dependencyFileRenderer
+                .setBasePath(baseParentFile.getAbsolutePath())
+                .setDependencies(scanner.getClosureSourceFiles())
+                .render();
     }
 
 
     public void initialize() {
-        super.initialize();
         try {
             scanDependencies();
+            super.initialize();
+            File baseFile = scanner.getBaseFile();
             File baseDirectory = baseFile.getParentFile();
             putObject("CLOSURE_BASE_PATH", baseDirectory.getPath() + "/");
             putObject("CLOSURE_IMPORT_SCRIPT", CLOSURE_IMPORTER);
             evaluateFile(baseFile);
-            evaluateString(dependencyFileRenderer.render());
-        } catch (IOException | RenderException exception) {
+            evaluateString(renderDependencyFile(baseFile));
+        } catch (IOException | RenderException | DependencyException
+                exception) {
             throw new RuntimeException(exception);
         }
     }
 
-    public void require(String require)
-            throws DependencyException, IOException {
-        evaluateString("goog.require('" + require + "');");
+    public void require(String require) throws IOException {
+        call("goog.require", null, javaToJS(require));
     }
 }

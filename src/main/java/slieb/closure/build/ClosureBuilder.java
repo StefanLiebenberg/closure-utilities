@@ -1,6 +1,8 @@
 package slieb.closure.build;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.configuration.CompositeConfiguration;
+import org.apache.commons.configuration.Configuration;
 import slieb.closure.build.gss.DefaultGssBuilder;
 import slieb.closure.build.gss.GssOptions;
 import slieb.closure.build.gss.GssResult;
@@ -9,18 +11,15 @@ import slieb.closure.build.html.HtmlOptions;
 import slieb.closure.build.html.HtmlResult;
 import slieb.closure.build.internal.AbstractBuilder;
 import slieb.closure.build.internal.BuildException;
-import slieb.closure.build.internal.BuildOptionsException;
 import slieb.closure.build.javascript.JsBuilder;
 import slieb.closure.build.javascript.JsOptions;
 import slieb.closure.build.javascript.JsResult;
+import slieb.closure.build.soy.DefaultSoyBuilder;
 import slieb.closure.build.soy.SoyOptions;
 import slieb.closure.build.soy.SoyResult;
-import slieb.closure.build.soy.DefaultSoyBuilder;
 import slieb.closure.internal.GlobalsConverter;
 import slieb.closure.render.DefaultHtmlRenderer;
 import slieb.closure.render.SoyHtmlRenderer;
-import org.apache.commons.configuration.CompositeConfiguration;
-import org.apache.commons.configuration.Configuration;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -423,11 +422,11 @@ public class ClosureBuilder
             "Closure output directory has not been specified.";
 
     @Override
-    public void checkOptions(@Nonnull ClosureOptions options) throws
-            BuildOptionsException {
+    public void checkOptions(@Nonnull ClosureOptions options)
+            throws BuildException {
         final File outputDirectory = options.getOutputDirectory();
         if (outputDirectory == null) {
-            throw new BuildOptionsException(UNSPECIFIED_OUTPUT_DIRECTORY);
+            throw new BuildException(UNSPECIFIED_OUTPUT_DIRECTORY);
         }
     }
 

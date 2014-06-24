@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import slieb.closure.build.internal.AbstractApplicationTest;
-import slieb.closure.build.internal.BuildOptionsException;
+import slieb.closure.build.internal.BuildException;
 import slieb.closure.render.HtmlRenderer;
 
 import java.io.File;
@@ -33,7 +33,7 @@ public class HtmlBuilderTest extends AbstractApplicationTest {
         super.tearDown();
     }
 
-    @Test(expected = BuildOptionsException.class)
+    @Test(expected = BuildException.class)
     public void testEmptyBuild() throws Exception {
         builder.build(new HtmlOptions());
     }

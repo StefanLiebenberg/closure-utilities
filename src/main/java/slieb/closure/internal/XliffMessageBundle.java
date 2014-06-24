@@ -21,8 +21,6 @@ import java.util.Map;
 
 public class XliffMessageBundle implements MessageBundle {
 
-    private static final SecureEntityResolver NOOP_RESOLVER
-            = new SecureEntityResolver();
 
     private final Map<String, JsMessage> messages;
 
@@ -62,23 +60,29 @@ public class XliffMessageBundle implements MessageBundle {
     }
 
 
+    private static final String SAX_GENERAL_ENTITIES =
+            "http://xml.org/sax/features/external-general-entities";
+
+    private static final String SAX_PARAMETER_ENTITIES =
+            "http://xml.org/sax/features/external-parameter-entities";
+
+    private static final String SAX_EXTERNAL_ENTITIES =
+            "http://xml.org/sax/features/external-parameter-entities";
+
+
+    private static final SecureEntityResolver NOOP_RESOLVER =
+            new SecureEntityResolver();
+
     // Inlined from guava-internal.
     private SAXParser createSAXParser()
             throws ParserConfigurationException, SAXException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(false);
         factory.setXIncludeAware(false);
-        factory.setFeature(
-                "http://xml.org/sax/features/external-general-entities", false);
-        factory.setFeature(
-                "http://xml.org/sax/features/external-parameter-entities",
-                false);
-        factory.setFeature(
-                "http://apache.org/xml/features/nonvalidating/load-external" +
-                        "-dtd",
-                false);
+        factory.setFeature(SAX_GENERAL_ENTITIES, false);
+        factory.setFeature(SAX_PARAMETER_ENTITIES, false);
+        factory.setFeature(SAX_EXTERNAL_ENTITIES, false);
         factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-
         SAXParser parser = factory.newSAXParser();
         XMLReader xmlReader = parser.getXMLReader();
         xmlReader.setEntityResolver(NOOP_RESOLVER);
@@ -152,11 +156,6 @@ public class XliffMessageBundle implements MessageBundle {
                     Preconditions.checkState(msgBuilder != null);
                     Preconditions.checkState(!isInTarget);
                     isInTarget = true;
-//                    String phRef = atts.getValue(PLACEHOLDER_NAME_ATT_NAME);
-//                    phRef = JsMessageVisitor
-// .toLowerCamelCaseWithNumericSuffixes
-//                            (phRef);
-//                    msgBuilder.appendPlaceholderReference(phRef);
                     break;
             }
         }

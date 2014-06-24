@@ -39,5 +39,10 @@ public class ClosureRunnerTest {
                 ".array.forEach);"));
     }
 
+    @Test
+    public void testGetCssName() throws Exception {
+        Assert.assertEquals("a-d-c",
+                closureRunner.getString("goog.getCssName('a-d-c')"));
+    }
 
 }

@@ -1,11 +1,12 @@
 package slieb.closure.build.gss;
 
 import com.google.common.collect.Lists;
-import junit.framework.Assert;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import slieb.closure.build.internal.AbstractBuildTest;
+import slieb.closure.build.internal.BuildException;
 import slieb.closure.tools.FS;
 
 import java.io.File;
@@ -94,6 +95,19 @@ public class DefaultGssBuilderTest
         Assert.assertTrue(content.contains(".foo-font{font:Arial,12px}"));
         Assert.assertTrue(content.contains(".foo-image{background:url" +
                 "(/assets/images/path-to-chicken.jpg)}"));
+    }
+
+    @Test(expected = BuildException.class)
+    public void testBuildFailWithoutOptions()
+            throws BuildException {
+        builder.build(builderOptions);
+    }
+
+    @Test(expected = BuildException.class)
+    public void testBuildFailWithOnlyEntryPoints()
+            throws BuildException {
+        builderOptions.setEntryPoints(Lists.newArrayList("company-import"));
+        builder.build(builderOptions);
     }
 
 }

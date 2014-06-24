@@ -10,7 +10,7 @@ import com.google.template.soy.msgs.SoyMsgBundle;
 import com.google.template.soy.shared.SoyGeneralOptions;
 import com.google.template.soy.xliffmsgplugin.XliffMsgPlugin;
 import slieb.closure.build.internal.AbstractBuilder;
-import slieb.closure.build.internal.BuildOptionsException;
+import slieb.closure.build.internal.BuildException;
 import slieb.closure.tools.FS;
 
 import javax.annotation.Nonnull;
@@ -170,7 +170,7 @@ public abstract class AbstractSoyBuilder
 
     @Override
     public void checkOptions(@Nonnull SoyOptions options) throws
-            BuildOptionsException {
+            BuildException {
 
         final ImmutableCollection<File> srcDirs = options
                 .getSourceDirectories();
@@ -182,7 +182,7 @@ public abstract class AbstractSoyBuilder
                 sources != null && !sources.isEmpty();
 
         if (!srcDirsIsSpecified && !sourcesIsSpecified) {
-            throw new BuildOptionsException(UNSPECIFIED_SOURCES);
+            throw new BuildException(UNSPECIFIED_SOURCES);
         }
     }
 

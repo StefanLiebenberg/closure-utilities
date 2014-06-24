@@ -32,6 +32,6 @@ public class IteratorCollector<A> {
 
     public static <A> void collect(Iterator<A> iterator,
                                    Collection<A> collection) {
-        new IteratorCollector<A>(iterator).collect(collection);
+        new IteratorCollector<>(iterator).collect(collection);
     }
 }

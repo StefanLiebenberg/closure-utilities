@@ -66,10 +66,5 @@ public class Immuter {
         return set(Collections2.transform(collection, transform));
     }
 
-    @Nonnull
-    public static String[] stringArray(
-            @Nonnull final Collection<String> collection) {
-        final String[] list = new String[collection.size()];
-        return collection.toArray(list);
-    }
+
 }

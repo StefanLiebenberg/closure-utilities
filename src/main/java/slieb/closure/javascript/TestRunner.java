@@ -1,7 +1,5 @@
 package slieb.closure.javascript;
 
-import slieb.closure.internal.DependencyException;
-
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +16,7 @@ public class TestRunner extends ClosureRunner {
         super.initialize();
         try {
             require("goog.testing.jsunit");
-        } catch (IOException | DependencyException exception) {
+        } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
     }
@@ -31,4 +29,32 @@ public class TestRunner extends ClosureRunner {
     public Boolean isSuccess() {
         return getBoolean("G_testRunner.isSuccess()");
     }
+
+    public Boolean isInitialized() {
+        return getBoolean("G_testRunner.isInitialized()");
+    }
+
+    public Boolean isFinished() {
+        return getBoolean("G_testRunner.isFinished()");
+    }
+
+    public Object getReport() {
+        return evaluateString("G_testRunner.getReport()");
+    }
+
+    public Double getRunTime() {
+        return (Double) getNumber("G_testRunner.getRunTime()");
+    }
+
+    public Double getNumFilesLoaded() {
+        return (Double) getNumber("G_testRunner.getNumFilesLoaded()");
+    }
+
+//    public void setStrict() {
+//        call("G_testRunner.setStrict", null);
+//    }
+//    goog.exportSymbol("G_testRunner.logTestFailure",tr.logTestFailure);
+//    goog.exportSymbol("G_testRunner.getTestResults",tr.getTestResults);
+
+
 }

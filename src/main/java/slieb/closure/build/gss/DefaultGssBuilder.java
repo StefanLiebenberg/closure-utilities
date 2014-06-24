@@ -1,13 +1,12 @@
 package slieb.closure.build.gss;
 
 
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
-
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.io.File;
 import java.net.URI;
+import java.util.Collection;
+import java.util.List;
 
 @Immutable
 public class DefaultGssBuilder extends AbstractGssBuilder {
@@ -18,7 +17,7 @@ public class DefaultGssBuilder extends AbstractGssBuilder {
     public void scan(@Nonnull GssOptions options,
                      @Nonnull InternalData internalData)
             throws Exception {
-        final ImmutableCollection<File> sourceDirectories =
+        final Collection<File> sourceDirectories =
                 options.getSourceDirectories();
         internalData.sourceFiles = scanInternal(sourceDirectories);
     }
@@ -31,7 +30,7 @@ public class DefaultGssBuilder extends AbstractGssBuilder {
     public void parse(@Nonnull GssOptions options,
                       @Nonnull InternalData internalData)
             throws Exception {
-        final ImmutableList<String> entryPoints = options.getEntryPoints();
+        final List<String> entryPoints = options.getEntryPoints();
         internalData.resolvedSourceFiles =
                 parseInternal(internalData.sourceFiles, entryPoints,
                         dependencyParser);

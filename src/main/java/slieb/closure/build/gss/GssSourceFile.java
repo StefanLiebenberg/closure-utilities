@@ -1,7 +1,9 @@
 package slieb.closure.build.gss;
 
 import slieb.closure.build.internal.SourceFileBase;
+import slieb.closure.build.internal.SourceInterface;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,4 +21,5 @@ public class GssSourceFile extends SourceFileBase {
     public GssSourceFile(String sourcePath) throws URISyntaxException {
         super(sourcePath);
     }
+
 }

@@ -6,19 +6,18 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.Compiler;
+import slieb.closure.build.ClosureSourceFile;
 import slieb.closure.build.internal.AbstractBuilder;
 import slieb.closure.build.internal.BuildException;
-import slieb.closure.build.internal.BuildOptionsException;
-import slieb.closure.build.ClosureSourceFile;
 import slieb.closure.build.internal.DependencyBuilder;
 import slieb.closure.build.internal.SourceFileBase;
 import slieb.closure.internal.DependencyException;
 import slieb.closure.internal.DependencyOptions;
+import slieb.closure.internal.SoyDelegateOptimizer;
 import slieb.closure.javascript.ClosureDependencyParser;
 import slieb.closure.render.DefinesFileRenderer;
 import slieb.closure.render.DependencyFileRenderer;
 import slieb.closure.render.RenderException;
-import slieb.closure.internal.SoyDelegateOptimizer;
 import slieb.closure.tools.FS;
 import slieb.closure.tools.Immuter;
 
@@ -39,9 +38,9 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         private File outputFile;
         private File dependencyFile;
         private File definesFile;
-        private ArrayList<File> sourceFiles;
-        private ArrayList<ClosureSourceFile> closureSourceFiles;
-        private ArrayList<ClosureSourceFile> closureEntryFiles;
+        private List<File> sourceFiles;
+        private List<ClosureSourceFile> closureSourceFiles;
+        private List<ClosureSourceFile> closureEntryFiles;
         private ImmutableList<ClosureSourceFile> resolvedSourceFiles;
         private ImmutableList<File> resolvedFiles;
         private Result compilerResult;
@@ -68,8 +67,9 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
     private static final String JS_EXT = "js";
 
     @Nonnull
-    private ClosureSourceFile parseFile(@Nonnull File inputFile,
-                                        @Nonnull InternalData internalData)
+    private ClosureSourceFile parseFile(
+            @Nonnull File inputFile,
+            @Nonnull InternalData internalData)
             throws IOException {
         ClosureSourceFile sourceFile = new ClosureSourceFile(inputFile);
         depParser.parse(sourceFile, FS.read(inputFile));
@@ -367,7 +367,7 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
 
     @Override
     public void checkOptions(@Nonnull JsOptions options)
-            throws BuildOptionsException {
+            throws BuildException {
 
         final File outFile = options.getOutputFile();
         if (outFile == null) {
@@ -378,14 +378,13 @@ public class JsBuilder extends AbstractBuilder<JsOptions, JsResult> {
         final Collection<File> entryFiles = options.getEntryFiles();
         if ((entryPoints == null || entryPoints.isEmpty()) && (
                 entryFiles == null || entryFiles.isEmpty())) {
-            throw new BuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
+            throw new BuildException(UNSPECIFIED_ENTRY_POINTS);
         }
 
         final Collection<File> sourceDirectories =
                 options.getSourceDirectories();
         if (sourceDirectories == null || sourceDirectories.isEmpty()) {
-            throw new BuildOptionsException
-                    (UNSPECIFIED_SOURCE_DIRECTORIES);
+            throw new BuildException(UNSPECIFIED_SOURCE_DIRECTORIES);
         }
     }
 }

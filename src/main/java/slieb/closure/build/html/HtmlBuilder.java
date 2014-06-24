@@ -1,7 +1,7 @@
 package slieb.closure.build.html;
 
 import slieb.closure.build.internal.AbstractBuilder;
-import slieb.closure.build.internal.BuildOptionsException;
+import slieb.closure.build.internal.BuildException;
 import slieb.closure.render.DefaultHtmlRenderer;
 import slieb.closure.render.HtmlRenderer;
 import slieb.closure.render.RenderException;
@@ -77,12 +77,11 @@ public class HtmlBuilder
             "Html output file has not been specified.";
 
     @Override
-    public void checkOptions(
-            @Nonnull final HtmlOptions buildOptions) throws
-            BuildOptionsException {
+    public void checkOptions(@Nonnull final HtmlOptions buildOptions)
+            throws BuildException {
         final File outputFile = buildOptions.getOutputFile();
         if (outputFile == null) {
-            throw new BuildOptionsException(UNSPECIFIED_OUTPUT_FILE);
+            throw new BuildException(UNSPECIFIED_OUTPUT_FILE);
         }
     }
 }

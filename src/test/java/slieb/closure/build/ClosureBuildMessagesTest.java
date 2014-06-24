@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import slieb.closure.build.internal.AbstractBuildTest;
 import slieb.closure.internal.XliffMessageBundle;
-import slieb.closure.rhino.EnvJsRunner;
+import slieb.closure.rhino.EnvRunner;
 
 import java.io.File;
 import java.io.InputStream;
@@ -58,7 +58,7 @@ public class ClosureBuildMessagesTest
         File scriptFile = result.getJsOutputFile();
         Assert.assertNotNull(scriptFile);
 
-        EnvJsRunner runner = new EnvJsRunner();
+        EnvRunner runner = new EnvRunner();
         runner.initialize();
         runner.evaluateFile(scriptFile);
         runner.doLoad();
@@ -103,7 +103,7 @@ public class ClosureBuildMessagesTest
         final File scriptFile = result.getJsOutputFile();
         Assert.assertNotNull(scriptFile);
 
-        final EnvJsRunner runner = new EnvJsRunner();
+        final EnvRunner runner = new EnvRunner();
         runner.initialize();
         runner.evaluateFile(scriptFile);
         runner.doLoad();
@@ -148,7 +148,7 @@ public class ClosureBuildMessagesTest
         final File scriptFile = result.getJsOutputFile();
         Assert.assertNotNull(scriptFile);
 
-        final EnvJsRunner runner = new EnvJsRunner();
+        final EnvRunner runner = new EnvRunner();
         runner.initialize();
 
         runner.evaluateFile(scriptFile);

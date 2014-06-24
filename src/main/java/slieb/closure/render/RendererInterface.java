@@ -2,13 +2,12 @@ package slieb.closure.render;
 
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
+
 
 public interface RendererInterface {
 
-    public void render(@Nonnull final Appendable sb)
-            throws RenderException, IOException;
+    public void render(@Nonnull final Appendable sb) throws RenderException;
 
     @Nonnull
-    public String render() throws RenderException, IOException;
+    public String render() throws RenderException;
 }

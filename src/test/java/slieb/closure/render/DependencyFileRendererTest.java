@@ -1,12 +1,14 @@
 package slieb.closure.render;
 
-import junit.framework.Assert;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import slieb.closure.build.ClosureSourceFile;
 
 import java.io.File;
+
+import static org.junit.Assert.assertEquals;
 
 public class DependencyFileRendererTest {
 
@@ -30,7 +32,7 @@ public class DependencyFileRendererTest {
         StringBuffer sb = new StringBuffer();
         renderer.renderDependencyPath(dependency, sb);
         String expected = "/path.js";
-        Assert.assertEquals(expected, sb.toString());
+        assertEquals(expected, sb.toString());
     }
 
 
@@ -43,7 +45,7 @@ public class DependencyFileRendererTest {
         renderer.setBasePath("/a/b/e/");
         renderer.renderDependencyPath(dependency, sb);
         String expected = "../c/path.js";
-        Assert.assertEquals(expected, sb.toString());
+        assertEquals(expected, sb.toString());
     }
 
     @Test
@@ -58,7 +60,7 @@ public class DependencyFileRendererTest {
         StringBuffer sb = new StringBuffer();
         renderer.renderDependency(dependency, sb);
         String expected = "goog.addDependency('/path.js', [], []);";
-        Assert.assertEquals(expected, sb.toString());
+        assertEquals(expected, sb.toString());
     }
 
     @Test
@@ -70,7 +72,7 @@ public class DependencyFileRendererTest {
         renderer.renderDependency(dependency, sb);
         String expected = "goog.addDependency('/path.js', ['package.one'], " +
                 "[]);";
-        Assert.assertEquals(expected, sb.toString());
+        assertEquals(expected, sb.toString());
     }
 
     @Test
@@ -81,9 +83,8 @@ public class DependencyFileRendererTest {
         dependency.addRequireNamespace("package.two");
         StringBuffer sb = new StringBuffer();
         renderer.renderDependency(dependency, sb);
-        String expected = "goog.addDependency('/path.js', ['package.one'], " +
-                "['package.two']);";
-        Assert.assertEquals(expected, sb.toString());
+        String expected = "goog.addDependency('/path.js', ['package.one'], ['package.two']);\n";
+        assertEquals(expected, sb.toString());
     }
 
     @Test

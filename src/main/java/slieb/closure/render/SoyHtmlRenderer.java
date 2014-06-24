@@ -19,17 +19,17 @@ public class SoyHtmlRenderer extends DefaultHtmlRenderer {
 
     private final SoyTofu.Renderer renderer;
 
-    public SoyHtmlRenderer(
-            @Nonnull final Collection<File> sourceDirectories,
-            @Nonnull final String templateName) {
+    public SoyHtmlRenderer(@Nonnull final Collection<File> sourceDirectories,
+                           @Nonnull final String templateName) {
         SoyFileSet.Builder soyFileSetBuilder = new SoyFileSet.Builder();
         for (File sourceFile : FS.find(sourceDirectories, "soy")) {
             soyFileSetBuilder.add(sourceFile);
         }
         final SoyFileSet fileSet = soyFileSetBuilder.build();
         final SoyTofu soyTofu = fileSet.compileToTofu();
-        renderer = soyTofu.newRenderer(templateName);
+        this.renderer = soyTofu.newRenderer(templateName);
     }
+
 
     @Nonnull
     @Override
@@ -39,6 +39,7 @@ public class SoyHtmlRenderer extends DefaultHtmlRenderer {
     }
 
     private static class BaseData extends SoyMapData {
+
         protected final SoyHtmlRenderer soyHtmlRenderer;
 
         public BaseData(@Nonnull final SoyHtmlRenderer soyHtmlRenderer) {
@@ -62,8 +63,8 @@ public class SoyHtmlRenderer extends DefaultHtmlRenderer {
 
             switch (key) {
                 case "Title":
-                    return SoyData.createFromExistingData(soyHtmlRenderer
-                            .renderTitle());
+                    return SoyData.createFromExistingData(
+                            soyHtmlRenderer.renderTitleContent());
                 case "Scripts":
                     return scriptsData;
                 case "Stylesheets":

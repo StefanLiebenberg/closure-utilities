@@ -16,7 +16,7 @@ public abstract class AbstractBuilder<A, B>
         implements BuilderInterface<A, B> {
 
     protected final Logger LOGGER =
-            Logger.getLogger(this.getClass().getName());
+            Logger.getLogger(getClass().getName());
 
     public static final String BUILD_EXCEPTION_MESSAGE =
             "An exception occurred during the build";
@@ -26,7 +26,7 @@ public abstract class AbstractBuilder<A, B>
 
     @Override
     public abstract void checkOptions(@Nonnull final A options)
-            throws BuildOptionsException;
+            throws BuildException;
 
     @Nonnull
     protected abstract B buildInternal(@Nonnull final A options)
@@ -48,9 +48,9 @@ public abstract class AbstractBuilder<A, B>
     @Nonnull
     protected static ImmutableSet<File> findSourceFiles(
             @Nonnull final Collection<File> directories,
-            @Nonnull final String extension) throws IOException {
+            @Nonnull final String... extensions) throws IOException {
         final ImmutableSet.Builder<File> builder = new ImmutableSet.Builder<>();
-        for (File sourceFile : FS.find(directories, extension)) {
+        for (File sourceFile : FS.find(directories, extensions)) {
             builder.add(sourceFile.getAbsoluteFile());
         }
         return builder.build();

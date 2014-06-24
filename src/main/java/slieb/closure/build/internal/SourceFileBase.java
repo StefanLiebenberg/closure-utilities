@@ -6,12 +6,16 @@ import com.google.common.collect.ImmutableSet;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
 import java.util.HashSet;
 
-public class SourceFileBase {
+public class SourceFileBase implements SourceInterface {
 
     /**
      * <b>Example:</b><br />
@@ -168,5 +172,30 @@ public class SourceFileBase {
         }
         throw new NullPointerException("Source file is not supposed to be " +
                 "null");
+    }
+
+
+    @Nonnull
+    @Override
+    public File getFileLocation() {
+        return new File(sourceLocation);
+    }
+
+    @Nonnull
+    @Override
+    public Collection<String> getRequires() {
+        return getRequiredNamespaces();
+    }
+
+    @Nonnull
+    @Override
+    public Collection<String> getProvides() {
+        return getProvidedNamespaces();
+    }
+
+    @Nonnull
+    @Override
+    public Reader getReader() throws IOException {
+        return new FileReader(getFileLocation());
     }
 }

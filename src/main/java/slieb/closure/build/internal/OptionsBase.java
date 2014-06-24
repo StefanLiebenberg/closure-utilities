@@ -2,6 +2,10 @@ package slieb.closure.build.internal;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Build Options Base Class.
+ *
+ */
 public class OptionsBase {
 
     public OptionsBase() {}

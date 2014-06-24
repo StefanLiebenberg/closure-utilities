@@ -1,14 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.stefanliebenberg</groupId>
     <artifactId>closure-utilities</artifactId>
     <version>1.0.7-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>closure-utilities</name>
-
     <licenses>
         <license>
             <name>MIT License</name>
@@ -28,10 +26,10 @@
 
     <developers>
         <developer>
+            <id>siga.fredo@gmail.com</id>
             <email>siga.fredo@gmail.com</email>
             <name>Stefan Liebenberg</name>
-            <url>https://github.com/StefanLiebenberg</url>
-            <id>s.liebenberg</id>
+            <url>http://github.com/StefanLiebenberg</url>
         </developer>
     </developers>
 
@@ -40,15 +38,11 @@
         <github.global.server>github</github.global.server>
     </properties>
     <dependencies>
+
         <dependency>
-            <groupId>com.google.javascript</groupId>
-            <artifactId>closure-compiler</artifactId>
-            <version>v20131014</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.closure-stylesheets</groupId>
-            <artifactId>closure-stylesheets</artifactId>
-            <version>20130727</version>
+            <groupId>com.github.stefanliebenberg</groupId>
+            <artifactId>closure-rhino-runtimes</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.google.template</groupId>
@@ -56,8 +50,16 @@
             <version>2012-12-21</version>
             <scope>compile</scope>
         </dependency>
-
-        <!-- This dependency is meant to override a bad dependency -->
+        <dependency>
+            <groupId>com.github.stefanliebenberg</groupId>
+            <artifactId>soy-annotations</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefanliebenberg</groupId>
+            <artifactId>closure-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -90,47 +92,32 @@
             <version>1.7.3</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
-
-    <distributionManagement>
-        <repository>
-            <name>Github - Stefan Liebenberg</name>
-            <id>github-StefanLiebenberg</id>
-            <url>git:releases://git@github.com:StefanLiebenberg/maven.git</url>
-        </repository>
-        <snapshotRepository>
-            <id>Github - Stefan Liebenberg - Snapshots</id>
-            <name>github-StefanLiebenberg-Snapshots</name>
-            <url>git:snapshots://git@github.com:StefanLiebenberg/maven.git</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <repositories>
         <repository>
-            <name>Github - Stefan Liebenberg</name>
-            <id>github-StefanLiebenberg</id>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <url>https://raw.github.com/StefanLiebenberg/maven/releases</url>
-        </repository>
-        <repository>
-            <id>Github - Stefan Liebenberg - Snapshots</id>
-            <name>github-StefanLiebenberg-Snapshots</name>
+            <id>sonatype-snapshots</id>
+            <name>Sonatype Snapshots</name>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-            <url>https://raw.github.com/StefanLiebenberg/maven/snapshots</url>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
-    </repositories>
+        <repository>
+            <id>sonatype-releases</id>
+            <name>Sonatype Releases</name>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <url>https://oss.sonatype.org/content/repositories/releases</url>
+        </repository>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>synergian-repo</id>
-            <url>https://raw.github.com/synergian/wagon-git/releases</url>
-        </pluginRepository>
-    </pluginRepositories>
+    </repositories>
 
     <build>
         <plugins>

@@ -16,6 +16,9 @@ import java.util.List;
 public class DependencyCalculator<S extends SourceFileBase>
         implements IDependencyCalculator<S> {
 
+    protected DependencyExceptionHandler dependencyExceptionHandler =
+            new DependencyExceptionHandler();
+
     public DependencyCalculator(
             @Nonnull final Collection<S> dependencies) {
         this.dependencies = ImmutableSet.copyOf(dependencies);
@@ -40,29 +43,7 @@ public class DependencyCalculator<S extends SourceFileBase>
                 }
             };
 
-    @Nonnull
-    private DependencyException nothingProvides(
-            @Nonnull final String namespace) {
-        return new DependencyException("Nothing provides '" + namespace + "'");
-    }
 
-    @Nonnull
-    private DependencyException circularError(
-            @Nonnull final String namespace,
-            @Nonnull final Collection<S> parents) {
-        final Collection<String> strings =
-                Collections2.transform(parents, BASE_TRANSFORMER);
-        final String[] parentNames =
-                strings.toArray(new String[strings.size()]);
-        final StringBuilder message = new StringBuilder();
-        message.append("Circular Error detected while trying to import '")
-                .append(namespace).append("'.");
-        for (String parent : parentNames) {
-            message.append("\n   ").append(parent);
-        }
-        message.append("\n   ").append(namespace);
-        return new DependencyException(message.toString());
-    }
 
     private ImmutableCollection<S> dependencies;
 
@@ -105,11 +86,13 @@ public class DependencyCalculator<S extends SourceFileBase>
         final S provider = getProviderOf(namespace);
 
         if (provider == null) {
-            throw nothingProvides(namespace);
+            dependencyExceptionHandler
+                    .nothingProvides(namespace);
         }
 
         if (parents.contains(provider)) {
-            throw circularError(namespace, parents);
+            dependencyExceptionHandler
+                    .circularDependencies(namespace, parents);
         }
 
         return resolveDependencies(provider, dependencies, parents);

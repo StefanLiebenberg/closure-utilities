@@ -8,11 +8,10 @@ import java.util.Map;
 
 public class DefinesFileRenderer extends AbstractRenderer {
 
-    public static String VAR_DEFINES_BEGIN = "var CLOSURE_DEFINES = {\n";
-    public static String VAR_DEFINES_DELIM = ",\n";
-    public static String VAR_DEFINES_KEY_BEGIN = "  ";
-    public static String VAR_DEFINES_KEY_END = ": ";
-    public static String VAR_DEFINES_END = "\n};\n";
+    private static final String DEFINES_FORMAT =
+            "var CLOSURE_DEFINES = {\n%s\n};\n";
+    private static final String ENTRY_FORMAT = "  %s: %s";
+    private static final String ENTRY_DELIM = ",\n";
 
     public final Map<String, Object> map = new LinkedHashMap<>();
 
@@ -41,18 +40,21 @@ public class DefinesFileRenderer extends AbstractRenderer {
     }
 
     @Override
-    public void render(@Nonnull Appendable sb) throws RenderException,
-            IOException {
-        sb.append(VAR_DEFINES_BEGIN);
-        String delim = "";
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            sb.append(delim)
-                    .append(VAR_DEFINES_KEY_BEGIN)
-                    .append(renderPropertyValue(entry.getKey()))
-                    .append(VAR_DEFINES_KEY_END)
-                    .append(renderPropertyValue(entry.getValue()));
-            delim = VAR_DEFINES_DELIM;
+    public void render(@Nonnull Appendable sb) throws RenderException {
+        try {
+            StringBuilder jsonBuilder = new StringBuilder();
+            String delim = "";
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                String keyString = renderPropertyValue(entry.getKey());
+                String valueString = renderPropertyValue(entry.getValue());
+                String jsonEntry = String.format(ENTRY_FORMAT, keyString,
+                        valueString);
+                jsonBuilder.append(delim).append(jsonEntry);
+                delim = ENTRY_DELIM;
+            }
+            sb.append(String.format(DEFINES_FORMAT, jsonBuilder.toString()));
+        } catch (IOException ioException) {
+            throw new RenderException(ioException);
         }
-        sb.append(VAR_DEFINES_END);
     }
 }

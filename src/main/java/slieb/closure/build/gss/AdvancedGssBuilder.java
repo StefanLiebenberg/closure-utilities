@@ -1,6 +1,5 @@
 package slieb.closure.build.gss;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.annotation.Nonnull;
@@ -63,7 +62,7 @@ public class AdvancedGssBuilder extends AbstractGssBuilder {
     public void parse(@Nonnull GssOptions options,
                       @Nonnull InternalData internalData)
             throws Exception {
-        final ImmutableList<String> entryPoints = options.getEntryPoints();
+        final List<String> entryPoints = options.getEntryPoints();
         Boolean entryPointsChanged = false, sourceFilesChanged = false;
 
         if (!cachedEntryPoints.equals(entryPoints)) {

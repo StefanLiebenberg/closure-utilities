@@ -1,16 +1,15 @@
 package slieb.closure.tools;
 
 
-import com.google.common.base.Function;
 import com.google.common.io.Files;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.*;
-import java.net.URI;
-import java.net.URL;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashSet;
@@ -73,7 +72,7 @@ public class FS {
     public static Collection<File> find(
             @Nonnull final File directory,
             @Nonnull final String... extensions) {
-        final Collection<File> files = new HashSet<File>();
+        final Collection<File> files = new HashSet<>();
         collectFiles(directory, files, extensions);
         return files;
     }
@@ -82,7 +81,7 @@ public class FS {
     public static HashSet<File> find(
             @Nonnull final Collection<File> directories,
             @Nonnull final String... extensions) {
-        final HashSet<File> files = new HashSet<File>();
+        final HashSet<File> files = new HashSet<>();
         collectFiles(directories, files, extensions);
         return files;
     }
@@ -110,26 +109,6 @@ public class FS {
         }
     }
 
-    static void copy(
-            @Nonnull final File inputFile,
-            @Nonnull final File outputFile)
-            throws IOException {
-        try (final InputStream istream = new FileInputStream(inputFile);
-             final OutputStream ostream = new FileOutputStream(outputFile)) {
-            IOUtils.copy(istream, ostream);
-        }
-    }
-
-    @Nonnull
-    public static File getTempFile(
-            @Nonnull final String prefix,
-            @Nonnull final String affix)
-            throws IOException {
-        File tempFile = File.createTempFile(prefix, affix);
-        ensureDirectoryFor(tempFile);
-        tempFile.deleteOnExit();
-        return tempFile;
-    }
 
     @Nonnull
     public static File getTempDirectory()
@@ -138,56 +117,5 @@ public class FS {
         directory.deleteOnExit();
         return directory;
     }
-
-    public final static Function<URL, String> URL_TO_FILEPATH = new
-            Function<URL, String>() {
-                public String apply(final URL url) {
-                    if (url != null) {
-                        return url.getPath();
-                    } else {
-                        return null;
-                    }
-                }
-            };
-
-    public final static Function<File, String> FILE_TO_FILEPATH =
-            new Function<File, String>() {
-                @Nullable
-                @Override
-                public String apply(@Nullable File file) {
-                    if (file != null) {
-                        return file.getPath();
-                    } else {
-                        return null;
-                    }
-                }
-            };
-
-    public final static Function<File, Path> FILE_TO_PATH =
-            new Function<File, Path>() {
-                @Nullable
-                @Override
-                public Path apply(@Nullable File file) {
-                    if (file != null) {
-                        return file.toPath();
-                    } else {
-                        return null;
-                    }
-                }
-            };
-
-
-    public final static Function<File, URI> FILE_TO_URI =
-            new Function<File, URI>() {
-                @Nullable
-                @Override
-                public URI apply(@Nullable File file) {
-                    if (file != null) {
-                        return file.toURI();
-                    } else {
-                        return null;
-                    }
-                }
-            };
 
 }

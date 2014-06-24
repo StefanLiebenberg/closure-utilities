@@ -1,9 +1,7 @@
 package slieb.closure.build.gss;
 
 
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
-import slieb.closure.tools.Immuter;
+import slieb.closure.resources.ResourceProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,11 +19,9 @@ public class GssOptions {
 
     private Boolean shouldGenerateForDebug = true;
 
-    private ImmutableList<File> sourceFiles;
+    private ResourceProvider resourceProvider;
 
-    private ImmutableCollection<File> sourceDirectories;
-
-    private ImmutableList<String> entryPoints;
+    private List<String> entryPoints;
 
     private File renameMap;
 
@@ -44,15 +40,6 @@ public class GssOptions {
     }
 
     public void setSourceFiles(@Nullable final List<File> sourceFiles) {
-        if (sourceFiles != null) {
-            this.sourceFiles = Immuter.list(sourceFiles);
-        } else {
-            this.sourceFiles = null;
-        }
-    }
-
-    public void setSourceFiles(@Nullable final ImmutableList<File>
-                                       sourceFiles) {
         this.sourceFiles = sourceFiles;
     }
 
@@ -76,7 +63,7 @@ public class GssOptions {
     }
 
     @Nullable
-    public ImmutableList<File> getSourceFiles() {
+    public List<File> getSourceFiles() {
         return sourceFiles;
     }
 
@@ -113,40 +100,22 @@ public class GssOptions {
     }
 
     @Nullable
-    public ImmutableCollection<File> getSourceDirectories() {
+    public Collection<File> getSourceDirectories() {
         return sourceDirectories;
     }
 
-    public void setSourceDirectories(
-            @Nullable final Collection<File> sourceDirectories) {
-        if (sourceDirectories != null) {
-            this.sourceDirectories = Immuter.set(sourceDirectories);
-        } else {
-            this.sourceDirectories = null;
-        }
-    }
 
     public void setSourceDirectories(
-            @Nullable final ImmutableCollection<File> sourceDirectories) {
+            @Nullable final Collection<File> sourceDirectories) {
         this.sourceDirectories = sourceDirectories;
     }
 
     @Nullable
-    public ImmutableList<String> getEntryPoints() {
+    public List<String> getEntryPoints() {
         return entryPoints;
     }
 
-    public void setEntryPoints(
-            @Nullable final List<String> entryPoints) {
-        if (entryPoints != null) {
-            this.entryPoints = Immuter.list(entryPoints);
-        } else {
-            this.entryPoints = null;
-        }
-    }
-
-    public void setEntryPoints(
-            @Nullable final ImmutableList<String> entryPoints) {
+    public void setEntryPoints(@Nullable final List<String> entryPoints) {
         this.entryPoints = entryPoints;
     }
 

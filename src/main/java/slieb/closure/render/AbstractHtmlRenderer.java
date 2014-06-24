@@ -1,8 +1,5 @@
 package slieb.closure.render;
 
-import slieb.closure.render.AbstractRenderer;
-import slieb.closure.render.HtmlRenderer;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;

@@ -8,8 +8,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 
-public class DefaultHtmlRenderer
-        extends AbstractHtmlRenderer {
+public class DefaultHtmlRenderer extends AbstractHtmlRenderer {
 
     @Nonnull
     protected String getFilePath(@Nonnull File file) {
@@ -137,10 +136,18 @@ public class DefaultHtmlRenderer
         }
     }
 
+    protected String renderTitleContent() {
+        if (title != null) {
+            return title;
+        } else {
+            return "";
+        }
+    }
+
     @Nonnull
     protected String renderTitle() {
         if (title != null) {
-            return render_tag("title", title);
+            return render_tag("title", renderTitleContent());
         } else {
             return "";
         }
@@ -173,8 +180,7 @@ public class DefaultHtmlRenderer
     }
 
     @Override
-    public void render(@Nonnull Appendable sb)
-            throws RenderException, IOException {
+    public void render(@Nonnull Appendable sb) throws RenderException {
         try {
             sb.append(renderDoctype());
             sb.append(renderHtmlTag());

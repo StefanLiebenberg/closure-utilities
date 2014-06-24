@@ -22,17 +22,19 @@ public class DependencyBuilder<A extends SourceFileBase>
 
     @Override
     public void checkOptions(@Nonnull DependencyOptions<A> options)
-            throws BuildOptionsException {
+            throws BuildException {
         if (STRICT_MODE) {
+
             ImmutableList<String> entryPoints = options.getEntryPoints();
             ImmutableList<A> entryFiles = options.getEntryFiles();
             if ((entryPoints == null || entryPoints.isEmpty()) && (
                     entryFiles == null || entryFiles.isEmpty())) {
-                throw new BuildOptionsException(UNSPECIFIED_ENTRY_POINTS);
+                throw new BuildException(UNSPECIFIED_ENTRY_POINTS);
             }
+
             ImmutableCollection<A> sourceFiles = options.getSourceFiles();
             if (sourceFiles == null || sourceFiles.isEmpty()) {
-                throw new BuildOptionsException(UNSPECIFIED_SOURCE_FILES);
+                throw new BuildException(UNSPECIFIED_SOURCE_FILES);
             }
         }
     }
