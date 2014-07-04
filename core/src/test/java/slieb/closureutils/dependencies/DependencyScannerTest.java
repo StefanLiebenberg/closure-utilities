@@ -5,20 +5,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import slieb.closureutils.resources.Resource;
 import slieb.closureutils.resources.ResourceProvider;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
-import static com.google.common.collect.ImmutableSet.copyOf;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,8 +25,6 @@ public class DependencyScannerTest {
     @Mock
     private DependencyParser mockDependencyParser;
 
-    @Mock
-    private DependencyCalculator mockDependencyCalculator;
 
     @Mock
     private DependencyNode nodeA, nodeB, nodeC;
@@ -41,20 +34,23 @@ public class DependencyScannerTest {
 
     private DependencyScanner scanner;
 
-    public void setupNode(DependencyNode mockNode, Resource mockResource, String namespace) {
+    public void setupNode(DependencyNode mockNode, Resource mockResource,
+                          String namespace, Set<String> requires) {
         when(mockDependencyParser.parse(mockResource)).thenReturn(mockNode);
         when(mockNode.getResource()).thenReturn(mockResource);
-        when(mockNode.getProvides()).thenReturn(copyOf(newHashSet(namespace)));
-//        when(mockNode.getRequires()).thenReturn(copyOf(Sets.<String>newHashSet()));
+        when(mockNode.getProvides()).thenReturn(newHashSet(namespace));
+        when(mockNode.getRequires()).thenReturn(requires);
     }
 
     @Before
     public void setup() throws Exception {
-        when(mockResourceProvider.getResources()).thenReturn(Sets.newHashSet(resourceA, resourceB, resourceC));
-        setupNode(nodeA, resourceA, "A");
-        setupNode(nodeB, resourceB, "B");
-        setupNode(nodeC, resourceC, "C");
-        scanner = new DependencyScanner(mockResourceProvider, mockDependencyParser, mockDependencyCalculator);
+        when(mockResourceProvider.getResources()).thenReturn(Sets.newHashSet
+                (resourceA, resourceB, resourceC));
+        setupNode(nodeA, resourceA, "A", Sets.<String>newHashSet("B"));
+        setupNode(nodeB, resourceB, "B", Sets.<String>newHashSet());
+        setupNode(nodeC, resourceC, "C", Sets.<String>newHashSet());
+        scanner = new DependencyScanner(mockResourceProvider,
+                mockDependencyParser);
     }
 
     @Test
@@ -67,20 +63,6 @@ public class DependencyScannerTest {
 
     @Test
     public void getDependencies() {
-        when(mockDependencyCalculator.resolve(any(DependencyTree.class), anyString(), any(List.class), any(Collection.class))).then(new Answer<Object>() {
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) throws Throwable {
-                Object[] args = invocationOnMock.getArguments();
-                Object list = args[2];
-                if (list instanceof List) {
-                    List<Object> castList = (List<Object>) list;
-                    castList.add(nodeA);
-                    castList.add(nodeB);
-                }
-                return null;
-            }
-        });
-
         List<DependencyNode> dependencies = scanner.getDependencies("A");
         assertTrue(dependencies.contains(nodeA));
         assertTrue(dependencies.contains(nodeB));

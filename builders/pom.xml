@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.google.javascript</groupId>
             <artifactId>closure-compiler</artifactId>
-            <version>v20131014</version>
+            <version>${dep.closure.compiler}</version>
         </dependency>
         <dependency>
             <groupId>com.google.closure-stylesheets</groupId>
@@ -38,9 +38,40 @@
             <version>20140426</version>
         </dependency>
         <dependency>
+            <groupId>com.google.template</groupId>
+            <artifactId>soy</artifactId>
+            <version>2012-12-21</version>
+        </dependency>
+        <dependency>
             <groupId>com.github.stefanliebenberg</groupId>
             <artifactId>blender-css</artifactId>
             <version>1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.stefanliebenberg</groupId>
+            <artifactId>closure-utilities-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.stefanliebenberg</groupId>
+            <artifactId>closure-utilities-stylesheets</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.stefanliebenberg</groupId>
+            <artifactId>closure-utilities-rendering</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.7.3</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

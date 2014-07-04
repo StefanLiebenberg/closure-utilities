@@ -35,27 +35,41 @@
     </developers>
 
     <modules>
+        <!--<module>configuration</module>-->
         <module>core</module>
-        <module>builders</module>
-        <module>rhino-runtimes</module>
+        <!--<module>builders</module>-->
+        <module>rendering</module>
+        <!--<module>stylesheets</module>-->
+        <module>javascript</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+
         <github.global.server>github</github.global.server>
+        <dep.commons>3.2.1</dep.commons>
+        <dep.guava>17.0</dep.guava>
+        <dep.jsr>2.0.3</dep.jsr>
+        <dep.jackson>1.9.13</dep.jackson>
+        <dep.closure.compiler>v20131014</dep.closure.compiler>
     </properties>
 
+    <prerequisites>
+        <maven>3.0.0</maven>
+    </prerequisites>
 
     <dependencies>
         <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-        </dependency>
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>17.0</version>
+            <version>${dep.guava}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${dep.jsr}</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>

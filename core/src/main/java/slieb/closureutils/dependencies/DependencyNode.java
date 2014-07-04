@@ -1,41 +1,54 @@
 package slieb.closureutils.dependencies;
 
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import slieb.closureutils.resources.Resource;
 
-import java.util.Set;
+import javax.annotation.concurrent.Immutable;
+import java.util.Collection;
 
-import static com.google.common.collect.ImmutableSet.copyOf;
-
-
+@Immutable
 public class DependencyNode {
     private final Resource resource;
 
     private final ImmutableSet<String> provides, requires;
 
-    public DependencyNode(Resource resource, Set<String> provides, Set<String> requires) {
+    private final ImmutableMap<String, Boolean> flags;
+
+    public DependencyNode(Resource resource, ImmutableSet<String> provides,
+                          ImmutableSet<String> requires, ImmutableMap<String,
+            Boolean> flags) {
         this.resource = resource;
-        this.provides = copyOf(provides);
-        this.requires = copyOf(requires);
+        this.provides = provides;
+        this.requires = requires;
+        this.flags = flags;
     }
 
     public Resource getResource() {
         return resource;
     }
 
-    public ImmutableSet<String> getProvides() {
+    public Collection<String> getProvides() {
         return provides;
     }
 
-    public ImmutableSet<String> getRequires() {
+    public Collection<String> getRequires() {
         return requires;
     }
 
-    public static class Builder {
-        private final Resource resource;
+    public Boolean getFlag(String name) {
+        return flags.containsKey(name) ? flags.get(name) : false;
+    }
 
-        private final ImmutableSet.Builder<String>
+    public static class Builder {
+        public final Resource resource;
+
+        protected final ImmutableMap.Builder<String,
+                Boolean> flags = new ImmutableMap.Builder<>();
+
+
+        protected final ImmutableSet.Builder<String>
                 providesBuilder = new ImmutableSet.Builder<>(),
                 requiresBuilder = new ImmutableSet.Builder<>();
 
@@ -53,10 +66,14 @@ public class DependencyNode {
             return this;
         }
 
-        public DependencyNode build() {
-            return new DependencyNode(resource, providesBuilder.build(), requiresBuilder.build());
+        public Builder setFlag(String flagName, Boolean value) {
+            flags.put(flagName, value);
+            return this;
         }
 
-
+        public DependencyNode build() {
+            return new DependencyNode(resource, providesBuilder.build(),
+                    requiresBuilder.build(), flags.build());
+        }
     }
 }

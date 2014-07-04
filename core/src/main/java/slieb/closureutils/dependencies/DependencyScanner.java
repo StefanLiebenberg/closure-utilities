@@ -3,14 +3,15 @@ package slieb.closureutils.dependencies;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import slieb.closureutils.resources.Resource;
 import slieb.closureutils.resources.ResourceProvider;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
+import static slieb.closureutils.dependencies.DependencyCalculator
+        .resolveDependencies;
 
 public class DependencyScanner {
 
@@ -18,12 +19,12 @@ public class DependencyScanner {
 
     private final DependencyParser dependencyParser;
 
-    private final DependencyCalculator dependencyCalculator;
-
-    public DependencyScanner(ResourceProvider resourceProvider, DependencyParser dependencyParser, DependencyCalculator dependencyCalculator) {
-        this.resourceProvider = resourceProvider;
-        this.dependencyParser = dependencyParser;
-        this.dependencyCalculator = dependencyCalculator;
+    public DependencyScanner(ResourceProvider resourceProvider,
+                             DependencyParser dependencyParser) {
+        this.resourceProvider = checkNotNull(resourceProvider,
+                "Resource provider is null");
+        this.dependencyParser = checkNotNull(dependencyParser,
+                "Dependency parser is null");
     }
 
     public List<DependencyNode> getDependencies(String entryPoint) {
@@ -31,18 +32,23 @@ public class DependencyScanner {
     }
 
     public DependencyTree getDependencyTree() {
-        ImmutableSet.Builder<DependencyNode> setBuilder = new ImmutableSet.Builder<>();
-        for (Resource resource : resourceProvider.getResources()) {
+        ImmutableSet.Builder<DependencyNode> setBuilder = new ImmutableSet
+                .Builder<>();
+        for (Resource resource : checkNotNull(resourceProvider.getResources()
+        )) {
             setBuilder.add(dependencyParser.parse(resource));
         }
         return new DependencyTree(setBuilder.build());
     }
 
-    public ImmutableList<DependencyNode> getDependencies(List<String> entryPoints) {
+    public ImmutableList<DependencyNode> getDependencies(List<String>
+                                                                 entryPoints) {
         DependencyTree tree = getDependencyTree();
-        ArrayList<DependencyNode> dependenciesList = new ArrayList<>();
+        List<DependencyNode> dependenciesList = newArrayList();
         for (String namespace : entryPoints) {
-            dependencyCalculator.resolve(tree, namespace, dependenciesList, Sets.<DependencyNode>newHashSet());
+            List<DependencyNode> parentsList = newArrayList();
+            resolveDependencies(tree, namespace, dependenciesList,
+                    parentsList);
         }
         return ImmutableList.copyOf(dependenciesList);
     }

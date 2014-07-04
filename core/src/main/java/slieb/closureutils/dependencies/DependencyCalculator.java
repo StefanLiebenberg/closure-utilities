@@ -1,33 +1,36 @@
 package slieb.closureutils.dependencies;
 
 
-import java.util.Collection;
+import javax.annotation.Nonnull;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkState;
-import static java.lang.String.format;
+import static slieb.closureutils.dependencies.DependencyExceptionHandler.circularDependency;
+import static slieb.closureutils.dependencies.DependencyExceptionHandler.nothingProvides;
 
-public class DependencyCalculator {
+public final class DependencyCalculator {
 
-    public List<DependencyNode> resolve(DependencyTree tree, DependencyNode provider, List<DependencyNode> dependencies, Collection<DependencyNode> parents) {
+    @Nonnull
+    public static List<DependencyNode> resolveDependencies(
+            @Nonnull DependencyTree tree,
+            @Nonnull String namespace,
+            @Nonnull List<DependencyNode> dependencies,
+            @Nonnull List<DependencyNode> parents) {
+        final DependencyNode provider = tree.getProviderOf(namespace);
+        if (provider == null) {
+            throw nothingProvides(namespace, parents);
+        }
+        if (parents.contains(provider)) {
+            throw circularDependency(namespace, provider, parents);
+        }
         if (!dependencies.contains(provider)) {
             parents.add(provider);
-            for (String namespace : provider.getRequires()) {
-                resolve(tree, namespace, dependencies, parents);
+            for (String requireNamespace : provider.getRequires()) {
+                resolveDependencies(tree, requireNamespace, dependencies, parents);
             }
             parents.remove(provider);
             dependencies.add(provider);
         }
         return dependencies;
-    }
-
-
-    public List<DependencyNode> resolve(DependencyTree tree, String namespace, List<DependencyNode> dependencies,
-                                        Collection<DependencyNode> parents) {
-        final DependencyNode provider = tree.getProviderOf(namespace);
-        checkState(provider != null, format("Nothing provides %s", namespace));
-        checkState(!parents.contains(provider), format("Circular Dependency at %s", namespace));
-        return resolve(tree, provider, dependencies, parents);
     }
 
 }

@@ -1,14 +1,17 @@
 package slieb.closureutils.dependencies;
 
 
+import com.google.common.collect.ImmutableSet;
+
+import java.util.Collection;
 import java.util.Set;
 
 public class DependencyTree {
 
-    private final Set<DependencyNode> dependencyNodes;
+    private final ImmutableSet<DependencyNode> dependencyNodes;
 
     public DependencyTree(Set<DependencyNode> dependencyNodes) {
-        this.dependencyNodes = dependencyNodes;
+        this.dependencyNodes = ImmutableSet.copyOf(dependencyNodes);
     }
 
     public DependencyNode getProviderOf(String namespace) {
@@ -18,5 +21,9 @@ public class DependencyTree {
             }
         }
         return null;
+    }
+
+    public Collection<DependencyNode> getDependencyNodes() {
+        return dependencyNodes;
     }
 }
