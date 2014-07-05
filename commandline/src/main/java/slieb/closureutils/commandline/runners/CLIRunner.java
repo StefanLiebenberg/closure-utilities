@@ -1,10 +1,20 @@
 package slieb.closureutils.commandline.runners;
 
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import java.io.OutputStream;
 import java.util.Arrays;
 
+@Singleton
 public class CLIRunner implements Runner {
+
+    private final BuildRunner buildRunner;
+
+    private final ServeRunner serveRunner;
+
+    private final TestRunner testRunner;
 
     private static final String
             CMD_BUILD = "build",
@@ -12,11 +22,13 @@ public class CLIRunner implements Runner {
             CMD_TEST = "test",
             CMD_CLI = "cli";
 
-    private final BuildRunner buildRunner = new BuildRunner();
 
-    private final ServeRunner serveRunner = new ServeRunner();
-
-    private final TestRunner testRunner = new TestRunner();
+    @Inject
+    public CLIRunner(BuildRunner buildRunner, ServeRunner serveRunner, TestRunner testRunner) {
+        this.buildRunner = buildRunner;
+        this.serveRunner = serveRunner;
+        this.testRunner = testRunner;
+    }
 
     public void runCommand(String command, String... commandArgs) throws Exception {
 
@@ -56,7 +68,7 @@ public class CLIRunner implements Runner {
     }
 
     @Override
-    public void printHelp(OutputStream inputStream) {
+    public void printHelp(OutputStream outputStream) {
 
     }
 }

@@ -1,6 +1,9 @@
 package slieb.closureutils.dependencies;
 
 
+import slieb.closureutils.resources.Resource;
+
+import java.net.URI;
 import java.util.List;
 
 public class DependencyExceptionHandler {
@@ -16,10 +19,23 @@ public class DependencyExceptionHandler {
 
         DependencyNode first = parents.get(0);
         if (first != null) {
-            stringBuilder.append("Required in ").append(first.getResource().getUri().toString()).append("\n");
+            stringBuilder.append("Required in ").append(getUri(first)).append("\n");
         }
 
         return new DependencyException(stringBuilder.toString());
+    }
+
+    private static String getUri(DependencyNode node) {
+        if (node != null) {
+            Resource resource = node.getResource();
+            if (resource != null) {
+                URI uri = resource.getUri();
+                if (uri != null) {
+                    return uri.toString();
+                }
+            }
+        }
+        return null;
     }
 
 
@@ -34,7 +50,7 @@ public class DependencyExceptionHandler {
         sb.append("Circular dependency found in when trying to locate '").append(namespace).append("'").append("\n");
         sb.append("  Parents:\n");
         for (DependencyNode parentNode : parents) {
-            sb.append("  -  ").append(parentNode.getResource().getUri()).append("\n");
+            sb.append("  -  ").append(getUri(parentNode)).append("\n");
         }
         return new DependencyException(sb.toString());
     }
