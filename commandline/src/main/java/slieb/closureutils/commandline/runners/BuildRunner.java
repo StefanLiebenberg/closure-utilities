@@ -31,10 +31,10 @@ public class BuildRunner implements Runner {
     }
 
     public BuildOptions parse(String[] args) throws CmdLineException {
-        final BuildOptions configurable = new BuildOptions();
-        final CmdLineParser cmdLineParser = new CmdLineParser(configurable);
+        final BuildOptions options = new BuildOptions();
+        final CmdLineParser cmdLineParser = new CmdLineParser(options);
         cmdLineParser.parseArgument(args);
-        return configurable;
+        return options;
     }
 
 
@@ -42,25 +42,24 @@ public class BuildRunner implements Runner {
         return options.getModules();
     }
 
-
     @Override
     public void run(String... args) throws Exception {
         BuildOptions options = parse(args);
         Set<String> modules = getModules(options);
-
-        if (modules.contains("css")) {
+        Boolean runAll = modules.isEmpty();
+        if (runAll || modules.contains("css")) {
             gssBuilder.build(null);
         }
 
-        if (modules.contains("soy")) {
+        if (runAll || modules.contains("soy")) {
             soyBuilder.build(null);
         }
 
-        if (modules.contains("js")) {
+        if (runAll || modules.contains("js")) {
             jsBuilder.build(null);
         }
 
-        if (modules.contains("html")) {
+        if (runAll || modules.contains("html")) {
             htmlBuilder.build(null);
         }
     }
