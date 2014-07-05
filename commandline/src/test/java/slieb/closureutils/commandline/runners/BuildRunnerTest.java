@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class BuildRunnerTest {
 
-    BuildRunner buildRunner;
+    private BuildRunner buildRunner;
 
     @Mock
     private SoyBuilder mockSoyBuilder;
