@@ -9,5 +9,20 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>closure-utilities-configuration</artifactId>
+    <artifactId>closure-utilities-libraries</artifactId>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/javascript</directory>
+                <includes>
+                    <include>**/*.js</include>
+                </includes>
+                <excludes>
+                    <exclude>**/*_test.js</exclude>
+                </excludes>
+            </resource>
+        </resources>
+    </build>
+
 </project>
