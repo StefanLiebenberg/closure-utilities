@@ -42,6 +42,7 @@
         <module>stylesheets</module>
         <module>javascript</module>
         <module>commandline</module>
+        <module>maven</module>
 
     </modules>
 
