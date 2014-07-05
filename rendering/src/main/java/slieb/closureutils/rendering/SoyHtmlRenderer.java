@@ -1,7 +1,20 @@
 package slieb.closureutils.rendering;
 
+import com.google.template.soy.tofu.SoyTofu;
+
+/**
+ * An extension on DefaultHtmlRenderer that will render from a soy template instead of building the html in methods.
+ */
 public class SoyHtmlRenderer extends DefaultHtmlRenderer {
-//
+
+    private final SoyTofu tofu;
+
+    public SoyHtmlRenderer(SoyTofu tofu) {
+        this.tofu = tofu;
+    }
+
+
+    //
 //    private final SoyTofu.Renderer renderer;
 //
 //    public SoyHtmlRenderer(SoyTofu.Renderer renderer) {

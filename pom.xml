@@ -35,12 +35,14 @@
     </developers>
 
     <modules>
-        <!--<module>configuration</module>-->
+        <module>configuration</module>
         <module>core</module>
-        <!--<module>builders</module>-->
+        <module>builders</module>
         <module>rendering</module>
-        <!--<module>stylesheets</module>-->
+        <module>stylesheets</module>
         <module>javascript</module>
+        <module>commandline</module>
+
     </modules>
 
     <properties>

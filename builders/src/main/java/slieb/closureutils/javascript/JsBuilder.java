@@ -26,8 +26,7 @@ import java.util.List;
 
 public class JsBuilder implements BuilderInterface<JsOptions, JsResult> {
 
-    protected final DependencyParser dependencyParser;
-
+    protected final JavascriptDependencyParser dependencyParser;
 
     private final DependencyFileRenderer depFileRenderer =
             new DependencyFileRenderer();
@@ -35,7 +34,7 @@ public class JsBuilder implements BuilderInterface<JsOptions, JsResult> {
     private final DefinesFileRenderer definesFileRenderer =
             new DefinesFileRenderer();
 
-    public JsBuilder(DependencyParser dependencyParser) {
+    public JsBuilder(JavascriptDependencyParser dependencyParser) {
         this.dependencyParser = dependencyParser;
     }
 
@@ -43,11 +42,7 @@ public class JsBuilder implements BuilderInterface<JsOptions, JsResult> {
     private void buildDefinesFile(@Nonnull JsOptions options,
                                   @Nonnull JsResult.Builder builder)
             throws RenderException, IOException {
-        Resource definesResource =
-                new StringResource(
-                        definesFileRenderer
-                                .setMapValues(options.getGlobals())
-                                .render(), null);
+        Resource definesResource = new StringResource(definesFileRenderer.render(options.getGlobals()), null);
         builder.setDefinesResource(definesResource);
     }
 
@@ -55,9 +50,7 @@ public class JsBuilder implements BuilderInterface<JsOptions, JsResult> {
                                        @Nonnull JsResult.Builder builder)
             throws RenderException, IOException {
         builder.setDepsResource(
-                new StringResource(
-                        depFileRenderer
-                                .render(), null));
+                new StringResource(depFileRenderer.render(null), null));
     }
 
     protected DependencyScanner getDependencyScanner(

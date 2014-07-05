@@ -12,9 +12,10 @@ import java.util.Iterator;
 
 import static slieb.closureutils.tools.URIUtils.getRelativeURISafe;
 
-
-public class DependencyFileRenderer extends
-        AbstractRenderer<JavascriptDependencyTree> {
+/**
+ * Produces the content of a deps.js file when given a JavascriptDependencyTree to render.
+ */
+public class DependencyFileRenderer extends AbstractRenderer<JavascriptDependencyTree> {
 
     private String getPath(@Nonnull final DependencyNode dep,
                            DependencyNode baseNode) {

@@ -3,6 +3,9 @@ package slieb.closureutils.rendering;
 
 import javax.annotation.Nonnull;
 
+/**
+ * The exception class thrown by renderers.
+ */
 public class RenderException extends Exception {
     public RenderException() {}
 

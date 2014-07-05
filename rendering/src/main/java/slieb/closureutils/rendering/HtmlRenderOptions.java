@@ -7,7 +7,9 @@ import javax.annotation.Nullable;
 import java.net.URI;
 import java.util.List;
 
-
+/**
+ * The options interface to HtmlRenderers.
+ */
 public interface HtmlRenderOptions {
 
     @Nullable

@@ -7,6 +7,12 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * The Default Html Renderer takes a instance of HtmlRenderOptions and renders a html file.
+ * <p/>
+ * <p/>
+ * TODO: Improve docs here.
+ */
 public class DefaultHtmlRenderer extends AbstractRenderer<HtmlRenderOptions>
         implements HtmlRenderer {
 
@@ -39,9 +45,7 @@ public class DefaultHtmlRenderer extends AbstractRenderer<HtmlRenderOptions>
     }
 
 
-    protected void renderHtmlTag(HtmlRenderOptions options,
-                                 Appendable sb) throws
-            IOException {
+    protected void renderHtmlTag(HtmlRenderOptions options, Appendable sb) throws IOException {
         renderContentTag(sb, HTML, false);
         renderHeadTag(sb, options);
         renderBodyTag(sb, options);
@@ -59,10 +63,7 @@ public class DefaultHtmlRenderer extends AbstractRenderer<HtmlRenderOptions>
     }
 
 
-    protected void renderAttribute(Appendable sb,
-                                   @Nonnull final String name,
-                                   @Nonnull final String value) throws
-            IOException {
+    protected void renderAttribute(Appendable sb, @Nonnull final String name, @Nonnull final String value) throws IOException {
         sb
                 .append(SPACE)
                 .append(name)
@@ -72,16 +73,14 @@ public class DefaultHtmlRenderer extends AbstractRenderer<HtmlRenderOptions>
                 .append(QUOTE);
     }
 
-    protected void renderStylesheetTag(Appendable sb, final String content)
-            throws IOException {
+    protected void renderStylesheetTag(Appendable sb, final String content) throws IOException {
         renderContentTag(sb, STYLESHEET, false);
         sb.append(content);
         renderContentTag(sb, STYLESHEET, true);
     }
 
 
-    protected void renderStylesheetLink(Appendable sb,
-                                        Resource sourceFile)
+    protected void renderStylesheetLink(Appendable sb, Resource sourceFile)
             throws IOException {
         sb.append("<link");
         renderAttribute(sb, "rel", "stylesheet");
