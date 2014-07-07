@@ -64,7 +64,6 @@
             <groupId>com.github.stefanliebenberg</groupId>
             <artifactId>closure-utilities-stylesheets</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
