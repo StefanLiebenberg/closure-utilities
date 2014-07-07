@@ -7,11 +7,14 @@ import slieb.closureutils.resources.Resource;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import java.net.URI;
+import com.google.inject.Inject;
+import com.google.inject.name.Named;
 
 @Immutable
 public class DefaultGssBuilder extends AbstractGssBuilder {
 
-    public DefaultGssBuilder(DependencyParser dependencyParser) {
+    @Inject
+    public DefaultGssBuilder(@Named("gssDependencyParser") DependencyParser dependencyParser) {
         super(dependencyParser);
     }
 
