@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import slieb.closureutils.dependencies.DependencyNode;
-import slieb.closureutils.dependencies.DependencyParser;
+import slieb.closureutils.stylesheets.StylesheetDependencyParser;
 import slieb.closureutils.resources.*;
 import slieb.closureutils.stylesheets.CssRenamingMap;
 
@@ -24,8 +24,7 @@ import static org.mockito.Mockito.when;
 public class DefaultGssBuilderTest {
 
     @Mock
-    private DependencyParser mockDependencyParser;
-
+    private StylesheetDependencyParser mockDependencyParser;
 
     @Mock
     private ResourceProvider mockResourceProvider;
