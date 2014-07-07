@@ -15,6 +15,5 @@ public class StylesheetDependencyParser implements DependencyParser {
   @Override 
   public DependencyNode parse(Resource resource) {
       return null;
-
   }
 }
