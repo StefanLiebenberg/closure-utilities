@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Inject;
+
 public class JsBuilder implements BuilderInterface<JsOptions, JsResult> {
 
     protected final JavascriptDependencyParser dependencyParser;
@@ -34,6 +36,7 @@ public class JsBuilder implements BuilderInterface<JsOptions, JsResult> {
     private final DefinesFileRenderer definesFileRenderer =
             new DefinesFileRenderer();
 
+    @Inject
     public JsBuilder(JavascriptDependencyParser dependencyParser) {
         this.dependencyParser = dependencyParser;
     }
