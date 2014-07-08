@@ -1,10 +1,10 @@
 package slieb.closureutils.commandline.runners;
 
 
-import java.io.OutputStream;
+import java.io.PrintStream;
 
 public interface Runner {
     public void run(String... args) throws Exception;
 
-    public void printHelp(OutputStream outputStream);
+    public void printHelp(PrintStream printStream);
 }

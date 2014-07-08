@@ -10,4 +10,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>closure-utilities-configuration</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>1.13</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefanliebenberg</groupId>
+            <artifactId>closure-utilities-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

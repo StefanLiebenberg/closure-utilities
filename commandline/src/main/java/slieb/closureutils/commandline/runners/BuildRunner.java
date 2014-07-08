@@ -5,13 +5,14 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import slieb.closureutils.build.BuildException;
 import slieb.closureutils.commandline.options.BuildOptions;
 import slieb.closureutils.gss.DefaultGssBuilder;
 import slieb.closureutils.html.HtmlBuilder;
 import slieb.closureutils.javascript.JsBuilder;
 import slieb.closureutils.templates.SoyBuilder;
 
-import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.Set;
 
 @Singleton
@@ -30,7 +31,7 @@ public class BuildRunner implements Runner {
         this.jsBuilder = jsBuilder;
     }
 
-    public BuildOptions parse(String[] args) throws CmdLineException {
+    protected BuildOptions parse(String[] args) throws CmdLineException {
         final BuildOptions options = new BuildOptions();
         final CmdLineParser cmdLineParser = new CmdLineParser(options);
         cmdLineParser.parseArgument(args);
@@ -43,7 +44,7 @@ public class BuildRunner implements Runner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) throws BuildException, CmdLineException {
         BuildOptions options = parse(args);
         Set<String> modules = getModules(options);
         Boolean runAll = modules.isEmpty();
@@ -65,11 +66,9 @@ public class BuildRunner implements Runner {
     }
 
     @Override
-    public void printHelp(OutputStream outputStream) {
+    public void printHelp(PrintStream printStream) {
         final BuildOptions configurable = new BuildOptions();
         final CmdLineParser cmdLineParser = new CmdLineParser(configurable);
-        cmdLineParser.printUsage(outputStream);
-
-
+        cmdLineParser.printUsage(printStream);
     }
 }

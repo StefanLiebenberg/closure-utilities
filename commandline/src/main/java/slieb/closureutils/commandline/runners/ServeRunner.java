@@ -3,7 +3,7 @@ package slieb.closureutils.commandline.runners;
 
 import com.google.inject.Singleton;
 
-import java.io.OutputStream;
+import java.io.PrintStream;
 
 @Singleton
 public class ServeRunner implements Runner {
@@ -14,7 +14,7 @@ public class ServeRunner implements Runner {
     }
 
     @Override
-    public void printHelp(OutputStream outputStream) {
+    public void printHelp(PrintStream ps) {
         throw new RuntimeException("Not implemented yet.");
     }
 }

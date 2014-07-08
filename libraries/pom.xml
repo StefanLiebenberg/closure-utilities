@@ -14,7 +14,7 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/javascript</directory>
+                <directory>${pom.basedir}/src/main/javascript</directory>
                 <includes>
                     <include>**/*.js</include>
                 </includes>

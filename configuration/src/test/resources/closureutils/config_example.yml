@@ -1,0 +1,27 @@
+sources:
+- src/main/javascript
+testSources:
+- src/test/javascript
+components:
+  sample_app:
+    entryPoints:
+    - sample.app
+    properties:
+      goog.DEBUG: false
+    propertiesFiles:
+    - src/main/resources/globals.properties
+    outputScript: target/output/generated.min.js
+    options:
+      compile: true
+      debug: false
+      compileMode: advanced
+  sample_app_debug:
+    parent: sample_app
+    properties:
+      goog.DEBUG: true
+    entryPoints:
+    - debug
+    options:
+      compile: true
+      debug: true
+      compileMode: simple

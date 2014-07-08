@@ -3,12 +3,11 @@ package slieb.closureutils.javascript;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 import com.google.javascript.jscomp.*;
 import com.google.javascript.jscomp.Compiler;
 import slieb.closureutils.build.BuildException;
 import slieb.closureutils.build.BuilderInterface;
-import slieb.closureutils.dependencies.DependencyCalculator;
-import slieb.closureutils.dependencies.DependencyParser;
 import slieb.closureutils.dependencies.DependencyScanner;
 import slieb.closureutils.rendering.DefinesFileRenderer;
 import slieb.closureutils.rendering.DependencyFileRenderer;
@@ -24,23 +23,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.inject.Inject;
-
 public class JsBuilder implements BuilderInterface<JsOptions, JsResult> {
 
     protected final JavascriptDependencyParser dependencyParser;
 
-    private final DependencyFileRenderer depFileRenderer =
-            new DependencyFileRenderer();
+    private final DependencyFileRenderer depFileRenderer;
 
-    private final DefinesFileRenderer definesFileRenderer =
-            new DefinesFileRenderer();
+    private final DefinesFileRenderer definesFileRenderer;
 
     @Inject
-    public JsBuilder(JavascriptDependencyParser dependencyParser) {
+    public JsBuilder(JavascriptDependencyParser dependencyParser, DependencyFileRenderer depFileRenderer, DefinesFileRenderer definesFileRenderer) {
         this.dependencyParser = dependencyParser;
+        this.depFileRenderer = depFileRenderer;
+        this.definesFileRenderer = definesFileRenderer;
     }
-
 
     private void buildDefinesFile(@Nonnull JsOptions options,
                                   @Nonnull JsResult.Builder builder)
